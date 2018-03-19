@@ -1,0 +1,29 @@
+{
+  "name": "functions",
+  "version": "0.0.1",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "lint": "standard",
+    "serve": "firebase serve --only functions",
+    "shell": "firebase experimental:functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.15.3",
+    "express-authentication": "^0.3.2",
+    "express-es6-template-engine": "^2.0.1",
+    "firebase-admin": "~5.8.1",
+    "firebase-functions": "^0.8.1"
+  },
+  "devDependencies": {},
+  "private": true,
+  "apidoc": {
+    "name": "RopeScore Live",
+    "description": "A Live Display website for RopeScore",
+    "title": "RopeScore Live API",
+    "url": "https://live.ropescore.com/api"
+  }
+}

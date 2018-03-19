@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="theme-color" content="#efefef">
+    <link rel="manifest" href="/static/manifest.json">
+    <link rel="preload" href="/static/img/icon.png" as="image">
+    <link rel="icon" href="/static/img/icon.png">
+    <title>RopeScore</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://ropescore.com/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/fa/fontawesome.css">
+    <link rel="stylesheet" href="/static/css/fa/fa-solid.css">
+  </head>
+
+  <body>
+    <nav>
+      <ul class="topnav">
+        <li onclick="goHome()" class="pointer">
+          <div>RopeScore</div>
+        </li>
+        </li>${nav.map(el => `
+        <li id="${el.id}" ${(id===el.id ? 'class="current"' : '')}>
+          <a href="${el.link}">${el.title}</a>
+        </li>`).join('')}
+      </ul>
+    </nav>
+    ${(brand ? `
+    <div class="brand">
+      <h1 class="huge">
+        <img src="/static/img/icon.png" alt="logo" class="logo"/>
+        RopeScore
+      </h1>
+      <h2>A Scoring System for Rope Skipping</h2>
+    </div>` : ``)}
+    <div class="content">${template}</div>
+    <footer>
+      &copy; Svante Bengtson 2017-2018
+    </footer>
+    <!-- Scripts -->
+    <script src="/__/firebase/4.11.0/firebase.js"></script>
+    <script src="/__/firebase/4.11.0/firebase-firestore.js"></script>
+    <script src="/__/firebase/init.js"></script>
+    <script src="/main.js"></script>
+    ${scripts.map(el => `<script src="${el}"></script>`).join('')}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108349312-1"></script> -->
+    <!-- <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-108349312-1');
+    </script> -->

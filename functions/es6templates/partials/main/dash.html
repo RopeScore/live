@@ -1,0 +1,12 @@
+<div class="table">
+  <table class="select">
+    ${federations.map(fed => `
+    <tr onclick="window.location.pathname = '/${fed}'">
+      <td>
+        <span class="lg">${fed}</span>
+        <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
+      </td>
+    </tr>
+    `).join('')}
+  </table>
+</div>

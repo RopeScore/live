@@ -1,0 +1,18 @@
+{
+  "name": "RopeScore Live",
+  "short_name": "RopeScore",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#fff",
+  "description": "Live Rope Skipping Scores",
+  "lang": "en",
+  "icons": [{
+    "src": "/static/img/icon.png",
+    "sizes": "1024x1024",
+    "type": "image/png"
+  }, {
+    "src": "/static/img/icon.svg",
+    "type": "image/svg+xml"
+  }]
+}

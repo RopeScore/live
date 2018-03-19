@@ -1,0 +1,19 @@
+{
+  "name": "RopeScore-Live",
+  "productName": "RopeScore-Live",
+  "homepage": "https://live.ropescore.com",
+  "version": "0.0.1",
+  "description": "A Live Display website for RopeScore",
+  "author": "Svante Bengtson",
+  "repository": "svbeon/RopeScore-Live",
+  "bugs": {
+    "email": "contact@ropescore.com"
+  },
+  "dependencies": {
+    "firebase-tools": "*"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "apidoc": "apidoc -i functions/ -e functions/node_modules/ -o apidoc/"
+  }
+}

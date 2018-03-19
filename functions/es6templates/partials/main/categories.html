@@ -1,0 +1,12 @@
+<div class="table">
+  <table class="select">
+    ${categories.map(cat => `
+    <tr onclick="window.location.pathname = '/${fed}/${cat}'">
+      <td>
+        <span class="lg">${cat}</span>
+        <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
+      </td>
+    </tr>
+    `).join('')}
+  </table>
+</div>
