@@ -19,3 +19,12 @@ app.use('/api/', apiRouter.router)
 app.use('/', mainRouter.router)
 
 exports.app = functions.https.onRequest(app)
+
+exports.createLookup = functions.firestore.document('/{fed}/categories/{cat}/config').onWrite(event => {
+  let data = event.data.data()
+  let obj = {}
+
+  obj[event.params.cat] = data.name
+
+  return admin.firestore().collection(event.params.fed).doc('categoriesLookup').set(obj, {merge: true})
+})

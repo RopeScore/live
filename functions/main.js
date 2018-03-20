@@ -42,9 +42,14 @@ router.get('/', (req, res) => {
 
 router.get('/:fed', (req, res, next) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categories').getCollections().then(collections => {
+  admin.firestore().collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
+    let data = doc.data()
     let categories = []
-    collections.forEach(collection => { categories.push(collection.id) })
+    if (doc.exists) {
+      let keys = Object.keys(data)
+      categories = keys.map(id => { return {id, name: data[id]} })
+    }
+
     res.render('app', { // eslint-disable-line
       locals: {
         scripts: [],
@@ -59,6 +64,65 @@ router.get('/:fed', (req, res, next) => {
       },
       partials: {
         template: 'partials/main/categories'
+      }
+    })
+  })
+})
+
+router.get('/:fed/:cat', (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  admin.firestore().collection(req.params.fed).doc('categories').collection(req.params.cat).doc('config').get().then(doc => {
+    let data = doc.data()
+    let events = []
+    if (doc.exists) {
+      events = data.events || []
+    }
+
+    nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+
+    res.render('app', { // eslint-disable-line
+      locals: {
+        scripts: [],
+        id: 'dash',
+        title: '',
+        nav,
+        brand: true,
+        admin: false,
+
+        events,
+        cat: req.params.cat,
+        fed: req.params.fed
+      },
+      partials: {
+        template: 'partials/main/events'
+      }
+    })
+  })
+})
+
+router.get('/:fed/:cat/:event', (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  admin.firestore().collection(req.params.fed).doc('categories').collection(req.params.cat).doc('config').get().then(doc => {
+    let data = doc.data()
+
+    nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+    nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
+
+    res.render('app', { // eslint-disable-line
+      locals: {
+        scripts: [],
+        id: 'dash',
+        title: '',
+        nav,
+        brand: true,
+        admin: false,
+
+        event: req.params.event,
+        cat: req.params.cat,
+        fed: req.params.fed
+      },
+      partials: {
+        template: 'partials/main/event'
       }
     })
   })

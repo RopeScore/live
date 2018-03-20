@@ -1,9 +1,9 @@
 <div class="table">
   <table class="select">
     ${categories.map(cat => `
-    <tr onclick="window.location.pathname = '/${fed}/${cat}'">
+    <tr onclick="window.location.pathname = '/${fed}/${cat.id}'">
       <td>
-        <span class="lg">${cat}</span>
+        <span class="lg">${cat.name}</span>
         <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
       </td>
     </tr>

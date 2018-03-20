@@ -1,0 +1,18 @@
+<div class="table">
+  <table class="select">
+    ${events.map(event => `
+    <tr onclick="window.location.pathname = '/${fed}/${cat}/${event}'">
+      <td>
+        <span class="lg">${event}</span>
+        <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
+      </td>
+    </tr>
+    `).join('')}
+    <tr onclick="window.location.pathname = '/${fed}/${cat}/overall'">
+      <td>
+        <span class="lg">Overall</span>
+        <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
+      </td>
+    </tr>
+  </table>
+</div>
