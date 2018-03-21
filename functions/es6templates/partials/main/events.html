@@ -1,9 +1,9 @@
 <div class="table">
   <table class="select">
     ${events.map(event => `
-    <tr onclick="window.location.pathname = '/${fed}/${cat}/${event}'">
+    <tr onclick="window.location.pathname = '/${fed}/${cat}/${event.abbr}'">
       <td>
-        <span class="lg">${event}</span>
+        <span class="lg">${event.name || event.abbr}</span>
         <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
       </td>
     </tr>

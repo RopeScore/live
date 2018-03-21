@@ -75,7 +75,12 @@ router.get('/:fed/:cat', (req, res, next) => {
     let data = doc.data()
     let events = []
     if (doc.exists) {
-      events = data.events || []
+      events = Object.keys(data.events).map(abbr => {
+        return {
+          abbr,
+          name: data.events[abbr].name
+        }
+      })
     }
 
     nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
@@ -100,32 +105,57 @@ router.get('/:fed/:cat', (req, res, next) => {
   })
 })
 
+router.get('/:fed/:cat/overall', (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+  nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
+
+  let renderPage = (err, content) => res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: ['/static/js/vue.js', '/main/overall.js'],
+      id: 'dash',
+      title: '',
+      nav,
+      brand: true,
+      admin: false,
+
+      content
+    },
+    partials: {
+      template: 'partials/vue'
+    }
+  })
+  es6renderer('es6templates/partials/main/overall.html', {locals: {
+    cat: req.params.cat,
+    fed: req.params.fed
+  }}, renderPage)
+})
+
 router.get('/:fed/:cat/:event', (req, res, next) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categories').collection(req.params.cat).doc('config').get().then(doc => {
-    let data = doc.data()
+  nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+  if (nav.findIndex(obj => obj.id === 'cat') < 0) nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
 
-    nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
-    nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
+  let renderPage = (err, content) => res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: ['/static/js/vue.js', '/main/event.js'],
+      id: 'dash',
+      title: '',
+      nav,
+      brand: true,
+      admin: false,
 
-    res.render('app', { // eslint-disable-line
-      locals: {
-        scripts: [],
-        id: 'dash',
-        title: '',
-        nav,
-        brand: true,
-        admin: false,
-
-        event: req.params.event,
-        cat: req.params.cat,
-        fed: req.params.fed
-      },
-      partials: {
-        template: 'partials/main/event'
-      }
-    })
+      content
+    },
+    partials: {
+      template: 'partials/vue'
+    }
   })
+  es6renderer('es6templates/partials/main/event.html', {locals: {
+    event: req.params.event,
+    cat: req.params.cat,
+    fed: req.params.fed
+  }}, renderPage)
 })
 
 router.get('/login', (req, res) => {

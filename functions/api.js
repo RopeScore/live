@@ -104,9 +104,26 @@ router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, n
   admin.firestore().collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('config').get()
     .then(doc => {
-      console.log(doc.data())
       if (doc.exists) {
-        res.json(doc.data())
+        let data = doc.data()
+        let config = {
+          name: data.name || '',
+          events: []
+        }
+        console.log(data)
+
+        if (typeof data.events !== 'undefined') {
+          let abbrs = Object.keys(data.events)
+          config.events = abbrs.map(abbr => {
+            return {
+              abbr,
+              name: data.events[abbr].name || '',
+              speed: data.events[abbr].speed || false
+            }
+          })
+        }
+
+        res.json(config)
       } else {
         next({statusCode: 404, error: 'Cateory not configured'})
       }
@@ -125,16 +142,31 @@ router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, n
  * @apiParam {String} cat id of the category
  *
  * @apiParam {String} name The new name of the Category
- * @apiParam {String[]} events new Array of enabled events
+ * @apiParam {Object[]} events new Array of enabled events
+ * @apiParam {String} events.abbr The "standard" abbreviation of the event
+ * @apiParam {String} events.name The preferred name of the event, if not avilable the abbr will be used
  *
  * @apiSuccess {String} message success message
  */
 router.post('/:fed/:cat', authMiddleware, authentication.required(), (req, res, next) => {
   res.set('Cache-Control', 'private')
   console.log(req.body)
+  let events = {}
+  req.body.events.forEach(obj => {
+    if (typeof obj.abbr !== 'undefined') {
+      events[obj.abbr] = {
+        name: obj.name || '',
+        speed: obj.speed || false,
+        cols: obj.cols || {
+          speed: [],
+          overall: []
+        }
+      }
+    }
+  })
   let config = {
     name: req.body.name,
-    events: req.body.events
+    events: events
   }
   admin.firestore().collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('config').set(config)
