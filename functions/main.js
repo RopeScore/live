@@ -19,7 +19,7 @@ const nav = [
 
 router.get('/', (req, res) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().getCollections().then(collections => {
+  admin.firestore().collection('live').doc('federations').getCollections().then(collections => {
     let federations = []
     collections.forEach(collection => { federations.push(collection.id) })
     res.render('app', { // eslint-disable-line
@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
 
 router.get('/:fed', (req, res, next) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
     let data = doc.data()
     let categories = []
     if (doc.exists) {
@@ -71,7 +71,7 @@ router.get('/:fed', (req, res, next) => {
 
 router.get('/:fed/:cat', (req, res, next) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categories').collection(req.params.cat).doc('config').get().then(doc => {
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories').collection(req.params.cat).doc('config').get().then(doc => {
     let data = doc.data()
     let events = []
     if (doc.exists) {
@@ -81,6 +81,7 @@ router.get('/:fed/:cat', (req, res, next) => {
           name: data.events[abbr].name
         }
       })
+      events.push({abbr: 'overall'})
     }
 
     nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`

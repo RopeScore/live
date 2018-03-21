@@ -11,6 +11,10 @@ table.select tr td {
   padding: 1em;
   border: none;
   border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 table.select tr td:hover {
@@ -35,6 +39,8 @@ table.select .lg {
   vertical-align: middle;
   font-weight: bold;
   font-size: 1.33em;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 table.select .lg:first-letter {
@@ -42,7 +48,7 @@ table.select .lg:first-letter {
 }
 
 table.select .pr {
-  margin-top: .4em;
+  margin-top: .5em;
 }
 
 .pr {

@@ -3,7 +3,7 @@
  * shorthand for firebase.firestore()
  * @type {Object}
  */
-var firestore = firebase.firestore()
+var firestore = firebase.firestore().collection('live').doc('federations')
 /**
  * shorthand for firebase.auth()
  * @type {Object}

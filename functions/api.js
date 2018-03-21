@@ -19,7 +19,7 @@ function authMiddleware (req, res, next) {
     next({statusCode: 400, error: 'Only Avilable'})
   }
 
-  admin.firestore().collection(req.params.fed).doc('config').get()
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('config').get()
     .then(doc => {
       if (doc.exists) {
         let data = doc.data()
@@ -54,7 +54,7 @@ function authMiddleware (req, res, next) {
  */
 router.get('/', (req, res) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().getCollections().then(collections => {
+  admin.firestore().collection('live').doc('federations').getCollections().then(collections => {
     let federations = []
     collections.forEach(collection => { federations.push(collection.id) })
     res.json({
@@ -78,7 +78,7 @@ router.get('/', (req, res) => {
  */
 router.get('/:fed', authMiddleware, authentication.required(), (req, res) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categories').getCollections().then(collections => {
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories').getCollections().then(collections => {
     let categories = []
     collections.forEach(collection => { categories.push(collection.id) })
     res.json({categories})
@@ -107,7 +107,7 @@ router.get('/:fed', authMiddleware, authentication.required(), (req, res) => {
  */
 router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, next) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categories')
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('config').get()
     .then(doc => {
       if (doc.exists) {
@@ -182,7 +182,7 @@ router.post('/:fed/:cat', authMiddleware, authentication.required(), (req, res, 
     name: req.body.name,
     events: events
   }
-  admin.firestore().collection(req.params.fed).doc('categories')
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('config').set(config)
     .then(ref => {
       res.json({message: 'Category Config Updated successfully'})
@@ -217,7 +217,7 @@ router.delete('/:fed/:cat', authMiddleware, authentication.required(), (req, res
  */
 router.get('/:fed/:cat/participants', authMiddleware, authentication.required(), (req, res, next) => {
   res.set('Cache-Control', 'private')
-  admin.firestore().collection(req.params.fed).doc('categories')
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('participants').get()
     .then(doc => {
       if (doc.exists) {
@@ -271,7 +271,7 @@ router.post('/:fed/:cat/participants', authMiddleware, authentication.required()
     }
   })
 
-  admin.firestore().collection(req.params.fed).doc('categories')
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('participants').set(participants)
     .then(ref => {
       res.json({message: 'Category Participants Added successfully'})

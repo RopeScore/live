@@ -4,15 +4,9 @@
     <tr onclick="window.location.pathname = '/${fed}/${cat}/${event.abbr}'">
       <td>
         <span class="lg">${event.name || event.abbr}</span>
-        <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
+        <i class="fas fa-angle-right fa-lg"></i>
       </td>
     </tr>
     `).join('')}
-    <tr onclick="window.location.pathname = '/${fed}/${cat}/overall'">
-      <td>
-        <span class="lg">Overall</span>
-        <span class="pr"><i class="fas fa-angle-right fa-2x"></i></span>
-      </td>
-    </tr>
   </table>
 </div>
