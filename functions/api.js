@@ -49,7 +49,7 @@ function authMiddleware (req, res, next) {
  * @apiGroup Categories
  * @apiPermission none
  *
- * @apiSuccess {String} version
+ * @apiSuccess {String} version Current API version
  * @apiSuccess {String[]} federations Array of federations
  */
 router.get('/', (req, res) => {
@@ -97,7 +97,13 @@ router.get('/:fed', authMiddleware, authentication.required(), (req, res) => {
  * @apiParam {String} cat id of the category
  *
  * @apiSuccess {String} name The name of the Category
- * @apiSuccess {String[]} events Array of enabled events
+ * @apiSuccess {Object[]} events new Array of enabled events
+ * @apiSuccess {String} events.abbr The "standard" abbreviation of the event
+ * @apiSuccess {String} events.name The preferred name of the event
+ * @apiSuccess {Boolean} events.speed if the event is a speed event or not
+ * @apiSuccess {Object} events.cols columns to show
+ * @apiSuccess {String[]} events.cols.overall columns to show in the overall table, in the order they should be shown
+ * @apiSuccess {String[]} events.cols.event columns to show in the event's table, in the order they should be shown
  */
 router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, next) => {
   res.set('Cache-Control', 'private')
@@ -118,6 +124,10 @@ router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, n
             return {
               abbr,
               name: data.events[abbr].name || '',
+              cols: {
+                event: data.events[abbr].cols.event || [],
+                overall: data.events[abbr].cols.overall || []
+              },
               speed: data.events[abbr].speed || false
             }
           })
@@ -145,6 +155,10 @@ router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, n
  * @apiParam {Object[]} events new Array of enabled events
  * @apiParam {String} events.abbr The "standard" abbreviation of the event
  * @apiParam {String} events.name The preferred name of the event, if not avilable the abbr will be used
+ * @apiParam {Boolean} events.speed if the event is a speed event or not
+ * @apiParam {Object} events.cols columns to show
+ * @apiParam {String[]} events.cols.overall columns to show in the overall table
+ * @apiParam {String[]} events.cols.event columns to show in the event's table
  *
  * @apiSuccess {String} message success message
  */
@@ -226,7 +240,7 @@ router.get('/:fed/:cat/participants', authMiddleware, authentication.required(),
 })
 
 /**
- * @api {post} /:fed/:cat/participants Bulkadd Category Participants
+ * @api {post} /:fed/:cat/participants Bulk add Category Participants
  * @apiName setParticipants
  * @apiGroup Categories
  * @apiPermission federation
