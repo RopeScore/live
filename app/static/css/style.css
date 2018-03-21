@@ -34,7 +34,7 @@ table.select .lg {
   display: inline-block;
   vertical-align: middle;
   font-weight: bold;
-  font-size: 2em;
+  font-size: 1.33em;
 }
 
 table.select .lg:first-letter {

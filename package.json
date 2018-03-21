@@ -10,7 +10,9 @@
     "email": "contact@ropescore.com"
   },
   "dependencies": {
-    "firebase-tools": "*"
+    "firebase-tools": "*",
+    "standard": "*",
+    "apidoc": "*"
   },
   "devDependencies": {},
   "scripts": {
