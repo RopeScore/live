@@ -14,6 +14,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "apidoc": "apidoc -i functions/ -e functions/node_modules/ -o apidoc/"
+    "apidoc": "apidoc -i functions/ -e functions/node_modules/ -o app/apidoc/",
+    "deploy": "firebase deploy --project ropescore"
   }
 }
