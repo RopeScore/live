@@ -8,10 +8,16 @@ const router = express.Router()
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json())
 
+/**
+ * @apiDefine federation
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
+ */
+
 function authMiddleware (req, res, next) {
   // provide the data that was used to authenticate the request; if this is
   // not set then no attempt to authenticate is registered.
-  req.authentication = req.get('Authorization')
+  req.authentication = req.get('Authorization').replace(/^(Bearer )/, '')
 
   console.log(req.params.fed)
 
@@ -46,7 +52,7 @@ function authMiddleware (req, res, next) {
 /**
  * @api {get} / List Federations
  * @apiName getFederations
- * @apiGroup Categories
+ * @apiGroup Federations
  * @apiPermission none
  *
  * @apiSuccess {String} version Current API version
@@ -70,11 +76,11 @@ router.get('/', (req, res) => {
  * @apiGroup Categories
  * @apiPermission federation
  *
- * @apiHeader {String} Authorization api key
+ * @apiUse federation
  *
  * @apiParam {String} fed federation
  *
- * @apiSuccess {String[]} categories
+ * @apiSuccess {String[]} categories Array of category ids
  */
 router.get('/:fed', authMiddleware, authentication.required(), (req, res) => {
   res.set('Cache-Control', 'private')
@@ -91,7 +97,7 @@ router.get('/:fed', authMiddleware, authentication.required(), (req, res) => {
  * @apiGroup Categories
  * @apiPermission federation
  *
- * @apiHeader {String} Authorization api key
+ * @apiUse federation
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -146,7 +152,7 @@ router.get('/:fed/:cat', authMiddleware, authentication.required(), (req, res, n
  * @apiGroup Categories
  * @apiPermission federation
  *
- * @apiHeader {String} Authorization api key
+ * @apiUse federation
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -202,10 +208,10 @@ router.delete('/:fed/:cat', authMiddleware, authentication.required(), (req, res
 /**
  * @api {get} /:fed/:cat/participants View Category Participants
  * @apiName getParticipants
- * @apiGroup Categories
+ * @apiGroup Participants
  * @apiPermission federation
  *
- * @apiHeader {String} Authorization api key
+ * @apiUse federation
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -242,10 +248,10 @@ router.get('/:fed/:cat/participants', authMiddleware, authentication.required(),
 /**
  * @api {post} /:fed/:cat/participants Bulk add Category Participants
  * @apiName setParticipants
- * @apiGroup Categories
+ * @apiGroup Participants
  * @apiPermission federation
  *
- * @apiHeader {String} Authorization api key
+ * @apiUse federation
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -278,7 +284,7 @@ router.post('/:fed/:cat/participants', authMiddleware, authentication.required()
     })
     .catch(err => {
       console.log(err)
-      next({statusCode: 500, error: 'Could not update category config'})
+      next({statusCode: 500, error: 'Could not add participants'})
     })
 })
 
@@ -292,6 +298,133 @@ router.patch('/:fed/:cat/participants', authMiddleware, authentication.required(
 router.delete('/:fed/:cat/participants', authMiddleware, authentication.required(), (req, res, next) => {
   res.set('Cache-Control', 'private')
   next({statusCode: 501, error: 'Not Implemented'})
+})
+
+/**
+ * @api {get} /:fed/:cat/scores/:event Get all stored scores for an event
+ * @apiName getScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ *
+ * @apiUse federation
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ * @apiParam {String} event event to get scores for
+ *
+ * @apiSuccess {Object[]} scores Array of objects with scores
+ * @apiSuccess {String} scores.uid id of the participant
+ * @apiSuccess {Boolean} [scores.display] If the score is publicly displayed
+ *
+ * @apiSuccess {Number} [scores.T1] Diff score (freestyles)
+ * @apiSuccess {Number} [scores.T2] Pres Score (freestyles)
+ * @apiSuccess {Number} [scores.T2] Pres Score (freestyles)
+ * @apiSuccess {Number} [scores.T3] RQ score (freestyles)
+ * @apiSuccess {Number} [scores.T4] T2 + T3 (freestyles)
+ * @apiSuccess {Number} [scores.T5] Deduc score (freestyles)
+ *
+ * @apiSuccess {Number} [scores.cScore] T4 - .5*T5 (freestyles)
+ * @apiSuccess {Number} [scores.dScore] T5 - .5*T5 (freestyles)
+ *
+ * @apiSuccess {Number} [scores.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiSuccess {Number} [scores.Y] (T - W) * fac (speed)
+ *
+ * @apiSuccess {Number} [scores.cRank] rank for cScore (freestyle)
+ * @apiSuccess {Number} [scores.dRank] rank for dScore (freestyle)
+ * @apiSuccess {Number} [scores.rsum] cRank + dRank (freestyle)
+ * @apiSuccess {Number} [scores.rank] total rank (of Y for speed, of rsum for freestyle)
+ */
+router.get('/:fed/:cat/scores/:event', authMiddleware, authentication.required(), (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
+    .collection(req.params.cat).doc('scores').collection(req.params.event).get()
+    .then(docs => {
+      let scores = []
+      docs.forEach(doc => {
+        let score = doc.data()
+        score.uid = doc.id
+        if (doc.exists) scores.push(score)
+      })
+      res.json({scores})
+    })
+})
+
+/**
+ * @api {post} /:fed/:cat/scores/:event Update multiple scores for an event
+ * @apiName setScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ *
+ * @apiUse federation
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ * @apiParam {String} event event to get scores for
+ *
+ *
+ * @apiParam {Object[]} scores Array of objects with scores
+ * @apiParam {String} scores.uid id of the participant
+ * @apiParam {Boolean} [scores.display] If the score is publicly displayed
+ *
+ * @apiParam {Number} [scores.T1] Diff score (freestyles)
+ * @apiParam {Number} [scores.T2] Pres Score (freestyles)
+ * @apiParam {Number} [scores.T2] Pres Score (freestyles)
+ * @apiParam {Number} [scores.T3] RQ score (freestyles)
+ * @apiParam {Number} [scores.T4] T2 + T3 (freestyles)
+ * @apiParam {Number} [scores.T5] Deduc score (freestyles)
+ *
+ * @apiParam {Number} [scores.cScore] T4 - .5*T5 (freestyles)
+ * @apiParam {Number} [scores.dScore] T5 - .5*T5 (freestyles)
+ *
+ * @apiParam {Number} [scores.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiParam {Number} [scores.Y] (T - W) * fac (speed)
+ *
+ * @apiParam {Number} [scores.cRank] rank for cScore (freestyle)
+ * @apiParam {Number} [scores.dRank] rank for dScore (freestyle)
+ * @apiParam {Number} [scores.rsum] cRank + dRank (freestyle)
+ * @apiParam {Number} [scores.rank] total rank (of Y for speed, of rsum for freestyle)
+ *
+ * @apiSuccess {String} message success message
+ */
+router.post('/:fed/:cat/scores/:event', authMiddleware, authentication.required(), (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  console.log(req.body)
+  let batch = admin.firestore().batch()
+  let colRef = admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
+    .collection(req.params.cat).doc('scores').collection(req.params.event)
+  req.body.scores.forEach(obj => {
+    if (typeof obj.uid !== 'undefined') {
+      let score = {}
+      if (typeof obj.T1 !== 'undefined') score.T1 = Number(obj.T1)
+      if (typeof obj.T2 !== 'undefined') score.T2 = Number(obj.T2)
+      if (typeof obj.T3 !== 'undefined') score.T3 = Number(obj.T3)
+      if (typeof obj.T4 !== 'undefined') score.T4 = Number(obj.T4)
+      if (typeof obj.T5 !== 'undefined') score.T5 = Number(obj.T5)
+
+      if (typeof obj.cScore !== 'undefined') score.cScore = Number(obj.cScore)
+      if (typeof obj.dScore !== 'undefined') score.dScore = Number(obj.dScore)
+
+      if (typeof obj.A !== 'undefined') score.A = Number(obj.A)
+      if (typeof obj.Y !== 'undefined') score.Y = Number(obj.Y)
+
+      if (typeof obj.cRank !== 'undefined') score.cRank = Number(obj.cRank)
+      if (typeof obj.dRank !== 'undefined') score.dRank = Number(obj.dRank)
+      if (typeof obj.rsum !== 'undefined') score.rsum = Number(obj.rsum)
+      if (typeof obj.rank !== 'undefined') score.rank = Number(obj.rank)
+
+      console.log(score)
+
+      batch.set(colRef.doc(obj.uid), score)
+    }
+  })
+  batch.commit()
+    .then(ref => {
+      res.json({message: 'Scores Updated successfully'})
+    })
+    .catch(err => {
+      console.log(err)
+      next({statusCode: 500, error: 'Could not update scores'})
+    })
 })
 
 router.use(authentication.failed(), (req, res) => {

@@ -20,7 +20,23 @@ var app = new Vue({
       config: false,
       participants: false,
       scores: false,
-      ranks: false
+      ranks: true
+    }
+  },
+  computed: {
+    ranked: function () {
+      var self = this
+      var uids = Object.keys(this.scores) || []
+      return uids.map(function (uid) {
+        var score = self.scores[uid]
+        score.uid = uid
+        return score
+      }).sort(function (a, b) {
+        if (typeof a.rank !== 'undefined' && typeof b.rank !== 'undefined' && a.rank !== b.rank) return a.rank - b.rank
+        if (typeof a.A !== 'undefined' && typeof b.A !== 'undefined' && a.A !== b.A) return b.A - a.A
+        if (typeof a.Y !== 'undefined' && typeof b.Y !== 'undefined' && a.Y !== b.Y) return b.Y - a.Y
+        return Number(a.uid) - Number(b.uid)
+      })
     }
   },
   methods: {
@@ -63,21 +79,12 @@ firestore.collection(app.fed).doc('categories').collection(app.cat).doc('partici
     // app.particiants = doc.data()
   })
 
-firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(app.abbr)
+firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(app.abbr).where('display', '==', true)
   .onSnapshot(function (docs) {
     app.loaded.scores = true
 
     docs.forEach(function (doc) {
       app.$set(app.scores, doc.id, doc.data())
-    })
-  })
-
-firestore.collection(app.fed).doc('categories').collection(app.cat).doc('ranks').collection(app.abbr)
-  .onSnapshot(function (docs) {
-    app.loaded.ranks = true
-
-    docs.forEach(function (doc) {
-      app.$set(app.ranks, doc.id, doc.data())
     })
   })
 

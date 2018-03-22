@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "body-parser": "^1.18.2",
+    "crypto": "^1.0.1",
     "express": "^4.15.3",
     "express-authentication": "^0.3.2",
     "express-es6-template-engine": "^2.0.1",
     "firebase-admin": "~5.8.1",
-    "firebase-functions": "^0.8.1"
+    "firebase-functions": "^0.8.1",
+    "standard": "^11.0.1"
   },
   "devDependencies": {},
   "private": true,

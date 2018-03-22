@@ -24,23 +24,23 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(score, uid) in scores">
-        <td>{{ (participants[uid] ? participants[uid].name : '') }}</td>
-        <td>{{ (participants[uid] ? participants[uid].club : '') }}</td>
-        <td>{{ uid }}</td>
+      <tr v-for="score in ranked">
+        <td>{{ (participants[score.uid] ? participants[score.uid].name : '') }}</td>
+        <td>{{ (participants[score.uid] ? participants[score.uid].club : '') }}</td>
+        <td>{{ score.uid }}</td>
 
         <td class="gray" v-if="showCol('rq')">{{ score.T3 }}</td>
         <td class="gray" v-if="showCol('pres')">{{ score.T2 }}</td>
         <td class="gray" v-if="showCol('diff')">{{ score.T1 }}</td>
         <td class="gray" v-if="showCol('deduc')">{{ score.T5 }}</td>
-        <td class="gray" v-if="showCol('cScore')">{{ score.T4 - (score.T5 / 2) }}</td>
-        <td class="gray" v-if="showCol('cRank')">{{ (ranks[uid] ? ranks[uid].crea : '') }}</td>
-        <td class="gray" v-if="showCol('dScore')">{{ score.T1 - (score.T5 / 2) }}</td>
-        <td class="gray" v-if="showCol('dRank')">{{ (ranks[uid] ? ranks[uid].diff : '') }}</td>
+        <td class="gray" v-if="showCol('cScore')">{{ score.cScore }}</td>
+        <td class="gray" v-if="showCol('cRank')">{{ score.cRank }}</td>
+        <td class="gray" v-if="showCol('dScore')">{{ score.dScore }}</td>
+        <td class="gray" v-if="showCol('dRank')">{{ score.dRank }}</td>
         <td ng-if="showCol('score')">{{ score.Y || score.A }}</td>
 
-        <td class="green" v-if="showCol('rsum')">{{ (ranks[uid] ? ranks[uid].sum : '') }}</td>
-        <td class="red" v-if="showCol('rank')">{{ (ranks[uid] ? ranks[uid].final : '') }}</td>
+        <td class="green" v-if="showCol('rsum')">{{ score.rsum }}</td>
+        <td class="red" v-if="showCol('rank')">{{ score.rank }}</td>
       </tr>
     </tbody>
   </table>
