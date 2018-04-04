@@ -2,8 +2,11 @@ const express = require('express')
 const admin = require('firebase-admin')
 const bodyParser = require('body-parser')
 const authentication = require('express-authentication')
+const Raven = require('raven')
 
 const router = express.Router()
+
+router.use(Raven.requestHandler())
 
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json())
@@ -426,6 +429,8 @@ router.post('/:fed/:cat/scores/:event', authMiddleware, authentication.required(
       next({statusCode: 500, error: 'Could not update scores'})
     })
 })
+
+router.use(Raven.errorHandler())
 
 router.use(authentication.failed(), (req, res) => {
   res.status(401).json(req.authentication)

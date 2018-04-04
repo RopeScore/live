@@ -46,6 +46,9 @@
     <script src="/__/firebase/4.11.0/firebase.js"></script>
     <script src="/__/firebase/4.11.0/firebase-firestore.js"></script>
     <script src="/__/firebase/init.js"></script>
+    <script src="/static/js/vue.js"></script>
+    <script src="https://cdn.ravenjs.com/3.24.0/vue/raven.min.js" crossorigin="anonymous"></script>
+    <script>Raven.config('https://97530d06d7f5493da6e5ebbe96779b06@sentry.io/1048286').install()</script>
     <script src="/main.js"></script>
     ${scripts.map(el => `<script src="${el}"></script>`).join('')}
     <!-- Global site tag (gtag.js) - Google Analytics -->

@@ -47,10 +47,8 @@ function signOut () {
  */
 auth.onAuthStateChanged(function (user) {
   if (user) {
-    document.getElementById('login')
-      .innerHTML = '<a onclick="signOut()">Log Out</a>'
+    document.getElementById('login').innerHTML = '<a onclick="signOut()">Log Out</a>'
   } else {
-    document.getElementById('login')
-      .innerHTML = '<a href="/login">Log In</a>'
+    document.getElementById('login').innerHTML = '<a href="/login">Log In</a>'
   }
 })

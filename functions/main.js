@@ -1,8 +1,10 @@
 const express = require('express')
 const admin = require('firebase-admin')
 const es6renderer = require('express-es6-template-engine')
+const Raven = require('raven')
 
 const router = express.Router()
+router.use(Raven.requestHandler())
 
 const nav = [
   {
@@ -113,7 +115,7 @@ router.get('/:fed/:cat/overall', (req, res, next) => {
 
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
-      scripts: ['/static/js/vue.js', '/main/overall.js'],
+      scripts: ['/main/overall.js'],
       id: 'dash',
       title: '',
       nav,
@@ -139,7 +141,7 @@ router.get('/:fed/:cat/:event', (req, res, next) => {
 
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
-      scripts: ['/static/js/vue.js', '/main/event.js'],
+      scripts: ['/main/event.js'],
       id: 'dash',
       title: '',
       nav,
@@ -163,7 +165,7 @@ router.get('/login', (req, res) => {
   res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
   var renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
-      scripts: ['/static/js/vue.js', '/auth.js'],
+      scripts: ['/auth.js'],
       id: 'login',
       title: 'Log In',
       nav,
@@ -177,6 +179,8 @@ router.get('/login', (req, res) => {
   })
   es6renderer('es6templates/partials/auth.html', {}, renderPage)
 })
+
+router.use(Raven.errorHandler())
 
 router.use(function (req, res, next) {
   res.status(404)

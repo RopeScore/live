@@ -5,7 +5,10 @@ service cloud.firestore {
         return get(/databases/$(database)/documents/live/federations/$(federation)/config).data.admins[request.auth.uid] == true
       }
       match /categories/{document=**} {
-        allow read;
+        function isPublic() {
+          return get(/databases/$(database)/documents/live/federations/$(federation)/categories/$(request.path[7])/config).data.display == true
+        }
+        allow read: if isAdmin() || isPublic();
         allow write: if isAdmin();
       }
       match /config {

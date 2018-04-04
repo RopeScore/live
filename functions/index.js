@@ -2,9 +2,12 @@ const functions = require('firebase-functions')
 const admin = require('firebase-admin')
 const es6renderer = require('express-es6-template-engine')
 const express = require('express')
-let crypto = require('crypto')
+const Raven = require('raven')
+const crypto = require('crypto')
 
 const app = express()
+
+Raven.config('https://97530d06d7f5493da6e5ebbe96779b06:3a5d43c915d549fda90721d4795b4672@sentry.io/1048286').install()
 admin.initializeApp(functions.config().firebase)
 
 app.engine('html', es6renderer)
@@ -25,9 +28,9 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
   let data = event.data.data()
   let obj = {}
 
-  obj[event.params.cat] = (data.display ? data.name : undefined)
+  obj[event.params.cat] = (data.display ? data.name : admin.firestore.FieldValue.delete())
 
-  return admin.firestore().collection('live').doc('federations').collection(event.params.fed).doc('categoriesLookup').set(obj, {merge: true})
+  return admin.firestore().collection('live').doc('federations').collection(event.params.fed).doc('categoriesLookup').update(obj)
 })
 
 exports.genKey = functions.firestore.document('/live/federations/{fed}/config').onWrite(event => {
