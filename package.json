@@ -12,7 +12,8 @@
   "dependencies": {
     "firebase-tools": "*",
     "standard": "*",
-    "apidoc": "*"
+    "apidoc": "*",
+    "firebase-admin": "5.10.0"
   },
   "devDependencies": {},
   "scripts": {
