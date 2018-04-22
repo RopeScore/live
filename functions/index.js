@@ -8,7 +8,7 @@ const crypto = require('crypto')
 const app = express()
 
 Raven.config('https://97530d06d7f5493da6e5ebbe96779b06:3a5d43c915d549fda90721d4795b4672@sentry.io/1048286').install()
-admin.initializeApp(functions.config().firebase)
+admin.initializeApp()
 
 app.engine('html', es6renderer)
 app.set('views', 'es6templates')
@@ -24,17 +24,17 @@ app.use('/', mainRouter.router)
 
 exports.app = functions.https.onRequest(app)
 
-exports.createLookup = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite(event => {
-  let data = event.data.data()
+exports.createLookup = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
+  let data = change.after.data()
   let obj = {}
 
-  obj[event.params.cat] = (data.display ? data.name : admin.firestore.FieldValue.delete())
+  obj[context.params.cat] = (data.display ? data.name : admin.firestore.FieldValue.delete())
 
-  return admin.firestore().collection('live').doc('federations').collection(event.params.fed).doc('categoriesLookup').update(obj)
+  return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').update(obj)
 })
 
-exports.genKey = functions.firestore.document('/live/federations/{fed}/config').onWrite(event => {
-  let data = event.data.data()
+exports.genKey = functions.firestore.document('/live/federations/{fed}/config').onWrite((change, context) => {
+  let data = change.after.data()
 
   if (data.genKey === true) {
     let obj = {
@@ -42,7 +42,7 @@ exports.genKey = functions.firestore.document('/live/federations/{fed}/config').
       genKey: false
     }
 
-    return admin.firestore().collection('live').doc('federations').collection(event.params.fed).doc('config').update(obj)
+    return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('config').update(obj)
   } else {
     return false
   }
