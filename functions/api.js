@@ -304,6 +304,148 @@ router.delete('/:fed/:cat/participants', authMiddleware, authentication.required
 })
 
 /**
+ * @api {get} /:fed/:cat/scores/overall Get all stored overall scores
+ * @apiName getOverallScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ *
+ * @apiUse federation
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiSuccess {Object[]} scores Array of objects with scores
+ * @apiSuccess {String} scores.uid id of the participant
+ * @apiSuccess {Boolean} [scores.display] If the score is publicly displayed
+ *
+ * @apiSuccess {Number} [scores.score] sum of all events scores
+ * @apiSuccess {Number} [scores.rsum] sum of all events ranks
+ * @apiSuccess {Number} [scores.rank] Overall rank
+ *
+ * @apiSuccess {Object[]} scores.events Array of objects with scores per event
+ * @apiSuccess {Number} scores.event.abbr the abbr event the score applies to
+ * @apiSuccess {Number} [scores.event.T1] Diff score (freestyles)
+ * @apiSuccess {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiSuccess {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiSuccess {Number} [scores.event.T3] RQ score (freestyles)
+ * @apiSuccess {Number} [scores.event.T4] T2 + T3 (freestyles)
+ * @apiSuccess {Number} [scores.event.T5] Deduc score (freestyles)
+ *
+ * @apiSuccess {Number} [scores.event.cScore] T4 - .5*T5 (freestyles)
+ * @apiSuccess {Number} [scores.event.dScore] T5 - .5*T5 (freestyles)
+ *
+ * @apiSuccess {Number} [scores.event.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiSuccess {Number} [scores.event.Y] (T - W) * fac (speed)
+ *
+ * @apiSuccess {Number} [scores.event.cRank] rank for cScore (freestyle)
+ * @apiSuccess {Number} [scores.event.dRank] rank for dScore (freestyle)
+ * @apiSuccess {Number} [scores.event.rsum] cRank + dRank (freestyle)
+ * @apiSuccess {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
+ */
+router.get('/:fed/:cat/scores/:event', authMiddleware, authentication.required(), (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
+    .collection(req.params.cat).doc('scores').collection('overall').get()
+    .then(docs => {
+      let scores = []
+      docs.forEach(doc => {
+        let score = doc.data()
+        score.uid = doc.id
+        if (doc.exists) scores.push(score)
+      })
+      res.json({scores})
+    })
+})
+
+/**
+ * @api {post} /:fed/:cat/scores/overall Update multiple overall scores
+ * @apiName setOverallScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ *
+ * @apiUse federation
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiParam {Object[]} scores Array of objects with scores
+ * @apiParam {String} scores.uid id of the participant
+ * @apiParam {Boolean} [scores.display] If the score is publicly displayed
+ *
+ * @apiParam {Number} [scores.score] sum of all events scores
+ * @apiParam {Number} [scores.rsum] sum of all events ranks
+ * @apiParam {Number} [scores.rank] Overall rank
+ *
+ * @apiParam {Object[]} scores.events Array of objects with scores per event
+ * @apiParam {Number} scores.event.abbr the abbr event the score applies to
+ * @apiParam {Number} [scores.event.T1] Diff score (freestyles)
+ * @apiParam {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiParam {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiParam {Number} [scores.event.T3] RQ score (freestyles)
+ * @apiParam {Number} [scores.event.T4] T2 + T3 (freestyles)
+ * @apiParam {Number} [scores.event.T5] Deduc score (freestyles)
+ *
+ * @apiParam {Number} [scores.event.cScore] T4 - .5*T5 (freestyles)
+ * @apiParam {Number} [scores.event.dScore] T5 - .5*T5 (freestyles)
+ *
+ * @apiParam {Number} [scores.event.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiParam {Number} [scores.event.Y] (T - W) * fac (speed)
+ *
+ * @apiParam {Number} [scores.event.cRank] rank for cScore (freestyle)
+ * @apiParam {Number} [scores.event.dRank] rank for dScore (freestyle)
+ * @apiParam {Number} [scores.event.rsum] cRank + dRank (freestyle)
+ * @apiParam {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
+ *
+ * @apiSuccess {String} message success message
+ */
+router.post('/:fed/:cat/scores/overall', authMiddleware, authentication.required(), (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  console.log(req.body)
+  let batch = admin.firestore().batch()
+  let colRef = admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
+    .collection(req.params.cat).doc('scores').collection('overall')
+  for (let part of req.body.scores) {
+    if (typeof part.uid === 'undefined') continue
+    let events = {}
+
+    if (typeof part.display !== 'undefined') events.display = part.display
+    if (typeof part.score !== 'undefined') events.score = Number(part.score)
+    if (typeof part.rsum !== 'undefined') events.rsum = Number(part.rsum)
+    if (typeof part.rank !== 'undefined') events.rank = Number(part.rank)
+
+    for (let evt of part.events) {
+      if (typeof evt.abbr === 'undefined') continue
+      events[evt.abbr] = {}
+      if (typeof evt.T1 !== 'undefined') events[evt.abbr].T1 = Number(evt.T1)
+      if (typeof evt.T2 !== 'undefined') events[evt.abbr].T2 = Number(evt.T2)
+      if (typeof evt.T3 !== 'undefined') events[evt.abbr].T3 = Number(evt.T3)
+      if (typeof evt.T4 !== 'undefined') events[evt.abbr].T4 = Number(evt.T4)
+      if (typeof evt.T5 !== 'undefined') events[evt.abbr].T5 = Number(evt.T5)
+
+      if (typeof evt.cScore !== 'undefined') events[evt.abbr].cScore = Number(evt.cScore)
+      if (typeof evt.dScore !== 'undefined') events[evt.abbr].dScore = Number(evt.dScore)
+
+      if (typeof evt.A !== 'undefined') events[evt.abbr].A = Number(evt.A)
+      if (typeof evt.Y !== 'undefined') events[evt.abbr].Y = Number(evt.Y)
+
+      if (typeof evt.cRank !== 'undefined') events[evt.abbr].cRank = Number(evt.cRank)
+      if (typeof evt.dRank !== 'undefined') events[evt.abbr].dRank = Number(evt.dRank)
+      if (typeof evt.rsum !== 'undefined') events[evt.abbr].rsum = Number(evt.rsum)
+      if (typeof evt.rank !== 'undefined') events[evt.abbr].rank = Number(evt.rank)
+    }
+    batch.set(colRef.doc(part.uid), events)
+  }
+  batch.commit()
+    .then(ref => {
+      res.json({message: 'Scores Updated successfully'})
+    })
+    .catch(err => {
+      console.log(err)
+      next({statusCode: 500, error: 'Could not update scores'})
+    })
+})
+
+/**
  * @api {get} /:fed/:cat/scores/:event Get all stored scores for an event
  * @apiName getScores
  * @apiGroup Scores
@@ -398,6 +540,8 @@ router.post('/:fed/:cat/scores/:event', authMiddleware, authentication.required(
   req.body.scores.forEach(obj => {
     if (typeof obj.uid !== 'undefined') {
       let score = {}
+      if (typeof obj.display !== 'undefined') score.display = obj.display
+
       if (typeof obj.T1 !== 'undefined') score.T1 = Number(obj.T1)
       if (typeof obj.T2 !== 'undefined') score.T2 = Number(obj.T2)
       if (typeof obj.T3 !== 'undefined') score.T3 = Number(obj.T3)

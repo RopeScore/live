@@ -20,7 +20,7 @@ const nav = [
 ]
 
 router.get('/', (req, res) => {
-  res.set('Cache-Control', 'private')
+  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
   admin.firestore().collection('live').doc('federations').getCollections().then(collections => {
     let federations = []
     collections.forEach(collection => { federations.push(collection.id) })
@@ -43,7 +43,7 @@ router.get('/', (req, res) => {
 })
 
 router.get('/:fed', (req, res, next) => {
-  res.set('Cache-Control', 'private')
+  res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
     let data = doc.data()
     let categories = []
@@ -72,7 +72,7 @@ router.get('/:fed', (req, res, next) => {
 })
 
 router.get('/:fed/:cat', (req, res, next) => {
-  res.set('Cache-Control', 'private')
+  res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories').collection(req.params.cat).doc('config').get().then(doc => {
     let data = doc.data()
     let events = []
@@ -109,9 +109,9 @@ router.get('/:fed/:cat', (req, res, next) => {
 })
 
 router.get('/:fed/:cat/overall', (req, res, next) => {
-  res.set('Cache-Control', 'private')
+  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
   nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
-  nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
+  if (nav.findIndex(obj => obj.id === 'cat') < 0) nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
 
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
@@ -135,7 +135,7 @@ router.get('/:fed/:cat/overall', (req, res, next) => {
 })
 
 router.get('/:fed/:cat/:event', (req, res, next) => {
-  res.set('Cache-Control', 'private')
+  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
   nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
   if (nav.findIndex(obj => obj.id === 'cat') < 0) nav.splice(nav.length - 1, 0, {'title': 'Category', 'link': `/${req.params.fed}/${req.params.cat}`, id: 'cat'})
 

@@ -1,0 +1,71 @@
+<div class="table" v-if="loaded.config && loaded.participants && loaded.scores && loaded.ranks">
+  <table name="overall" class="mt">
+    <thead>
+      <tr>
+        <th bold="true" :colspan="3 + colCount() + 3">{{ config.name }} Overall Scores</th>
+      </tr>
+      <tr>
+        <th colspan="3" rowspan="2"></th>
+        <th v-if="hasType('sr')" :colspan="colCount('sr')">Single Rope</th>
+        <th v-if="hasType('dd')" :colspan="colCount('dd')">Double Dutch</th>
+        <th colspan="3" rowspan="2">Overall</th>
+      </tr>
+      <tr>
+        <th colspan="2" v-for="event in sortedEvents">{{ trim(unabbr(event.abbr)) }}</th>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <th>Club</th>
+        <th>id</th>
+
+        <template v-for="event in sortedEvents">
+          <th class="gray" v-if="showCol(event.abbr, 'rq')">Req El</th>
+          <th class="gray" v-if="showCol(event.abbr, 'pres')">Pres</th>
+          <th class="gray" v-if="showCol(event.abbr, 'diff')">Diff</th>
+          <th class="gray" v-if="showCol(event.abbr, 'deduc')">Deduc</th>
+          <th class="gray" v-if="showCol(event.abbr, 'cScore')">Crea - Deduc/2</th>
+          <th class="gray" v-if="showCol(event.abbr, 'cRank')">Rank</th>
+          <th class="gray" v-if="showCol(event.abbr, 'dScore')">Diff - Deduc/2</th>
+          <th class="gray" v-if="showCol(event.abbr, 'dRank')">Rank</th>
+
+          <th v-if="showCol(event.abbr, 'score')">Score</th>
+          <th class="green" v-if="showCol(event.abbr, 'rsum')">Rank Sum</th>
+          <th class="red" v-if="showCol(event.abbr, 'rank')">Rank</th>
+        </template>
+
+        <th>Score</th>
+        <th class="green">Rank Sum</th>
+        <th class="red">Rank</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="score in ranked">
+        <td>{{ (participants[score.uid] ? participants[score.uid].name : '') }}</td>
+        <td>{{ (participants[score.uid] ? participants[score.uid].club : '') }}</td>
+        <td>{{ score.uid }}</td>
+
+        <template v-for="event in sortedEvents">
+          <td class="gray" v-if="showCol(event.abbr, 'rq')">{{ (score[event.abbr] ? score[event.abbr].T3 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'pres')">{{ (score[event.abbr] ? score[event.abbr].T2 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'diff')">{{ (score[event.abbr] ? score[event.abbr].T1 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'deduc')">{{ (score[event.abbr] ? score[event.abbr].T5 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'cScore')">{{ (score[event.abbr] ? score[event.abbr].cScore || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'cRank')">{{ (score[event.abbr] ? score[event.abbr].cRank || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'dScore')">{{ (score[event.abbr] ? score[event.abbr].dScore || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'dRank')">{{ (score[event.abbr] ? score[event.abbr].dRank || '' : '') }}</td>
+          <td ng-if="showCol(event.abbr, 'score')">{{ (score[event.abbr] ? score[event.abbr].Y || score[event.abbr].A || '' : '') }}</td>
+
+          <td class="green" v-if="showCol(event.abbr, 'rsum')">{{ (score[event.abbr] ? score[event.abbr].rsum || '' : '') }}</td>
+          <td class="red" v-if="showCol(event.abbr, 'rank')">{{ (score[event.abbr] ? score[event.abbr].rank || '' : '') }}</td>
+        </template>
+
+        <td>{{ score.score || '' }}</td>
+        <td class="green">{{ score.rsum || '' }}</td>
+        <td class="red">{{ score.rank || '' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div v-else>
+  Loading bar?
+</div>

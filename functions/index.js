@@ -15,10 +15,10 @@ app.set('views', 'es6templates')
 app.set('view engine', 'html')
 
 const mainRouter = require('./main')
-// const adminRouter = require('./admin')
+const adminRouter = require('./admin')
 const apiRouter = require('./api')
 
-// app.use('/admin/', adminRouter.router)
+app.use('/admin/', adminRouter.router)
 app.use('/api/', apiRouter.router)
 app.use('/', mainRouter.router)
 

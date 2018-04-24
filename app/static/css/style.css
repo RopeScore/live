@@ -2,6 +2,10 @@
   display: none;
 }
 
+.brand {
+  max-width: 380px;
+}
+
 table.select {
   width: 100%;
   max-width: 600px;
