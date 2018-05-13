@@ -342,7 +342,7 @@ router.delete('/:fed/:cat/participants', authMiddleware, authentication.required
  * @apiSuccess {Number} [scores.event.rsum] cRank + dRank (freestyle)
  * @apiSuccess {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
  */
-router.get('/:fed/:cat/scores/:event', authMiddleware, authentication.required(), (req, res, next) => {
+router.get('/:fed/:cat/scores/overall', authMiddleware, authentication.required(), (req, res, next) => {
   res.set('Cache-Control', 'private')
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('scores').collection('overall').get()
@@ -350,6 +350,12 @@ router.get('/:fed/:cat/scores/:event', authMiddleware, authentication.required()
       let scores = []
       docs.forEach(doc => {
         let score = doc.data()
+        let events = Object.keys(score.events).map(abbr => {
+          let obj = score.events[abbr]
+          obj.abbr = abbr
+          return obj
+        })
+        score.events = events
         score.uid = doc.id
         if (doc.exists) scores.push(score)
       })
@@ -406,34 +412,34 @@ router.post('/:fed/:cat/scores/overall', authMiddleware, authentication.required
     .collection(req.params.cat).doc('scores').collection('overall')
   for (let part of req.body.scores) {
     if (typeof part.uid === 'undefined') continue
-    let events = {}
+    let score = {events: {}}
 
-    if (typeof part.display !== 'undefined') events.display = part.display
-    if (typeof part.score !== 'undefined') events.score = Number(part.score)
-    if (typeof part.rsum !== 'undefined') events.rsum = Number(part.rsum)
-    if (typeof part.rank !== 'undefined') events.rank = Number(part.rank)
+    if (typeof part.display !== 'undefined') score.display = part.display
+    if (typeof part.score !== 'undefined') score.score = Number(part.score)
+    if (typeof part.rsum !== 'undefined') score.rsum = Number(part.rsum)
+    if (typeof part.rank !== 'undefined') score.rank = Number(part.rank)
 
     for (let evt of part.events) {
       if (typeof evt.abbr === 'undefined') continue
-      events[evt.abbr] = {}
-      if (typeof evt.T1 !== 'undefined') events[evt.abbr].T1 = Number(evt.T1)
-      if (typeof evt.T2 !== 'undefined') events[evt.abbr].T2 = Number(evt.T2)
-      if (typeof evt.T3 !== 'undefined') events[evt.abbr].T3 = Number(evt.T3)
-      if (typeof evt.T4 !== 'undefined') events[evt.abbr].T4 = Number(evt.T4)
-      if (typeof evt.T5 !== 'undefined') events[evt.abbr].T5 = Number(evt.T5)
+      score.events[evt.abbr] = {}
+      if (typeof evt.T1 !== 'undefined') score.events[evt.abbr].T1 = Number(evt.T1)
+      if (typeof evt.T2 !== 'undefined') score.events[evt.abbr].T2 = Number(evt.T2)
+      if (typeof evt.T3 !== 'undefined') score.events[evt.abbr].T3 = Number(evt.T3)
+      if (typeof evt.T4 !== 'undefined') score.events[evt.abbr].T4 = Number(evt.T4)
+      if (typeof evt.T5 !== 'undefined') score.events[evt.abbr].T5 = Number(evt.T5)
 
-      if (typeof evt.cScore !== 'undefined') events[evt.abbr].cScore = Number(evt.cScore)
-      if (typeof evt.dScore !== 'undefined') events[evt.abbr].dScore = Number(evt.dScore)
+      if (typeof evt.cScore !== 'undefined') score.events[evt.abbr].cScore = Number(evt.cScore)
+      if (typeof evt.dScore !== 'undefined') score.events[evt.abbr].dScore = Number(evt.dScore)
 
-      if (typeof evt.A !== 'undefined') events[evt.abbr].A = Number(evt.A)
-      if (typeof evt.Y !== 'undefined') events[evt.abbr].Y = Number(evt.Y)
+      if (typeof evt.A !== 'undefined') score.events[evt.abbr].A = Number(evt.A)
+      if (typeof evt.Y !== 'undefined') score.events[evt.abbr].Y = Number(evt.Y)
 
-      if (typeof evt.cRank !== 'undefined') events[evt.abbr].cRank = Number(evt.cRank)
-      if (typeof evt.dRank !== 'undefined') events[evt.abbr].dRank = Number(evt.dRank)
-      if (typeof evt.rsum !== 'undefined') events[evt.abbr].rsum = Number(evt.rsum)
-      if (typeof evt.rank !== 'undefined') events[evt.abbr].rank = Number(evt.rank)
+      if (typeof evt.cRank !== 'undefined') score.events[evt.abbr].cRank = Number(evt.cRank)
+      if (typeof evt.dRank !== 'undefined') score.events[evt.abbr].dRank = Number(evt.dRank)
+      if (typeof evt.rsum !== 'undefined') score.events[evt.abbr].rsum = Number(evt.rsum)
+      if (typeof evt.rank !== 'undefined') score.events[evt.abbr].rank = Number(evt.rank)
     }
-    batch.set(colRef.doc(part.uid), events)
+    batch.update(colRef.doc(part.uid), score)
   }
   batch.commit()
     .then(ref => {
@@ -561,7 +567,7 @@ router.post('/:fed/:cat/scores/:event', authMiddleware, authentication.required(
 
       console.log(score)
 
-      batch.set(colRef.doc(obj.uid), score)
+      batch.update(colRef.doc(obj.uid), score)
     }
   })
   batch.commit()

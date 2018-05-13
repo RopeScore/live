@@ -1,9 +1,9 @@
-/* global firebase */
+/* global firebase, Cookies */
 /**
  * shorthand for firebase.firestore()
  * @type {Object}
  */
-var firestore = firebase.firestore().collection('live').doc('federations')
+var firestore = firebase.firestore().collection('live').doc('federations') // eslint-disable-line
 /**
  * shorthand for firebase.auth()
  * @type {Object}
@@ -15,7 +15,7 @@ var auth = firebase.auth()
  * @return {undefined} Alters DOM without return
  * @function
  */
-function toggleNav () {
+function toggleNav () { // eslint-disable-line
   document.getElementsByClassName('topnav')[0].classList.toggle('responsive')
   document.getElementsByTagName('nav')[0].classList.toggle('responsive')
 }
@@ -24,7 +24,7 @@ function toggleNav () {
  * Function to navigate to /, or /admin
  * @return {undefined} does not return, modifies location
  */
-function goHome () {
+function goHome () { // eslint-disable-line
   if (/^\/admin/.test(window.location.pathname)) {
     window.location.pathname = '/admin'
   } else {
@@ -36,7 +36,7 @@ function goHome () {
  * signs out
  * @return {undefined}
  */
-function signOut () {
+function signOut () { // eslint-disable-line
   auth.signOut()
 }
 
@@ -48,7 +48,9 @@ function signOut () {
 auth.onAuthStateChanged(function (user) {
   if (user) {
     document.getElementById('login').innerHTML = '<a onclick="signOut()">Log Out</a>'
+    Cookies.set('ropescore_uid', user.uid)
   } else {
     document.getElementById('login').innerHTML = '<a href="/login">Log In</a>'
+    Cookies.remove('ropescore_uid')
   }
 })

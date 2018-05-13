@@ -40,7 +40,7 @@ table.select tr:last-child td {
 
 table.select .lg {
   display: inline-block;
-  vertical-align: middle;
+  /* vertical-align: middle; */
   font-weight: bold;
   font-size: 1.33em;
   overflow-x: hidden;
@@ -57,4 +57,17 @@ table.select .pr {
 
 .pr {
   float: right;
+}
+
+.apikey {
+  display: inline-block;
+  background: #ddd;
+  padding: 1px 5px;
+  border-radius: 4px;
+  min-width: 23em;
+  border: none;
+}
+
+.polling {
+  visibility: hidden;
 }

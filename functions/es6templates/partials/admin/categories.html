@@ -1,0 +1,37 @@
+<div>
+  <p>Viewing <b>${fed}</b></p>
+  <p>
+    API key:
+    <input class="mono apikey" id="apikey" :value="(showApiKey ? config.apikey || '' : '----------------------------------------')" readonly />
+    <a @click="showApiKey = !showApiKey">
+      <span v-show="!showApiKey"><i class="fas fa-eye"></i> Show API key</span>
+      <span v-show="showApiKey"><i class="fas fa-eye-slash"></i> Hide API key</span>
+    </a>
+    <a @click="copyKey">
+      <i class="fas fa-clipboard"></i> Copy
+    </a>
+    <br/>
+    <a @click="newKey()"><i class="fas fa-sync"></i> Generate New API key</a> <span v-show="config.genKey"><i class="fas fa-spinner fa-spin"></i></span>
+  </p>
+  <p>
+    <span class="red"><b>WARNING!</b></span> Do <b>NEVER</b> share the API key with anyone you don't want to be able to
+    modify scores. If ou accidentaly show the API key on a projector in the
+    competition venue or anywhere else anyone can see it <b>RESET IT</b> by
+    generating a new one above. The <b>ONLY</b> people that should know the API
+    key are officials managing the scoring system and/or RopeScore Live at your
+    competition. The API key can be used to add, remove and modify categories,
+    participant data, scores, ranks etc.
+  </p>
+</div>
+<div class="table">
+  <table class="select">
+    ${categories.map(cat => `
+    <tr onclick="window.location.pathname = '/admin/${fed}/${cat.id}'">
+      <td>
+        <span class="lg">${cat.name}</span>
+        <i class="fas fa-angle-right fa-lg"></i>
+      </td>
+    </tr>
+    `).join('')}
+  </table>
+</div>

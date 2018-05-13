@@ -19,6 +19,11 @@ const nav = [
   }
 ]
 
+function isType (abbr, type) {
+  var abbrType = abbr.substring(0, 2)
+  return (abbrType.toLowerCase() === type.toLowerCase())
+}
+
 router.get('/', (req, res) => {
   res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
   admin.firestore().collection('live').doc('federations').getCollections().then(collections => {
@@ -36,7 +41,7 @@ router.get('/', (req, res) => {
         federations
       },
       partials: {
-        template: 'partials/main/dash'
+        template: 'partials/main/federations'
       }
     })
   })
@@ -80,8 +85,13 @@ router.get('/:fed/:cat', (req, res, next) => {
       events = Object.keys(data.events).map(abbr => {
         return {
           abbr,
-          name: data.events[abbr].name
+          name: data.events[abbr].name || '',
+          speed: data.events[abbr].speed || false
         }
+      }).sort(function (a, b) {
+        if (isType(a.abbr, 'sr') !== isType(b.abbr, 'sr')) return isType(b.abbr, 'sr')
+        if (a.speed !== b.speed) return b.speed
+        return a.abbr.localeCompare(b.abbr)
       })
       events.push({abbr: 'overall'})
     }
@@ -91,7 +101,7 @@ router.get('/:fed/:cat', (req, res, next) => {
     res.render('app', { // eslint-disable-line
       locals: {
         scripts: [],
-        id: 'dash',
+        id: 'cat',
         title: '',
         nav,
         brand: true,
@@ -116,7 +126,7 @@ router.get('/:fed/:cat/overall', (req, res, next) => {
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
       scripts: ['/main/overall.js'],
-      id: 'dash',
+      id: 'score',
       title: '',
       nav,
       brand: true,

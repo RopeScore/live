@@ -33,7 +33,7 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').update(obj)
 })
 
-exports.genKey = functions.firestore.document('/live/federations/{fed}/config').onWrite((change, context) => {
+exports.genKey = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
   let data = change.after.data()
 
   if (data.genKey === true) {
@@ -42,7 +42,7 @@ exports.genKey = functions.firestore.document('/live/federations/{fed}/config').
       genKey: false
     }
 
-    return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('config').update(obj)
+    return change.after.ref.update(obj)
   } else {
     return false
   }

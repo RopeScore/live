@@ -45,18 +45,18 @@
         <td>{{ score.uid }}</td>
 
         <template v-for="event in sortedEvents">
-          <td class="gray" v-if="showCol(event.abbr, 'rq')">{{ (score[event.abbr] ? score[event.abbr].T3 || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'pres')">{{ (score[event.abbr] ? score[event.abbr].T2 || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'diff')">{{ (score[event.abbr] ? score[event.abbr].T1 || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'deduc')">{{ (score[event.abbr] ? score[event.abbr].T5 || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'cScore')">{{ (score[event.abbr] ? score[event.abbr].cScore || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'cRank')">{{ (score[event.abbr] ? score[event.abbr].cRank || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'dScore')">{{ (score[event.abbr] ? score[event.abbr].dScore || '' : '') }}</td>
-          <td class="gray" v-if="showCol(event.abbr, 'dRank')">{{ (score[event.abbr] ? score[event.abbr].dRank || '' : '') }}</td>
-          <td ng-if="showCol(event.abbr, 'score')">{{ (score[event.abbr] ? score[event.abbr].Y || score[event.abbr].A || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'rq')">{{ (score.events[event.abbr] ? score.events[event.abbr].T3 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'pres')">{{ (score.events[event.abbr] ? score.events[event.abbr].T2 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'diff')">{{ (score.events[event.abbr] ? score.events[event.abbr].T1 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'deduc')">{{ (score.events[event.abbr] ? score.events[event.abbr].T5 || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'cScore')">{{ (score.events[event.abbr] ? score.events[event.abbr].cScore || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'cRank')">{{ (score.events[event.abbr] ? score.events[event.abbr].cRank || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'dScore')">{{ (score.events[event.abbr] ? score.events[event.abbr].dScore || '' : '') }}</td>
+          <td class="gray" v-if="showCol(event.abbr, 'dRank')">{{ (score.events[event.abbr] ? score.events[event.abbr].dRank || '' : '') }}</td>
+          <td ng-if="showCol(event.abbr, 'score')">{{ (score.events[event.abbr] ? score.events[event.abbr].Y || score.events[event.abbr].A || '' : '') }}</td>
 
-          <td class="green" v-if="showCol(event.abbr, 'rsum')">{{ (score[event.abbr] ? score[event.abbr].rsum || '' : '') }}</td>
-          <td class="red" v-if="showCol(event.abbr, 'rank')">{{ (score[event.abbr] ? score[event.abbr].rank || '' : '') }}</td>
+          <td class="green" v-if="showCol(event.abbr, 'rsum')">{{ (score.events[event.abbr] ? score.events[event.abbr].rsum || '' : '') }}</td>
+          <td class="red" v-if="showCol(event.abbr, 'rank')">{{ (score.events[event.abbr] ? score.events[event.abbr].rank || '' : '') }}</td>
         </template>
 
         <td>{{ score.score || '' }}</td>

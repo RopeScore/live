@@ -1,0 +1,54 @@
+<div v-if="config.display.speed" class="lg">
+  <h1 class="full">Unofficial Speed Scores - {{ config.name }}</h1>
+  <table>
+    <tr v-for="event in scores">
+      <td class="onethird" ng-class="{gray: scores[event.uid][event.event].dns}">{{ Abbr.unabbr(event.abbr) }}</td>
+      <td class="onethird" ng-class="{gray: scores[event.uid][event.event].dns}">{{ data[data.globconfig.display.id].participants[event.uid].name }}, {{ data[data.globconfig.display.id].participants[event.uid].club }}</td>
+      <td class="onethird" ng-class="{gray: scores[event.uid][event.event].dns}">{{ (scores[event.uid][event.event].dns ? 'DNS' : scores[event.uid][event.event].PreY) }}</td>
+    </tr>
+  </table>
+</div>
+
+<div ng-if="!config.display.speed" class="lg center">
+  <h1 class="full">Unofficial Scores - {{ config.name }}</h1>
+  <h2>{{ Abbr.unabbr(config.display.event.abbr) }}</h2>
+  <h2><u>{{ participant.name }}</u> from <u>{{ participant.club }}</u></h2>
+  <table class="blank lg center">
+    <tr>
+      <th></th>
+      <th>Difficulty</th>
+      <th>Creativity</th>
+    </tr>
+    <tr>
+      <th class="ra">Score</th>
+      <td>{{ score.T1 || 0 }}</td>
+      <td>{{ score.T4 || 0 }}</td>
+    </tr>
+    <tr class="bb">
+      <th class="ra">Deductions</th>
+      <td>{{ -score.T5 / 2 }}</td>
+      <td>{{ -score.T5 / 2 }}</td>
+    </tr>
+    <tr>
+      <th class="ra">Total</th>
+      <td>{{ score.dScore || 0 }}</td>
+      <td>{{ score.cScore || 0 }}</td>
+    </tr>
+    <tr>
+      <td colspan="3">&nbsp;</td>
+    </tr>
+    <tr>
+      <th colspan="2">Unofficial Score</th>
+      <td>{{ score.PreA }}</td>
+    </tr>
+  </table>
+</div>
+
+<div ng-if="!config.display.id" class="center lg">
+  <h1>Waiting for unofficial scores to display</h1>
+</div>
+
+<div class="center">
+  <img src="https://the-tricktionary.com/static/img/icon.png" style="width:3em; display:inline"/>
+  <h1 style="display:inline">the-Tricktionary.com</h1>
+</div>

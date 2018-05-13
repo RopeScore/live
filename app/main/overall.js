@@ -45,7 +45,7 @@ var app = new Vue({
       }).sort(function (a, b) {
         if (self.isType(a.abbr, 'sr') !== self.isType(b.abbr, 'sr')) return self.isType(b.abbr, 'sr')
         if (a.speed !== b.speed) return b.speed
-        return a.abbr - b.abbr
+        return a.abbr.localeCompare(b.abbr)
       })
     }
   },

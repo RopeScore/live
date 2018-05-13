@@ -12,6 +12,7 @@ service cloud.firestore {
         allow write: if isAdmin();
       }
       match /config {
+        allow read: if isAdmin();
         allow read, write: if isAdmin() && request.resource.data.apikey == resource.data.apikey;
       }
     }
