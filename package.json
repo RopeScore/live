@@ -2,7 +2,7 @@
   "name": "RopeScore-Live",
   "productName": "RopeScore-Live",
   "homepage": "https://live.ropescore.com",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A Live Display website for RopeScore",
   "author": "Svante Bengtson",
   "repository": "svbeon/RopeScore-Live",

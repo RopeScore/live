@@ -2,7 +2,7 @@
   <p>Viewing <b>${fed}</b></p>
   <p>
     API key:
-    <input class="mono apikey" id="apikey" :value="(showApiKey ? config.apikey || '' : '----------------------------------------')" readonly />
+    <input class="mono apikey" id="apikey" :value="(showApiKey ? config.apikey || '' : '••••••••••••••••••••••••••••••••••••••••')" readonly />
     <a @click="showApiKey = !showApiKey">
       <span v-show="!showApiKey"><i class="fas fa-eye"></i> Show API key</span>
       <span v-show="showApiKey"><i class="fas fa-eye-slash"></i> Hide API key</span>

@@ -1,0 +1,23 @@
+const admin = require('firebase-admin')
+
+/**
+ * @api {get} / List Federations
+ * @apiName getFederations
+ * @apiGroup Federations
+ * @apiPermission none
+ * @apiVersion 1.0.0
+ *
+ * @apiSuccess {String} version Current API version
+ * @apiSuccess {String[]} federations Array of federations
+ */
+module.exports = (req, res) => {
+  res.set('Cache-Control', 'private')
+  admin.firestore().collection('live').doc('federations').getCollections().then(collections => {
+    let federations = []
+    collections.forEach(collection => { federations.push(collection.id) })
+    res.json({
+      version: require('./package.json').version,
+      federations
+    })
+  })
+}

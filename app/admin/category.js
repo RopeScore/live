@@ -45,27 +45,52 @@ var app = new Vue({
       var abbrType = abbr.substring(0, 2)
       return (abbrType.toLowerCase() === type.toLowerCase())
     },
+    isSpeed: function (abbr) {
+      return this.config.events[abbr].speed || false
+    },
     togglePub: function (evt, uid) {
       var val = true
       if (evt === 'overall') {
         val = !this.scores.overall[uid].display
       } else {
-        val = !this.scores.events[evt][uid].display
+        val = !this.scores[evt][uid].display
       }
       firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(evt).doc(uid).update({display: val})
     },
+    toggleCatVisibility: function () {
+      return firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config').update({visible: !this.config.visible})
+    },
     display: function (abbr, uid) {
-      firestore.collection(app.fed).doc('config').update({
-        projector: {
-          category: this.cat,
-          event: abbr,
-          uid: uid
-        }
-      })
+      if (this.isSpeed(abbr)) {
+        let events = this.globConfig.projector.events || []
+        events.unshift({ abbr: abbr, uid: uid })
+        firestore.collection(app.fed).doc('config').update({
+          projector: {
+            category: this.cat,
+            speed: true,
+            events: events
+          }
+        })
+      } else {
+        firestore.collection(app.fed).doc('config').update({
+          projector: {
+            category: this.cat,
+            speed: false,
+            event: {
+              abbr: abbr,
+              uid: uid
+            }
+          }
+        })
+      }
     },
     onDisplay: function (abbr, uid) {
       var currDisp = app.globConfig.projector
-      return currDisp.category === app.cat && currDisp.event === abbr && currDisp.uid === uid
+      if (currDisp.speed) {
+        return currDisp.category === app.cat && currDisp.events.findIndex(function (obj) { return obj.abbr === abbr && obj.uid === uid }) >= 0
+      } else {
+        return currDisp.category === app.cat && typeof currDisp.event !== 'undefined' && currDisp.event.abbr === abbr && currDisp.event.uid === uid
+      }
     }
   }
 })

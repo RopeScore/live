@@ -28,7 +28,7 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
   let data = change.after.data()
   let obj = {}
 
-  obj[context.params.cat] = (data.display ? data.name : admin.firestore.FieldValue.delete())
+  obj[context.params.cat] = (data.visible ? data.name : admin.firestore.FieldValue.delete())
 
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').update(obj)
 })

@@ -1,3 +1,13 @@
+<div>
+  <p>Viewing <b>{{ config.name || '' }}</b> (<b>${fed}</b>)</p>
+  <p>
+    <a @click="toggleCatVisibility()">
+      <span v-show="!config.visible"><i class="fas fa-eye"></i> Make Category Visible</span>
+      <span v-show="config.visible"><i class="fas fa-eye-slash"></i> Hide Category</span>
+    </a>
+  </p>
+</div>
+
 <div class="table" v-if="loaded.config && loaded.participants && loaded.scores">
   <table name="overall" class="mt">
     <thead>

@@ -1,6 +1,5 @@
 {
   "name": "functions",
-  "version": "0.0.1",
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "lint": "standard",
@@ -26,6 +25,7 @@
   "private": true,
   "apidoc": {
     "name": "RopeScore Live",
+    "version": "1.0.0",
     "description": "A Live Display website for RopeScore",
     "title": "RopeScore Live API",
     "url": "https://live.ropescore.com/api"
