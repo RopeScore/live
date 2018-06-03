@@ -18,17 +18,20 @@ const admin = require('firebase-admin')
  * @apiParam {String} scores.uid id of the participant
  * @apiParam {Boolean} [scores.display] If the score is publicly displayed
  *
- * @apiParam {Number} [scores.T1] Diff score (freestyles)
- * @apiParam {Number} [scores.T2] Pres Score (freestyles)
- * @apiParam {Number} [scores.T2] Pres Score (freestyles)
- * @apiParam {Number} [scores.T3] RQ score (freestyles)
- * @apiParam {Number} [scores.T4] T2 + T3 (freestyles)
- * @apiParam {Number} [scores.T5] Deduc score (freestyles)
+ * @apiParam {Number} [scores.T1] Diff score (freestyle)
+ * @apiParam {Number} [scores.T2] Pres Score (freestyle)
+ * @apiParam {Number} [scores.T2] Pres Score (freestyle)
+ * @apiParam {Number} [scores.T3] RQ score (freestyle)
+ * @apiParam {Number} [scores.T4] T2 + T3 (freestyle)
+ * @apiParam {Number} [scores.T5] Deduc score (freestyle)
  *
- * @apiParam {Number} [scores.cScore] T4 - .5*T5 (freestyles)
- * @apiParam {Number} [scores.dScore] T5 - .5*T5 (freestyles)
+ * @apiParam {Number} [scores.cScore] T4 - (T5 * .5) (freestyle)
+ * @apiParam {Number} [scores.dScore] T5 - (T5 * .5) (freestyle)
  *
- * @apiParam {Number} [scores.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiParam {Number} [scores.PreA] T1 + T4 - T5 (freestyle)
+ * @apiParam {Number} [scores.PreY] T - W (speed)
+ *
+ * @apiParam {Number} [scores.A] (T1 + T4 - T5) * fac (freestyle)
  * @apiParam {Number} [scores.Y] (T - W) * fac (speed)
  *
  * @apiParam {Number} [scores.cRank] rank for cScore (freestyle)
@@ -57,6 +60,9 @@ module.exports = (req, res, next) => {
 
       if (typeof obj.cScore !== 'undefined') score.cScore = Number(obj.cScore)
       if (typeof obj.dScore !== 'undefined') score.dScore = Number(obj.dScore)
+
+      if (typeof obj.PreA !== 'undefined') score.PreA = Number(obj.PreA)
+      if (typeof obj.PreY !== 'undefined') score.PreY = Number(obj.PreY)
 
       if (typeof obj.A !== 'undefined') score.A = Number(obj.A)
       if (typeof obj.Y !== 'undefined') score.Y = Number(obj.Y)

@@ -22,8 +22,9 @@
         <th>id</th>
 
         <template v-for="event in sortedEvents">
-          <th>Publish</th>
-          <th>Live Display</th>
+          <th><a @click="PublishAll(event.abbr)">Publish All</a></th>
+          <th v-if="isSpeed(event.abbr)"><a @click="displayAll(event.abbr)">Display all on Projector</a></th>
+          <th v-else>Projector</th>
         </template>
 
         <th>Publish</th>
@@ -36,8 +37,13 @@
         <td>{{ uid }}</td>
 
         <template v-for="event in sortedEvents">
-          <td><a v-if="scores[event.abbr][uid]" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].display, red: !scores[event.abbr][uid] || !scores[event.abbr][uid].display}" @click="togglePub(event.abbr, uid)">{{ (scores[event.abbr][uid] && scores[event.abbr][uid].display ? 'Unpublish' : 'Publish') }}</a></td>
-          <td><span v-show="onDisplay(event.abbr, uid)">On&nbsp;Display</span><a v-show="!onDisplay(event.abbr, uid) && scores[event.abbr][uid]" @click="display(event.abbr, uid)">Display</a></td>
+          <td>
+            <a v-if="scores[event.abbr][uid]" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].display, red: !scores[event.abbr][uid] || !scores[event.abbr][uid].display}" @click="togglePub(event.abbr, uid)">{{ (scores[event.abbr][uid] && scores[event.abbr][uid].display ? 'Unpublish' : 'Publish') }}</a>
+          </td>
+          <td>
+            <a v-show="onDisplay(event.abbr, uid)" @click="display(event.abbr, uid)" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].projector}">Remove from Display</a>
+            <a v-show="!onDisplay(event.abbr, uid) && scores[event.abbr][uid]" @click="display(event.abbr, uid)" :class="{red: !scores[event.abbr][uid] || !scores[event.abbr][uid].projector}">Display</a>
+          </td>
         </template>
 
         <td><a v-if="scores.overall[uid]" :class="{green: scores.overall[uid] && scores.overall[uid].display, red: !scores.overall[uid] || !scores.overall[uid].display}" @click="togglePub('overall', uid)">{{ (scores.overall[uid] && scores.overall[uid].display ? 'Unpublish' : 'Publish') }}</a></td>

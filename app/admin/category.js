@@ -1,4 +1,4 @@
-/* global Vue, auth, firestore */
+/* global Vue, auth, firestore, firebase */
 var app = new Vue({
   el: '#app',
   data: {
@@ -62,34 +62,44 @@ var app = new Vue({
     },
     display: function (abbr, uid) {
       if (this.isSpeed(abbr)) {
-        let events = this.globConfig.projector.events || []
-        events.unshift({ abbr: abbr, uid: uid })
         firestore.collection(app.fed).doc('config').update({
           projector: {
             category: this.cat,
-            speed: true,
-            events: events
+            speed: true
           }
+        })
+        firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({
+          projector: !this.scores[abbr][uid].projector
         })
       } else {
-        firestore.collection(app.fed).doc('config').update({
-          projector: {
-            category: this.cat,
-            speed: false,
-            event: {
-              abbr: abbr,
-              uid: uid
+        if (typeof app.globConfig.projector !== 'undefined' &&
+            app.globConfig.projector.category === this.cat &&
+            typeof app.globConfig.projector.event !== 'undefined' &&
+            app.globConfig.projector.event.abbr === abbr &&
+            app.globConfig.projector.event.uid === uid) {
+          firestore.collection(app.fed).doc('config').update({
+            projector: firebase.firestore.FieldValue.delete()
+          })
+        } else {
+          firestore.collection(app.fed).doc('config').update({
+            projector: {
+              category: this.cat,
+              speed: false,
+              event: {
+                abbr: abbr,
+                uid: uid
+              }
             }
-          }
-        })
+          })
+        }
       }
     },
     onDisplay: function (abbr, uid) {
-      var currDisp = app.globConfig.projector
+      var currDisp = this.globConfig.projector
       if (currDisp.speed) {
-        return currDisp.category === app.cat && currDisp.events.findIndex(function (obj) { return obj.abbr === abbr && obj.uid === uid }) >= 0
+        return currDisp.category === this.cat && this.scores[abbr] && this.scores[abbr][uid] && this.scores[abbr][uid].projector
       } else {
-        return currDisp.category === app.cat && typeof currDisp.event !== 'undefined' && currDisp.event.abbr === abbr && currDisp.event.uid === uid
+        return currDisp.category === this.cat && typeof currDisp.event !== 'undefined' && currDisp.event.abbr === abbr && currDisp.event.uid === uid
       }
     }
   }

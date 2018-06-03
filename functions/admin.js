@@ -81,7 +81,11 @@ router.get('/', authMiddleware, (req, res) => {
 
 router.get('/:fed', authMiddleware, (req, res, next) => {
   res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
-  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
+  nav[nav.findIndex(obj => obj.id === 'admindash')].link = `/admin/${req.params.fed}`
+  nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/display`, id: 'proj'})
+
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookupAdmin').get().then(doc => {
     let data = doc.data()
     let categories = []
     if (doc.exists) {
@@ -110,6 +114,30 @@ router.get('/:fed', authMiddleware, (req, res, next) => {
   })
 })
 
+router.get('/:fed/display', (req, res, next) => {
+  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
+  nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+
+  let renderPage = (err, content) => res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: ['/admin/display.js'],
+      id: 'disp',
+      title: '',
+      nav: false,
+      brand: false,
+      admin: false,
+
+      content
+    },
+    partials: {
+      template: 'partials/vue'
+    }
+  })
+  es6renderer('es6templates/partials/admin/display.html', {locals: {
+    fed: req.params.fed
+  }}, renderPage)
+})
+
 router.get('/:fed/:cat', authMiddleware, (req, res, next) => {
   res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
   // admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
@@ -119,6 +147,9 @@ router.get('/:fed/:cat', authMiddleware, (req, res, next) => {
   //     let keys = Object.keys(data)
   //     categories = keys.map(id => { return {id, name: data[id]} })
   //   }
+  nav[nav.findIndex(obj => obj.id === 'admindash')].link = `/admin/${req.params.fed}`
+  nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/display`, id: 'proj'})
 
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
@@ -126,7 +157,7 @@ router.get('/:fed/:cat', authMiddleware, (req, res, next) => {
       id: 'admincat',
       title: '',
       nav,
-      brand: true,
+      brand: false,
       admin: true,
       content
     },
@@ -139,30 +170,6 @@ router.get('/:fed/:cat', authMiddleware, (req, res, next) => {
     cat: req.params.cat
   }}, renderPage)
   // })
-})
-
-router.get('/:fed/display', (req, res, next) => {
-  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
-  nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
-
-  let renderPage = (err, content) => res.render('app', { // eslint-disable-line
-    locals: {
-      scripts: ['/admin/display.js'],
-      id: 'disp',
-      title: '',
-      nav,
-      brand: true,
-      admin: false,
-
-      content
-    },
-    partials: {
-      template: 'partials/vue'
-    }
-  })
-  es6renderer('es6templates/partials/admin/display.html', {locals: {
-    fed: req.params.fed
-  }}, renderPage)
 })
 
 router.use(Raven.errorHandler())

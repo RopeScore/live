@@ -2,8 +2,34 @@
   display: none;
 }
 
+body.nonav {
+  padding-top: 0;
+}
+
 .brand {
   max-width: 380px;
+}
+
+.ad {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 60px;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 0 2em 0 #fff;
+  text-align: right
+}
+
+.ad img {
+  width: 1.5em;
+  border: none;
+}
+
+.proj {
+  max-height: calc(100vh - 45px - 1em);
+  display: block;
+  overflow-y: hidden;
 }
 
 table.select {
@@ -53,6 +79,14 @@ table.select .lg:first-letter {
 
 table.select .pr {
   margin-top: .5em;
+}
+
+div.center table {
+  text-align: center;
+}
+
+.ra {
+  text-align: right;
 }
 
 .pr {

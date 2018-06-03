@@ -33,6 +33,15 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').update(obj)
 })
 
+exports.createAdminLookup = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
+  let data = change.after.data()
+  let obj = {}
+
+  obj[context.params.cat] = data.name
+
+  return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookupAdmin').update(obj)
+})
+
 exports.genKey = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
   let data = change.after.data()
 
