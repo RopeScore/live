@@ -54,7 +54,7 @@ firestore.collection(app.fed).doc('config')
           app.loaded.config = true
           Object.assign(app.config, doc.data())
 
-          if (typeof app.globConfig.projector !== 'undefined' && typeof app.config.events !== 'undefined' && typeof app.globConfig.projector.events !== 'undefined' && app.globConfig.projector.speed) {
+          if (app.globConfig.projector.speed) {
             if (typeof app.ticker !== 'undefined') { clearInterval(app.ticker) }
             var abbrs = Object.keys(app.config.events).filter(app.isSpeed) || []
             console.log(abbrs)
