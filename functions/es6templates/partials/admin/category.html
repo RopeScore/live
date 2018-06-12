@@ -22,12 +22,12 @@
         <th>id</th>
 
         <template v-for="event in sortedEvents">
-          <th><a @click="PublishAll(event.abbr)">Publish All</a></th>
+          <th><a @click="publishAll(event.abbr)">Publish All</a></th>
           <th v-if="isSpeed(event.abbr)"><a @click="displayAll(event.abbr)">Display all on Projector</a></th>
           <th v-else>Projector</th>
         </template>
 
-        <th>Publish</th>
+        <th><a @click="publishAll('overall')">Publish All</a></th>
       </tr>
     </thead>
     <tbody>

@@ -74,12 +74,12 @@ module.exports = (req, res, next) => {
 
       console.log(score)
 
-      batch.set(colRef.doc(obj.uid), score, {merge: true})
+      batch.set(colRef.doc('' + obj.uid), score, {merge: true})
     }
   })
   batch.commit()
     .then(ref => {
-      res.json({message: 'Scores Updated successfully'})
+      res.json({message: `${req.params.event} Scores Updated successfully`})
     })
     .catch(err => {
       console.log(err)

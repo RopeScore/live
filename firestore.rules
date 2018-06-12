@@ -1,8 +1,11 @@
 service cloud.firestore {
   match /databases/{database}/documents {
+    function superAdmin() {
+      return get(/databases/$(database)/documents/globconfig/admins)[request.auth.uid] != null
+    }
     match /live/federations/{federation} {
       function isAdmin() {
-        return get(/databases/$(database)/documents/live/federations/$(federation)/config).data.admins[request.auth.uid] == true
+        return superAdmin() || get(/databases/$(database)/documents/live/federations/$(federation)/config).data.admins[request.auth.uid] != null
       }
       match /categories/{document=**} {
         function isPublic() {

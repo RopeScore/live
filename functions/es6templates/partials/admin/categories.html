@@ -23,6 +23,7 @@
     participant data, scores, ranks etc.
   </p>
 </div>
+<h2>Categories</h2>
 <div class="table">
   <table class="select">
     ${categories.map(cat => `
@@ -33,5 +34,18 @@
       </td>
     </tr>
     `).join('')}
+  </table>
+</div>
+<h2>Admins</h2>
+<div class="table">
+  <table>
+    <tr>
+      <td><input type="email" placeholder="email" v-model="newAdminEmail"/></td>
+      <td><a @click="newAdmin()">Add Admin</a></td>
+    </tr>
+    <tr v-for="(email, uid) in config.admins">
+      <td>{{ email }}</td>
+      <td><a v-if="uid !== user.uid" @click="delAdmin(uid)">Remove admin</a></td>
+    </t>
   </table>
 </div>

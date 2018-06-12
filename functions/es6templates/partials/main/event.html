@@ -37,7 +37,7 @@
         <td class="gray" v-if="showCol('cRank')">{{ score.cRank }}</td>
         <td class="gray" v-if="showCol('dScore')">{{ score.dScore }}</td>
         <td class="gray" v-if="showCol('dRank')">{{ score.dRank }}</td>
-        <td ng-if="showCol('score')">{{ score.Y || score.A }}</td>
+        <td ng-if="showCol('score')">{{ (typeof score.Y !== 'undefined' ? score.Y : score.A) }}</td>
 
         <td class="green" v-if="showCol('rsum')">{{ score.rsum }}</td>
         <td class="red" v-if="showCol('rank')">{{ score.rank }}</td>
@@ -46,5 +46,9 @@
   </table>
 </div>
 <div v-else>
-  Loading bar?
+  <div class="pc">
+    <div id="pro-bar" class="pb" :style="{width: percentage}">
+      <div id="pro-lab" class="prl">{{ percentage }}</div>
+    </div>
+  </div>
 </div>

@@ -37,6 +37,16 @@ var app = new Vue({
         if (typeof a.Y !== 'undefined' && typeof b.Y !== 'undefined' && a.Y !== b.Y) return b.Y - a.Y
         return Number(a.uid) - Number(b.uid)
       })
+    },
+    percentage: function () {
+      var self = this
+      var arr = Object.keys(this.loaded)
+      var n = arr.length
+      var loaded = arr.filter(function (thing) {
+        return self.loaded[thing]
+      }).length
+      console.log(this.loaded, arr, loaded, n)
+      return (loaded / n) * 100 + '%'
     }
   },
   methods: {

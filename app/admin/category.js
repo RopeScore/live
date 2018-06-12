@@ -48,19 +48,30 @@ var app = new Vue({
     isSpeed: function (abbr) {
       return this.config.events[abbr].speed || false
     },
-    togglePub: function (evt, uid) {
+    togglePub: function (abbr, uid, force) {
       var val = true
-      if (evt === 'overall') {
+      if (force) {
+        val = true
+      } else if (abbr === 'overall') {
         val = !this.scores.overall[uid].display
       } else {
-        val = !this.scores[evt][uid].display
+        val = !this.scores[abbr][uid].display
       }
-      firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(evt).doc(uid).update({display: val})
+      firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({display: val})
+    },
+    publishAll: function (abbr) {
+      let participants = Object.keys(this.participants)
+      for (var i = 0; i < participants.length; i++) {
+        let uid = participants[i]
+        if (typeof this.scores[abbr][uid] !== 'undefined') {
+          this.togglePub(abbr, uid, true)
+        }
+      }
     },
     toggleCatVisibility: function () {
       return firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config').update({visible: !this.config.visible})
     },
-    display: function (abbr, uid) {
+    display: function (abbr, uid, force) {
       if (this.isSpeed(abbr)) {
         firestore.collection(app.fed).doc('config').update({
           projector: {
@@ -69,10 +80,10 @@ var app = new Vue({
           }
         })
         firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({
-          projector: !this.scores[abbr][uid].projector
+          projector: (force ? true : !this.scores[abbr][uid].projector)
         })
       } else {
-        if (typeof app.globConfig.projector !== 'undefined' &&
+        if (!force && typeof app.globConfig.projector !== 'undefined' &&
             app.globConfig.projector.category === this.cat &&
             typeof app.globConfig.projector.event !== 'undefined' &&
             app.globConfig.projector.event.abbr === abbr &&
@@ -91,6 +102,15 @@ var app = new Vue({
               }
             }
           })
+        }
+      }
+    },
+    displayAll: function (abbr) {
+      let participants = Object.keys(this.participants)
+      for (var i = 0; i < participants.length; i++) {
+        let uid = participants[i]
+        if (typeof this.scores[abbr][uid] !== 'undefined') {
+          this.display(abbr, uid, true)
         }
       }
     },

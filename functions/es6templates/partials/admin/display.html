@@ -1,6 +1,6 @@
 <div v-if="globConfig.projector" v-show="loaded.globConfig && loaded.config && loaded.participants && globConfig.projector.speed" class="lg proj">
   <h1 class="full">Unofficial Speed Scores - {{ config.name }}</h1>
-  <table>
+  <table class="lg">
     <tr v-for="event in cycling">
       <td class="onethird">{{ config.events[event.abbr].name }}</td>
       <!-- <td class="onethird">{{ event.uid }}</td> -->

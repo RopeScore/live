@@ -54,7 +54,7 @@ router.get('/', authMiddleware, (req, res) => {
     collections.forEach(collection => {
       promises.push(collection.doc('config').get().then(snapshot => {
         let data = snapshot.data()
-        if (data.admins[req.cookies.ropescore_uid] === true) {
+        if (data.admins[req.cookies.ropescore_uid]) {
           federations.push(collection.id)
         }
       }))

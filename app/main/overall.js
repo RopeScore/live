@@ -47,6 +47,16 @@ var app = new Vue({
         if (a.speed !== b.speed) return b.speed
         return a.abbr.localeCompare(b.abbr)
       })
+    },
+    percentage: function () {
+      var self = this
+      var arr = Object.keys(this.loaded)
+      var n = arr.length
+      var loaded = arr.filter(function (thing) {
+        return self.loaded[thing]
+      }).length
+      console.log(this.loaded, arr, loaded, n)
+      return (loaded / n) * 100 + '%'
     }
   },
   methods: {

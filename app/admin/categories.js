@@ -11,9 +11,12 @@ var app = new Vue({
 
     config: {
       apikey: '',
-      genKey: false
+      genKey: false,
+      admins: {},
+      newAdmins: []
     },
-    showApiKey: false
+    showApiKey: false,
+    newAdminEmail: ''
   },
   methods: {
     newKey: function () {
@@ -32,6 +35,17 @@ var app = new Vue({
         self.showApiKey = cache
         console.log('copied')
       })
+    },
+    newAdmin: function () {
+      let self = this
+      this.config.newAdmins.push(this.newAdminEmail)
+      firestore.collection(app.fed).doc('config').update({newAdmins: this.config.newAdmins}).then(function () {
+        self.newAdminEmail = ''
+      })
+    },
+    delAdmin: function (uid) {
+      delete this.config.admins[uid]
+      firestore.collection(app.fed).doc('config').update({admins: this.config.admins})
     }
   }
 })

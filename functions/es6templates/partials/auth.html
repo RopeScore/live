@@ -1,19 +1,20 @@
-<h1>{{ (!user ? 'Log In' : 'Profile') }}</h1>
-<div class="center">
+<h1>{{ (!user ? 'Log In' : 'Profile - ' + user.email) }}</h1>
+<div>
   <!-- v-if="display.password">-->
-  <label>
-    <input type="email" v-model="auth.email" placeholder="Email"/>
+  <label v-if="!user">
+    <input type="email" class="pretty" v-model="auth.email" placeholder="Email"/>
   </label>
   <label>
-    <input type="password" v-model="auth.password" placeholder="Password"/>
+    <input type="password" class="pretty" v-model="auth.password" placeholder="Password"/>
   </label>
-  <div id="emailerr"></div>
+  <div id="emailerr">{{ errors.email }}</div>
   <div v-if="!user">
     <button @click="signIn('email')">Log in</button>
     <button @click="emailSignUp('email')">Register</button>
   </div>
+  <div v-if="!user" class="gray mt mb">By registering or signing in you agree to our <a href="https://ropescore.com/privacy">Privacy and Cookie Policy</a></div>
   <div v-if="user">
-    <button @click="change('email')">Change Email</button>
+    <!-- <button @click="change('email')">Change Email</button> -->
     <button @click="change('password')">{{ (!display.password ? 'Change' : 'Create') }} Password</button>
   </div>
   <!-- <div class="center gray mt mb">or</div> -->
@@ -39,3 +40,6 @@
   <button onclick="signIn('github')">Logga in med GitHub</button>
   <div id="socialerr"></div>
 </div> -->
+<div v-if="user">
+  <a href="/admin">Go to the admin interface</a>
+</div>

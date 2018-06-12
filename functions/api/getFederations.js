@@ -1,4 +1,5 @@
 const admin = require('firebase-admin')
+const info = require('../package.json')
 
 /**
  * @api {get} / List Federations
@@ -16,7 +17,7 @@ module.exports = (req, res) => {
     let federations = []
     collections.forEach(collection => { federations.push(collection.id) })
     res.json({
-      version: require('./package.json').version,
+      version: info.apidoc.version,
       federations
     })
   })

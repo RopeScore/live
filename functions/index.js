@@ -30,7 +30,7 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
 
   obj[context.params.cat] = (data.visible ? data.name : admin.firestore.FieldValue.delete())
 
-  return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').update(obj)
+  return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').set(obj, {merge: true})
 })
 
 exports.createAdminLookup = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
@@ -39,7 +39,7 @@ exports.createAdminLookup = functions.firestore.document('/live/federations/{fed
 
   obj[context.params.cat] = data.name
 
-  return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookupAdmin').update(obj)
+  return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookupAdmin').set(obj, {merge: true})
 })
 
 exports.genKey = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
@@ -54,5 +54,27 @@ exports.genKey = functions.firestore.document('live/federations/{fed}/config').o
     return change.after.ref.update(obj)
   } else {
     return false
+  }
+})
+
+exports.makeAdmins = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
+  let data = change.after.data()
+
+  if (typeof data.newAdmins !== 'undefined' && data.newAdmins.length > 0) {
+    let email = data.newAdmins[0]
+    return admin.auth().getUserByEmail(email).then(function (userRecord) {
+      console.log('Successfully fetched user data:', userRecord.toJSON())
+      data.newAdmins.shift()
+      let obj = {
+        admins: data.admins,
+        newAdmins: data.newAdmins
+      }
+      obj.admins[userRecord.uid] = email
+      return change.after.ref.update(obj)
+    }).catch(function (error) {
+      console.log('Error fetching user data:', error)
+      data.newAdmins.shift()
+      return change.after.ref.update({newAdmins: data.newAdmins})
+    })
   }
 })

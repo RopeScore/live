@@ -47,6 +47,25 @@ router.get('/', (req, res) => {
   })
 })
 
+router.get('/login', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
+  var renderPage = (err, content) => res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: ['/auth.js'],
+      id: 'login',
+      title: 'Log In',
+      nav,
+      brand: true,
+      admin: false,
+      content: content
+    },
+    partials: {
+      template: 'partials/vue'
+    }
+  })
+  es6renderer('es6templates/partials/auth.html', {}, renderPage)
+})
+
 router.get('/:fed', (req, res, next) => {
   res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
@@ -169,25 +188,6 @@ router.get('/:fed/:cat/:event', (req, res, next) => {
     cat: req.params.cat,
     fed: req.params.fed
   }}, renderPage)
-})
-
-router.get('/login', (req, res) => {
-  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
-  var renderPage = (err, content) => res.render('app', { // eslint-disable-line
-    locals: {
-      scripts: ['/auth.js'],
-      id: 'login',
-      title: 'Log In',
-      nav,
-      brand: false,
-      admin: false,
-      content: content
-    },
-    partials: {
-      template: 'partials/vue'
-    }
-  })
-  es6renderer('es6templates/partials/auth.html', {}, renderPage)
 })
 
 router.use(Raven.errorHandler())

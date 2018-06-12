@@ -105,3 +105,53 @@ div.center table {
 .polling {
   visibility: hidden;
 }
+
+input.pretty {
+  border: 1px solid #ddd;
+  color: #333;
+  padding: .3em .3em;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  font-size: 1em;
+  margin-bottom: .5em;
+  outline: none;
+  transition: border .3s;
+}
+
+input.pretty:hover, input.pretty:focus {
+  border: 1px solid #aaa;
+  color: #333;
+  padding: .3em .3em;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 5px;
+  font-size: 1em;
+  margin-bottom: .5em;
+  outline: none;
+}
+
+/* progress bar */
+
+.pc {
+  position: relative;
+  width: 100%;
+  height: 30px;
+  background-color: #ddd;
+  margin-top: .5em;
+}
+
+.pb {
+  position: absolute;
+  width: 0;
+  height: 100%;
+  background-color: #bbb;
+  border-radius: 5px;
+  transition: width 1s, background-color 1s;
+}
+
+.prl {
+  text-align: center;
+  line-height: 30px;
+  color: #444;
+}

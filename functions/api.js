@@ -3,11 +3,15 @@ const admin = require('firebase-admin')
 const bodyParser = require('body-parser')
 const authentication = require('express-authentication')
 const Raven = require('raven')
+const cors = require('cors')
 
 const router = express.Router()
 
 router.use(Raven.requestHandler())
 
+router.use(cors({
+  origin: true
+}))
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json())
 

@@ -16,6 +16,7 @@ const admin = require('firebase-admin')
  * @apiParam {String} participants.uid UID of the participant
  * @apiParam {String} participants.name Name of the participant
  * @apiParam {String} participants.club The Club of the participant
+ * @apiParam {String} participants.members If the participant is a team this can be used to specify team members
  *
  * @apiSuccess {String} message success message
  */
@@ -28,7 +29,8 @@ module.exports = (req, res, next) => {
     if (typeof obj.uid === 'number' || typeof obj.uid === 'string') {
       participants[obj.uid] = {
         name: obj.name || '',
-        club: obj.club || ''
+        club: obj.club || '',
+        members: obj.members || ''
       }
     }
   })

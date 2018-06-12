@@ -77,11 +77,11 @@ module.exports = (req, res, next) => {
       if (typeof evt.rsum !== 'undefined') score.events[evt.abbr].rsum = Number(evt.rsum)
       if (typeof evt.rank !== 'undefined') score.events[evt.abbr].rank = Number(evt.rank)
     }
-    batch.set(colRef.doc(part.uid), score, {merge: true})
+    batch.set(colRef.doc('' + part.uid), score, {merge: true})
   }
   batch.commit()
     .then(ref => {
-      res.json({message: 'Scores Updated successfully'})
+      res.json({message: 'Overall Scores Updated successfully'})
     })
     .catch(err => {
       console.log(err)

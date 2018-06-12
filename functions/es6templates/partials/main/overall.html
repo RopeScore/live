@@ -53,7 +53,7 @@
           <td class="gray" v-if="showCol(event.abbr, 'cRank')">{{ (score.events[event.abbr] ? score.events[event.abbr].cRank || '' : '') }}</td>
           <td class="gray" v-if="showCol(event.abbr, 'dScore')">{{ (score.events[event.abbr] ? score.events[event.abbr].dScore || '' : '') }}</td>
           <td class="gray" v-if="showCol(event.abbr, 'dRank')">{{ (score.events[event.abbr] ? score.events[event.abbr].dRank || '' : '') }}</td>
-          <td ng-if="showCol(event.abbr, 'score')">{{ (score.events[event.abbr] ? score.events[event.abbr].Y || score.events[event.abbr].A || '' : '') }}</td>
+          <td ng-if="showCol(event.abbr, 'score')">{{ (score.events[event.abbr] ? (typeof score.events[event.abbr].Y !== 'undefined' ? score.events[event.abbr].Y : score.events[event.abbr].A) : '') }}</td>
 
           <td class="green" v-if="showCol(event.abbr, 'rsum')">{{ (score.events[event.abbr] ? score.events[event.abbr].rsum || '' : '') }}</td>
           <td class="red" v-if="showCol(event.abbr, 'rank')">{{ (score.events[event.abbr] ? score.events[event.abbr].rank || '' : '') }}</td>
@@ -67,5 +67,9 @@
   </table>
 </div>
 <div v-else>
-  Loading bar?
+  <div class="pc">
+    <div id="pro-bar" class="pb" :style="{width: percentage}">
+      <div id="pro-lab" class="prl">{{ percentage }}</div>
+    </div>
+  </div>
 </div>

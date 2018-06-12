@@ -48,6 +48,13 @@ firestore.collection(app.fed).doc('config')
     Object.assign(app.globConfig, doc.data())
     app.$set(app.globConfig, 'projector', doc.data().projector)
 
+    for (let i = 0; i < app.conns.length; i++) {
+      console.log('closing - config update')
+      app.conns[i]()
+    }
+    app.conns = []
+    app.cycling = []
+
     if (typeof app.globConfig.projector !== 'undefined' && typeof app.globConfig.projector.category !== 'undefined') {
       firestore.collection(app.fed).doc('categories').collection(app.globConfig.projector.category).doc('config')
         .onSnapshot(function (doc) {
@@ -60,9 +67,11 @@ firestore.collection(app.fed).doc('config')
             console.log(abbrs)
 
             for (let i = 0; i < app.conns.length; i++) {
+              console.log('closing - cat update')
               app.conns[i]()
             }
             app.conns = []
+            app.cycling = []
 
             for (let i = 0; i < abbrs.length; i++) {
               if (typeof app.scores[abbrs[i]] === 'undefined') {
