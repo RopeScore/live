@@ -12,7 +12,8 @@ var app = new Vue({
       'google.com': false,
       'twitter.com': false,
       'facebook.com': false,
-      'phoneCode': false
+      'phoneCode': false,
+      'forgot': false
     },
     errors: {
       social: '',
@@ -40,7 +41,7 @@ var app = new Vue({
   },
   methods: {
     Error: function (what, error) {
-      this[what] = error.code + ' - ' + error.message
+      this.errors[what] = error.code + ' - ' + error.message
     },
 
     phoneSendCode: function () {
@@ -139,6 +140,17 @@ var app = new Vue({
         })
     },
 
+    forgotEmail: function () {
+      var self = this
+      var email = this.auth.email
+      auth.sendPasswordResetEmail(email).then(function () {
+        self.display.forgot = false
+        self.Error('email', {code: 'auth/email-sent', message: 'Password reset email sent successfully'})
+      }).catch(function (err) {
+        self.Error('email', err)
+      })
+    },
+
     signIn: function (what) {
       if (what === 'google' || what === 'facebook' || what === 'twitter') {
         this.socialSignIn(what)
@@ -182,6 +194,12 @@ var app = new Vue({
       } else if (what === 'phone') {
         self.Error('phone', {code: 'auth/not-implemented', message: 'This is not yet implemented, the developer went to bed'})
       }
+    },
+
+    forgot: function (what) {
+      if (what === 'email') {
+        this.forgotEmail()
+      }
     }
   }
 })
@@ -195,7 +213,7 @@ auth.onAuthStateChanged(function (user) {
   var i
 
   for (i = 0; i < k.length; i++) {
-    if (app.display[k[i]] === false && k[i] !== 'phoneCode') {
+    if (app.display[k[i]] === false && k[i] !== 'phoneCode' && k[i] !== 'forgot') {
       app.display[k[i]] = true
     }
     if (app.display[k[i]] === true && k[i] === 'phoneCode') {
@@ -219,6 +237,7 @@ auth.onAuthStateChanged(function (user) {
         app.display[p[i].providerId] = false
       }
     }
+    app.display.forgot = false
 
     app.auth.email = user.email || ''
     app.auth.phone = user.phoneNumber || '+46'

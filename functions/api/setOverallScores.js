@@ -5,9 +5,9 @@ const admin = require('firebase-admin')
  * @apiName setOverallScores
  * @apiGroup Scores
  * @apiPermission federation
- * @apiVersion 1.0.0
+ * @apiVersion 1.1.0
  *
- * @apiUse federation
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -15,6 +15,7 @@ const admin = require('firebase-admin')
  * @apiParam {Object[]} scores Array of objects with scores
  * @apiParam {String} scores.uid id of the participant
  * @apiParam {Boolean} [scores.display] If the score is publicly displayed
+ * @apiParam {Boolean} [scores.delete] Removes the score, overrides all other parms
  *
  * @apiParam {Number} [scores.score] sum of all events scores
  * @apiParam {Number} [scores.rsum] sum of all events ranks
@@ -41,6 +42,7 @@ const admin = require('firebase-admin')
  * @apiParam {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
  *
  * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')
@@ -51,6 +53,11 @@ module.exports = (req, res, next) => {
   for (let part of req.body.scores) {
     if (typeof part.uid === 'undefined') continue
     let score = {events: {}}
+
+    if (typeof part.delete !== 'undefined' && part.delete === true) {
+      batch.delete(colRef.doc('' + part.uid))
+      continue
+    }
 
     if (typeof part.display !== 'undefined') score.display = part.display
     if (typeof part.score !== 'undefined') score.score = Number(part.score)
@@ -88,3 +95,47 @@ module.exports = (req, res, next) => {
       next({statusCode: 500, error: 'Could not update scores'})
     })
 }
+
+/**
+ * @api {post} /:fed/:cat/scores/overall Update multiple overall scores
+ * @apiName setOverallScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiParam {Object[]} scores Array of objects with scores
+ * @apiParam {String} scores.uid id of the participant
+ * @apiParam {Boolean} [scores.display] If the score is publicly displayed
+ *
+ * @apiParam {Number} [scores.score] sum of all events scores
+ * @apiParam {Number} [scores.rsum] sum of all events ranks
+ * @apiParam {Number} [scores.rank] Overall rank
+ *
+ * @apiParam {Object[]} scores.events Array of objects with scores per event
+ * @apiParam {Number} scores.event.abbr the abbr event the score applies to
+ * @apiParam {Number} [scores.event.T1] Diff score (freestyles)
+ * @apiParam {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiParam {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiParam {Number} [scores.event.T3] RQ score (freestyles)
+ * @apiParam {Number} [scores.event.T4] T2 + T3 (freestyles)
+ * @apiParam {Number} [scores.event.T5] Deduc score (freestyles)
+ *
+ * @apiParam {Number} [scores.event.cScore] T4 - .5*T5 (freestyles)
+ * @apiParam {Number} [scores.event.dScore] T5 - .5*T5 (freestyles)
+ *
+ * @apiParam {Number} [scores.event.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiParam {Number} [scores.event.Y] (T - W) * fac (speed)
+ *
+ * @apiParam {Number} [scores.event.cRank] rank for cScore (freestyle)
+ * @apiParam {Number} [scores.event.dRank] rank for dScore (freestyle)
+ * @apiParam {Number} [scores.event.rsum] cRank + dRank (freestyle)
+ * @apiParam {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
+ *
+ * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
+ */

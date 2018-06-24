@@ -15,12 +15,6 @@ router.use(cors({
 router.use(bodyParser.urlencoded({ extended: true }))
 router.use(bodyParser.json())
 
-/**
- * @apiDefine federation
- *
- * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
- */
-
 function authMiddleware (req, res, next) {
   // provide the data that was used to authenticate the request; if this is
   // not set then no attempt to authenticate is registered.
@@ -60,8 +54,7 @@ router.get('/', require('./api/getFederations'))
 router.get('/:fed', authMiddleware, authentication.required(), require('./api/getCategories'))
 router.get('/:fed/:cat', authMiddleware, authentication.required(), require('./api/getConfig'))
 router.post('/:fed/:cat', authMiddleware, authentication.required(), require('./api/setConfig'))
-/* TODO: Implement and document */
-router.delete('/:fed/:cat', authMiddleware, authentication.required(), require('./api/notImplemented'))
+router.delete('/:fed/:cat', authMiddleware, authentication.required(), require('./api/deleteCategory'))
 router.get('/:fed/:cat/participants', authMiddleware, authentication.required(), require('./api/getParticipants'))
 router.post('/:fed/:cat/participants', authMiddleware, authentication.required(), require('./api/setParticipants'))
 /* TODO: Implement and document, not neccesary atm... (update single participant) */

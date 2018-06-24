@@ -7,7 +7,7 @@ const admin = require('firebase-admin')
  * @apiPermission federation
  * @apiVersion 1.0.0
  *
- * @apiUse federation
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -16,6 +16,8 @@ const admin = require('firebase-admin')
  * @apiSuccess {String} participants.uid UID of the participant
  * @apiSuccess {String} participants.name Name of the participant
  * @apiSuccess {String} participants.club The Club of the participant
+ *
+ * @apiError {String} message error message
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')

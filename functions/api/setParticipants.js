@@ -7,7 +7,7 @@ const admin = require('firebase-admin')
  * @apiPermission federation
  * @apiVersion 1.0.0
  *
- * @apiUse federation
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -19,6 +19,7 @@ const admin = require('firebase-admin')
  * @apiParam {String} participants.members If the participant is a team this can be used to specify team members
  *
  * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')

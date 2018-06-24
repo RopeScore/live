@@ -10,6 +10,8 @@ const info = require('../package.json')
  *
  * @apiSuccess {String} version Current API version
  * @apiSuccess {String[]} federations Array of federations
+ *
+ * @apiError {String} message error message
  */
 module.exports = (req, res) => {
   res.set('Cache-Control', 'private')

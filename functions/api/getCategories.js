@@ -7,11 +7,13 @@ const admin = require('firebase-admin')
  * @apiPermission federation
  * @apiVersion 1.0.0
  *
- * @apiUse federation
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
  * @apiParam {String} fed federation
  *
  * @apiSuccess {String[]} categories Array of category ids
+ *
+ * @apiError {String} message error message
  */
 module.exports = (req, res) => {
   res.set('Cache-Control', 'private')

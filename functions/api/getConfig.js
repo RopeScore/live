@@ -7,7 +7,7 @@ const admin = require('firebase-admin')
  * @apiPermission federation
  * @apiVersion 1.0.0
  *
- * @apiUse federation
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -20,6 +20,8 @@ const admin = require('firebase-admin')
  * @apiSuccess {Object} events.cols columns to show
  * @apiSuccess {String[]} events.cols.overall columns to show in the overall table, in the order they should be shown
  * @apiSuccess {String[]} events.cols.event columns to show in the event's table, in the order they should be shown
+ *
+ * @apiError {String} message error message
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')

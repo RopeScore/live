@@ -4,15 +4,19 @@
   <label v-if="!user">
     <input type="email" class="pretty" v-model="auth.email" placeholder="Email"/>
   </label>
-  <label>
+  <label v-if="!display.forgot">
     <input type="password" class="pretty" v-model="auth.password" placeholder="Password"/>
   </label>
   <div id="emailerr">{{ errors.email }}</div>
-  <div v-if="!user">
+  <div v-if="!user && !display.forgot">
     <button @click="signIn('email')">Log in</button>
     <button @click="emailSignUp('email')">Register</button>
   </div>
-  <div v-if="!user" class="gray mt mb">By registering or signing in you agree to our <a href="https://ropescore.com/privacy">Privacy and Cookie Policy</a></div>
+  <div v-if="!user && display.forgot">
+    <button @click="forgot('email')">Reset Password</button>
+  </div>
+  <div v-if="!user" class="gray mt">By registering or signing in you agree to our <a href="https://ropescore.com/privacy">Privacy and Cookie Policy</a></div>
+  <div v-if="!user" class="gray mb"><a @click="display.forgot = !display.forgot">Forgot Password?</a></div>
   <div v-if="user">
     <!-- <button @click="change('email')">Change Email</button> -->
     <button @click="change('password')">{{ (!display.password ? 'Change' : 'Create') }} Password</button>

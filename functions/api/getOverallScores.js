@@ -7,7 +7,7 @@ const admin = require('firebase-admin')
  * @apiPermission federation
  * @apiVersion 1.0.0
  *
- * @apiUse federation
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
  * @apiParam {String} fed federation
  * @apiParam {String} cat id of the category
@@ -39,6 +39,8 @@ const admin = require('firebase-admin')
  * @apiSuccess {Number} [scores.event.dRank] rank for dScore (freestyle)
  * @apiSuccess {Number} [scores.event.rsum] cRank + dRank (freestyle)
  * @apiSuccess {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
+ *
+ * @apiError {String} message error message
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')

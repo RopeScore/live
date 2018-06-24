@@ -4,6 +4,7 @@ const es6renderer = require('express-es6-template-engine')
 const express = require('express')
 const Raven = require('raven')
 const crypto = require('crypto')
+const delCol = require('./deleteCollection')
 
 const app = express()
 
@@ -28,7 +29,7 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
   let data = change.after.data()
   let obj = {}
 
-  obj[context.params.cat] = (data.visible ? data.name : admin.firestore.FieldValue.delete())
+  obj[context.params.cat] = (data.visible && data.name ? data.name : admin.firestore.FieldValue.delete())
 
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').set(obj, {merge: true})
 })
@@ -37,7 +38,7 @@ exports.createAdminLookup = functions.firestore.document('/live/federations/{fed
   let data = change.after.data()
   let obj = {}
 
-  obj[context.params.cat] = data.name
+  obj[context.params.cat] = (data.delete ? admin.firestore.FieldValue.delete() : data.name || 'Unnamed')
 
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookupAdmin').set(obj, {merge: true})
 })
@@ -76,5 +77,16 @@ exports.makeAdmins = functions.firestore.document('live/federations/{fed}/config
       data.newAdmins.shift()
       return change.after.ref.update({newAdmins: data.newAdmins})
     })
+  }
+})
+
+exports.delCat = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
+  let data = change.after.data()
+
+  if (data.delete === true) {
+    let ref = change.after.ref.parent.parent
+    return delCol.deleteCollection(ref, context.params.cat, 50)
+  } else {
+    return false
   }
 })
