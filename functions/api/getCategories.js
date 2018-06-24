@@ -7,7 +7,7 @@ const admin = require('firebase-admin')
  * @apiPermission federation
  * @apiVersion 1.0.0
  *
- * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
  *
  * @apiParam {String} fed federation
  *
