@@ -29,6 +29,7 @@ router.get('/', (req, res) => {
   admin.firestore().collection('live').doc('federations').getCollections().then(collections => {
     let federations = []
     collections.forEach(collection => { federations.push(collection.id) })
+    federations.sort((a, b) => a.localeCompare(b))
     res.render('app', { // eslint-disable-line
       locals: {
         scripts: [],
@@ -74,6 +75,7 @@ router.get('/:fed', (req, res, next) => {
     if (doc.exists) {
       let keys = Object.keys(data)
       categories = keys.map(id => { return {id, name: data[id]} })
+      categories.sort((a, b) => a.name.localeCompare(b.name))
     }
 
     res.render('app', { // eslint-disable-line

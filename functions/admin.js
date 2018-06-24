@@ -60,6 +60,7 @@ router.get('/', authMiddleware, (req, res) => {
       }))
     })
     Promise.all(promises).then(() => {
+      federations.sort((a, b) => a.localeCompare(b))
       res.render('app', {
         locals: {
           scripts: [],
@@ -91,6 +92,7 @@ router.get('/:fed', authMiddleware, (req, res, next) => {
     if (doc.exists) {
       let keys = Object.keys(data)
       categories = keys.map(id => { return {id, name: data[id]} })
+      categories.sort((a, b) => a.name.localeCompare(b.name))
     }
 
     let renderPage = (err, content) => res.render('app', { // eslint-disable-line

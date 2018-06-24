@@ -5,7 +5,7 @@ const admin = require('firebase-admin')
  * @apiName setParticipants
  * @apiGroup Participants
  * @apiPermission federation
- * @apiVersion 1.0.0
+ * @apiVersion 1.1.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
@@ -14,9 +14,9 @@ const admin = require('firebase-admin')
  *
  * @apiParam {Object[]} participants An array of participants
  * @apiParam {String} participants.uid UID of the participant
- * @apiParam {String} participants.name Name of the participant
- * @apiParam {String} participants.club The Club of the participant
- * @apiParam {String} participants.members If the participant is a team this can be used to specify team members
+ * @apiParam {String} [participants.name] Name of the participant
+ * @apiParam {String} [participants.club] The Club of the participant
+ * @apiParam {String} [participants.members] If the participant is a team this can be used to specify team members
  *
  * @apiSuccess {String} message success message
  * @apiError   {String} message error message
@@ -46,3 +46,25 @@ module.exports = (req, res, next) => {
       next({statusCode: 500, error: 'Could not add participants'})
     })
 }
+
+/**
+ * @api {post} /:fed/:cat/participants Bulk add Category Participants
+ * @apiName setParticipants
+ * @apiGroup Participants
+ * @apiPermission federation
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiParam {Object[]} participants An array of participants
+ * @apiParam {String} participants.uid UID of the participant
+ * @apiParam {String} participants.name Name of the participant
+ * @apiParam {String} participants.club The Club of the participant
+ * @apiParam {String} participants.members If the participant is a team this can be used to specify team members
+ *
+ * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
+ */

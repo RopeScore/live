@@ -1,4 +1,4 @@
-/* global Vue, auth, firestore, firebase */
+/* global Vue, auth, firestore, firebase, confirm */
 var app = new Vue({
   el: '#app',
   data: {
@@ -38,6 +38,16 @@ var app = new Vue({
         if (a.speed !== b.speed) return b.speed
         return a.abbr.localeCompare(b.abbr)
       })
+    },
+    percentage: function () {
+      var self = this
+      var arr = Object.keys(this.loaded)
+      var n = arr.length
+      var loaded = arr.filter(function (thing) {
+        return self.loaded[thing]
+      }).length
+      console.log(this.loaded, arr, loaded, n)
+      return (loaded / n) * 100 + '%'
     }
   },
   methods: {
@@ -58,6 +68,17 @@ var app = new Vue({
         val = !this.scores[abbr][uid].display
       }
       firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({display: val})
+    },
+    delCat: function () {
+      if (confirm('Are you sure you want to remove ' + app.config.name + '? This cannot be undone')) {
+        firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config').set({delete: true}, {merge: true})
+          .then(function () {
+            window.location.pathname = '/admin/' + app.fed
+          })
+          .catch(function (err) {
+            if (err) throw err
+          })
+      }
     },
     publishAll: function (abbr) {
       let participants = Object.keys(this.participants)
@@ -135,6 +156,10 @@ firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config'
   .onSnapshot(function (doc) {
     app.loaded.config = true
     Object.assign(app.config, doc.data())
+
+    if (app.config.delete === true) {
+      window.location.pathname = '/admin/' + app.fed
+    }
 
     var events = Object.keys(app.config.events)
 

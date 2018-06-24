@@ -9,7 +9,7 @@ service cloud.firestore {
       }
       match /categories/{document=**} {
         function isPublic() {
-          return get(/databases/$(database)/documents/live/federations/$(federation)/categories/$(request.path[7])/config).data.display == true
+          return get(/databases/$(database)/documents/live/federations/$(federation)/categories/$(request.path[7])/config).data.visible == true
         }
         allow read: if isAdmin() || isPublic();
         allow write: if isAdmin();

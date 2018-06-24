@@ -5,7 +5,7 @@ const admin = require('firebase-admin')
  * @apiName getParticipants
  * @apiGroup Participants
  * @apiPermission federation
- * @apiVersion 1.0.0
+ * @apiVersion 1.1.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
  *
@@ -16,6 +16,7 @@ const admin = require('firebase-admin')
  * @apiSuccess {String} participants.uid UID of the participant
  * @apiSuccess {String} participants.name Name of the participant
  * @apiSuccess {String} participants.club The Club of the participant
+ * @apiSuccess {String} participants.members The Club of the participant
  *
  * @apiError {String} message error message
  */
@@ -32,7 +33,8 @@ module.exports = (req, res, next) => {
           return {
             uid,
             name: data[uid].name || '',
-            club: data[uid].club || ''
+            club: data[uid].club || '',
+            members: data[uid].members || ''
           }
         })
 
@@ -42,3 +44,23 @@ module.exports = (req, res, next) => {
       }
     })
 }
+
+/**
+ * @api {get} /:fed/:cat/participants View Category Participants
+ * @apiName getParticipants
+ * @apiGroup Participants
+ * @apiPermission federation
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer lt;apikeygt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiSuccess {Object[]} participants An array of participants
+ * @apiSuccess {String} participants.uid UID of the participant
+ * @apiSuccess {String} participants.name Name of the participant
+ * @apiSuccess {String} participants.club The Club of the participant
+ *
+ * @apiError {String} message error message
+ */

@@ -5,6 +5,9 @@
       <span v-show="!config.visible"><i class="fas fa-eye"></i> Make Category Visible</span>
       <span v-show="config.visible"><i class="fas fa-eye-slash"></i> Hide Category</span>
     </a>
+    <a @click="delCat()">
+      <i class="far fa-trash-alt"></i> Delete Category
+    </a>
   </p>
 </div>
 
@@ -50,4 +53,11 @@
       </tr>
     </tbody>
   </table>
+</div>
+<div v-else>
+  <div class="pc">
+    <div id="pro-bar" class="pb" :style="{width: percentage}">
+      <div id="pro-lab" class="prl">{{ percentage }}</div>
+    </div>
+  </div>
 </div>
