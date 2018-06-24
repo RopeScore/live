@@ -41,11 +41,13 @@
 
         <template v-for="event in sortedEvents">
           <td>
-            <a v-if="scores[event.abbr][uid]" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].display, red: !scores[event.abbr][uid] || !scores[event.abbr][uid].display}" @click="togglePub(event.abbr, uid)">{{ (scores[event.abbr][uid] && scores[event.abbr][uid].display ? 'Unpublish' : 'Publish') }}</a>
+            <a v-if="scores[event.abbr][uid] && !scores[event.abbr][uid].dns" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].display, red: !scores[event.abbr][uid] || !scores[event.abbr][uid].display}" @click="togglePub(event.abbr, uid)">{{ (scores[event.abbr][uid] && scores[event.abbr][uid].display ? 'Unpublish' : 'Publish') }}</a>
+            <span v-show="scores[event.abbr][uid] && scores[event.abbr][uid].dns" class="gray">DNS</span>
           </td>
           <td>
-            <a v-show="onDisplay(event.abbr, uid)" @click="display(event.abbr, uid)" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].projector}">Remove from Display</a>
-            <a v-show="!onDisplay(event.abbr, uid) && scores[event.abbr][uid]" @click="display(event.abbr, uid)" :class="{red: !scores[event.abbr][uid] || !scores[event.abbr][uid].projector}">Display</a>
+            <a v-show="onDisplay(event.abbr, uid) && !scores[event.abbr][uid].dns" @click="display(event.abbr, uid)" :class="{green: scores[event.abbr][uid] && scores[event.abbr][uid].projector}">Remove from Display</a>
+            <a v-show="!onDisplay(event.abbr, uid) && scores[event.abbr][uid] && !scores[event.abbr][uid].dns" @click="display(event.abbr, uid)" :class="{red: !scores[event.abbr][uid] || !scores[event.abbr][uid].projector}">Display</a>
+            <span v-show="scores[event.abbr][uid] && scores[event.abbr][uid].dns" class="gray">DNS</span>
           </td>
         </template>
 
