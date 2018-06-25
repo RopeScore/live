@@ -93,7 +93,7 @@ module.exports = (req, res, next) => {
     })
     .catch(err => {
       console.log(err)
-      next({statusCode: 500, error: 'Could not update scores'})
+      next({statusCode: 500, error: `Could not update ${req.params.event} scores`})
     })
 }
 

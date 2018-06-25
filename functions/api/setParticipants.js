@@ -39,11 +39,11 @@ module.exports = (req, res, next) => {
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('participants').set(participants)
     .then(ref => {
-      res.json({message: 'Category Participants Added successfully'})
+      res.json({message: 'Category Participants Updated successfully'})
     })
     .catch(err => {
       console.log(err)
-      next({statusCode: 500, error: 'Could not add participants'})
+      next({statusCode: 500, error: 'Could not update participants'})
     })
 }
 
