@@ -81,18 +81,31 @@ router.get('/', authMiddleware, (req, res) => {
 })
 
 router.get('/:fed', authMiddleware, (req, res, next) => {
-  res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
+  res.set('Cache-Control', 'private')
   nav[nav.findIndex(obj => obj.id === 'admindash')].link = `/admin/${req.params.fed}`
   nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
-  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/display`, id: 'proj'})
+  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/projector`, id: 'proj'})
 
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookupAdmin').get().then(doc => {
     let data = doc.data()
-    let categories = []
+    let groups = []
+    let categories = 0
+    let sorter = (a, b) => a.name.localeCompare(b.name)
     if (doc.exists) {
-      let keys = Object.keys(data)
-      categories = keys.map(id => { return {id, name: data[id]} })
-      categories.sort((a, b) => a.name.localeCompare(b.name))
+      let gkeys = Object.keys(data)
+      groups = gkeys.map(name => {
+        let ckeys = Object.keys(data[name])
+        let cats = ckeys.map(id => { return {id, name: data[name][id]} })
+        cats.sort(sorter)
+        return {name, categories: cats}
+      })
+      groups.sort(sorter)
+      groups = groups.filter(curr => {
+        console.log(curr, Array.isArray(curr.categories), curr.categories.length)
+        return Array.isArray(curr.categories) && curr.categories.length > 0
+      })
+      console.log(categories)
+      categories = groups.reduce((curr, sum) => sum + (Array.isArray(curr.categories) ? curr.categories.length : 0), 0)
     }
 
     let renderPage = (err, content) => res.render('app', { // eslint-disable-line
@@ -111,23 +124,62 @@ router.get('/:fed', authMiddleware, (req, res, next) => {
     })
     es6renderer('es6templates/partials/admin/categories.html', {locals: {
       fed: req.params.fed,
+      groups,
       categories
     }}, renderPage)
   })
 })
 
-router.get('/:fed/display', (req, res, next) => {
-  res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200')
+router.get('/:fed/projector', (req, res, next) => {
+  res.set('Cache-Control', 'private')
+  nav[nav.findIndex(obj => obj.id === 'admindash')].link = `/admin/${req.params.fed}`
   nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
+  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/projector`, id: 'proj'})
+
+  let displays = [
+    {
+      path: 'scores',
+      name: 'Scores'
+    },
+    {
+      path: 'results',
+      name: 'Results'
+    }
+    // {
+    //   path: 'floor',
+    //   name: 'Floor status'
+    // }
+  ]
+
+  res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: [],
+      id: 'proj',
+      title: '',
+      nav,
+      brand: true,
+      admin: true,
+
+      displays,
+      fed: req.params.fed
+    },
+    partials: {
+      template: 'partials/admin/projector'
+    }
+  })
+})
+
+router.get('/:fed/projector/scores', (req, res, next) => {
+  res.set('Cache-Control', 'private')
 
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
-      scripts: ['/admin/display.js'],
+      scripts: ['/admin/projector-scores.js'],
       id: 'disp',
       title: '',
       nav: false,
       brand: false,
-      admin: false,
+      admin: true,
 
       content
     },
@@ -135,23 +187,62 @@ router.get('/:fed/display', (req, res, next) => {
       template: 'partials/vue'
     }
   })
-  es6renderer('es6templates/partials/admin/display.html', {locals: {
+  es6renderer('es6templates/partials/admin/projector-scores.html', {locals: {
+    fed: req.params.fed
+  }}, renderPage)
+})
+
+router.get('/:fed/projector/results', (req, res, next) => {
+  res.set('Cache-Control', 'private')
+
+  let renderPage = (err, content) => res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: ['/admin/projector-results.js'],
+      id: 'disp',
+      title: '',
+      nav: false,
+      brand: false,
+      admin: true,
+
+      content
+    },
+    partials: {
+      template: 'partials/vue'
+    }
+  })
+  es6renderer('es6templates/partials/admin/projector-results.html', {locals: {
+    fed: req.params.fed
+  }}, renderPage)
+})
+
+router.get('/:fed/projector/floor', (req, res, next) => {
+  res.set('Cache-Control', 'private')
+
+  let renderPage = (err, content) => res.render('app', { // eslint-disable-line
+    locals: {
+      scripts: ['/admin/projector-floor.js'],
+      id: 'disp',
+      title: '',
+      nav: false,
+      brand: false,
+      admin: true,
+
+      content
+    },
+    partials: {
+      template: 'partials/vue'
+    }
+  })
+  es6renderer('es6templates/partials/admin/projector-floor.html', {locals: {
     fed: req.params.fed
   }}, renderPage)
 })
 
 router.get('/:fed/:cat', authMiddleware, (req, res, next) => {
-  res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
-  // admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
-  //   let data = doc.data()
-  //   let categories = []
-  //   if (doc.exists) {
-  //     let keys = Object.keys(data)
-  //     categories = keys.map(id => { return {id, name: data[id]} })
-  //   }
+  res.set('Cache-Control', 'private')
   nav[nav.findIndex(obj => obj.id === 'admindash')].link = `/admin/${req.params.fed}`
   nav[nav.findIndex(obj => obj.id === 'dash')].link = `/${req.params.fed}`
-  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/display`, id: 'proj'})
+  if (nav.findIndex(obj => obj.id === 'proj') < 0) nav.splice(nav.length - 1, 0, {'title': 'Projector', 'link': `/admin/${req.params.fed}/projector`, id: 'proj'})
 
   let renderPage = (err, content) => res.render('app', { // eslint-disable-line
     locals: {
@@ -177,20 +268,19 @@ router.get('/:fed/:cat', authMiddleware, (req, res, next) => {
 router.use(Raven.errorHandler())
 
 router.use(function (req, res, next) {
-  res.status(404)
-    .render('app', {
-      locals: {
-        scripts: [],
-        id: 404,
-        title: '404',
-        nav,
-        brand: true,
-        admin: false
-      },
-      partials: {
-        template: 'partials/404'
-      }
-    })
+  res.status(404).render('app', {
+    locals: {
+      scripts: [],
+      id: 404,
+      title: '404',
+      nav,
+      brand: true,
+      admin: false
+    },
+    partials: {
+      template: 'partials/404'
+    }
+  })
 })
 
 module.exports.router = router

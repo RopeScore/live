@@ -27,7 +27,9 @@ var app = new Vue({
     ranked: function () {
       var self = this
       var uids = Object.keys(this.scores) || []
-      return uids.map(function (uid) {
+      return uids.filter(function (uid) {
+        return typeof self.scores[uid] !== 'undefined'
+      }).map(function (uid) {
         var score = self.scores[uid]
         score.uid = uid
         return score
@@ -47,6 +49,14 @@ var app = new Vue({
       }).length
       console.log(this.loaded, arr, loaded, n)
       return (loaded / n) * 100 + '%'
+    },
+    anyMembers: function () {
+      var self = this
+      return Object.keys(this.participants).map(function (uid) {
+        return self.participants[uid].members
+      }).filter(function (members) {
+        return typeof members !== 'undefined'
+      }).length > 0
     }
   },
   methods: {
@@ -85,15 +95,20 @@ firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config'
 firestore.collection(app.fed).doc('categories').collection(app.cat).doc('participants')
   .onSnapshot(function (doc) {
     app.loaded.participants = true
-    Object.assign(app.participants, doc.data())
-    // app.particiants = doc.data()
+    let data = doc.data()
+    Object.keys(data).forEach(function (uid) {
+      app.$set(app.participants, uid, data[uid])
+    })
   })
 
 firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(app.abbr).where('display', '==', true)
   .onSnapshot(function (docs) {
     app.loaded.scores = true
 
-    docs.forEach(function (doc) {
+    docs.docChanges().forEach(function (change) {
+      let doc = change.doc
+      console.log(doc.id, change)
+      if (change.type === 'removed') return app.$set(app.scores, doc.id, undefined)
       app.$set(app.scores, doc.id, doc.data())
     })
   })

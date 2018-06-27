@@ -28,11 +28,10 @@ module.exports = (req, res, next) => {
 
   req.body.participants.forEach(obj => {
     if (typeof obj.uid === 'number' || typeof obj.uid === 'string') {
-      participants[obj.uid] = {
-        name: obj.name || '',
-        club: obj.club || '',
-        members: obj.members || ''
-      }
+      participants[obj.uid] = {}
+      if (typeof obj.name !== 'undefined' && String(obj.name)) participants[obj.uid].name = String(obj.name)
+      if (typeof obj.club !== 'undefined' && String(obj.club)) participants[obj.uid].club = String(obj.club)
+      if (typeof obj.members !== 'undefined' && String(obj.members)) participants[obj.uid].members = String(obj.members)
     }
   })
 

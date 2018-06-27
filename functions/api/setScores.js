@@ -51,6 +51,7 @@ module.exports = (req, res, next) => {
   let batch = admin.firestore().batch()
   let colRef = admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('scores').collection(req.params.event)
+  batch.set(colRef.parent, {})
   for (let part of req.body.scores) {
     if (typeof part.uid === 'undefined') continue
     let score = {}
@@ -61,27 +62,27 @@ module.exports = (req, res, next) => {
     }
 
     if (typeof part.display !== 'undefined') score.display = part.display
-    score.dns = part.dns || del()
+    score.dns = Boolean(part.dns) || del()
 
-    score.T1 = Number(part.T1) || del()
-    score.T2 = Number(part.T2) || del()
-    score.T3 = Number(part.T3) || del()
-    score.T4 = Number(part.T4) || del()
-    score.T5 = Number(part.T5) || del()
+    score.T1 = (isNaN(Number(part.T1)) ? del() : Number(part.T1))
+    score.T2 = (isNaN(Number(part.T2)) ? del() : Number(part.T2))
+    score.T3 = (isNaN(Number(part.T3)) ? del() : Number(part.T3))
+    score.T4 = (isNaN(Number(part.T4)) ? del() : Number(part.T4))
+    score.T5 = (isNaN(Number(part.T5)) ? del() : Number(part.T5))
 
-    score.cScore = Number(part.cScore) || del()
-    score.dScore = Number(part.dScore) || del()
+    score.cScore = (isNaN(Number(part.cScore)) ? del() : Number(part.cScore))
+    score.dScore = (isNaN(Number(part.dScore)) ? del() : Number(part.dScore))
 
-    score.PreA = Number(part.PreA) || del()
-    score.PreY = Number(part.PreY) || del()
+    score.PreA = (isNaN(Number(part.PreA)) ? del() : Number(part.PreA))
+    score.PreY = (isNaN(Number(part.PreY)) ? del() : Number(part.PreY))
 
-    score.A = Number(part.A) || del()
-    score.Y = Number(part.Y) || del()
+    score.A = (isNaN(Number(part.A)) ? del() : Number(part.A))
+    score.Y = (isNaN(Number(part.Y)) ? del() : Number(part.Y))
 
-    score.cRank = Number(part.cRank) || del()
-    score.dRank = Number(part.dRank) || del()
-    score.rsum = Number(part.rsum) || del()
-    score.rank = Number(part.rank) || del()
+    score.cRank = (isNaN(Number(part.cRank)) ? del() : Number(part.cRank))
+    score.dRank = (isNaN(Number(part.dRank)) ? del() : Number(part.dRank))
+    score.rsum = (isNaN(Number(part.rsum)) ? del() : Number(part.rsum))
+    score.rank = (isNaN(Number(part.rank)) ? del() : Number(part.rank))
 
     console.log(score)
 

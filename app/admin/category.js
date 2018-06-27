@@ -24,7 +24,9 @@ var app = new Vue({
       participants: false,
       scores: false,
       globConfig: false
-    }
+    },
+
+    saveStatus: ''
   },
   computed: {
     sortedEvents: function () {
@@ -48,6 +50,14 @@ var app = new Vue({
       }).length
       console.log(this.loaded, arr, loaded, n)
       return (loaded / n) * 100 + '%'
+    },
+    anyMembers: function () {
+      var self = this
+      return Object.keys(this.participants).map(function (uid) {
+        return self.participants[uid].members
+      }).filter(function (members) {
+        return typeof members !== 'undefined'
+      }).length > 0
     }
   },
   methods: {
@@ -93,11 +103,11 @@ var app = new Vue({
       return firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config').update({visible: !this.config.visible})
     },
     display: function (abbr, uid, force) {
-      if (this.isSpeed(abbr)) {
+      if (abbr === 'overall' || this.isSpeed(abbr)) {
         firestore.collection(app.fed).doc('config').update({
           projector: {
-            category: this.cat,
-            speed: true
+            category: app.cat,
+            speed: (abbr === 'overall' ? app.globConfig.projector.speed : true)
           }
         })
         firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({
@@ -142,6 +152,15 @@ var app = new Vue({
       } else {
         return currDisp.category === this.cat && typeof currDisp.event !== 'undefined' && currDisp.event.abbr === abbr && currDisp.event.uid === uid
       }
+    },
+    saveGroup: function () {
+      return firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config').update({group: app.config.group})
+        .then(function () {
+          app.saveStatus = 'Successfully saved'
+          setTimeout(function () {
+            app.saveStatus = ''
+          }, 5000)
+        })
     }
   }
 })
@@ -162,13 +181,17 @@ firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config'
     }
 
     var events = Object.keys(app.config.events)
+    events.push('overall')
 
     events.forEach(function (event) {
       app.$set(app.scores, event, {})
 
       firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(event)
         .onSnapshot(function (docs) {
-          docs.forEach(function (doc) {
+          app.loaded.scores = true
+          docs.docChanges().forEach(function (change) {
+            let doc = change.doc
+            if (change.type === 'removed') return app.$set(app.scores[event], doc.id, undefined)
             app.$set(app.scores[event], doc.id, doc.data())
           })
         })
@@ -178,15 +201,9 @@ firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config'
 firestore.collection(app.fed).doc('categories').collection(app.cat).doc('participants')
   .onSnapshot(function (doc) {
     app.loaded.participants = true
-    Object.assign(app.participants, doc.data())
-  })
-
-firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection('overall')
-  .onSnapshot(function (docs) {
-    app.loaded.scores = true
-
-    docs.forEach(function (doc) {
-      app.$set(app.scores.overall, doc.id, doc.data())
+    let data = doc.data()
+    Object.keys(data).forEach(function (uid) {
+      app.$set(app.participants, uid, data[uid])
     })
   })
 

@@ -1,4 +1,8 @@
 /* global firebase, Cookies */
+/* Use firestore's Timestamp classes instead of Dates when dates are returned.
+ * Future proofing, introduced in 4.13.0, apparently
+ */
+firebase.firestore().settings({timestampsInSnapshots: true})
 /**
  * shorthand for firebase.firestore()
  * @type {Object}

@@ -7,16 +7,20 @@ var app = new Vue({
     admin: false,
     override: true,
 
-    fed: window.location.pathname.split('/')[1],
-    cat: window.location.pathname.split('/')[2],
+    fed: window.location.pathname.split('/')[2],
+    cat: '',
+
+    conns: [],
 
     config: {},
+    globConfig: {},
     participants: {},
     scores: {},
     ranks: {},
 
     loaded: {
       config: false,
+      globConfig: false,
       participants: false,
       scores: false,
       ranks: true
@@ -36,18 +40,6 @@ var app = new Vue({
         if (typeof a.rank !== 'undefined' && typeof b.rank !== 'undefined' && a.rank !== b.rank) return a.rank - b.rank
         if (typeof a.score !== 'undefined' && typeof b.score !== 'undefined' && a.score !== b.score) return b.score - a.score
         return Number(a.uid) - Number(b.uid)
-      })
-    },
-    sortedEvents: function () {
-      let self = this
-      return Object.keys(this.config.events).map(function (abbr) {
-        var obj = self.config.events[abbr]
-        obj.abbr = abbr
-        return obj
-      }).sort(function (a, b) {
-        if (self.isType(a.abbr, 'sr') !== self.isType(b.abbr, 'sr')) return self.isType(b.abbr, 'sr')
-        if (a.speed !== b.speed) return b.speed
-        return a.abbr.localeCompare(b.abbr)
       })
     },
     percentage: function () {
@@ -105,49 +97,72 @@ var app = new Vue({
       return false
     },
     colCount: function (type) {
-      var count = 0
+      let count = 0
       if (typeof this.config.events !== 'undefined') {
-        for (var abbr in this.config.events) {
-          if (typeof this.config.events[abbr] !== 'undefined' &&
-              typeof this.config.events[abbr].cols !== 'undefined' &&
-              typeof this.config.events[abbr].cols.overall !== 'undefined' &&
-              (typeof type === 'undefined' ? true : this.isType(abbr, type))) {
-            count += this.config.events[abbr].cols.overall.length || 0
-          }
+        for (let abbr in this.config.events) {
+          if (app.isType(abbr, type)) count += 1
         }
-
+        console.log(type, count)
         return count
       }
+    },
+    sortedEvents: function () {
+      let self = this
+      return Object.keys(this.config.events).map(function (abbr) {
+        var obj = self.config.events[abbr]
+        obj.abbr = abbr
+        return obj
+      }).sort(function (a, b) {
+        if (self.isType(a.abbr, 'sr') !== self.isType(b.abbr, 'sr')) return self.isType(b.abbr, 'sr')
+        if (a.speed !== b.speed) return b.speed
+        return a.abbr.localeCompare(b.abbr)
+      })
     }
   }
 })
 
-firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config')
-  .onSnapshot(function (doc) {
-    app.loaded.config = true
-    Object.assign(app.config, doc.data())
-  })
+firestore.collection(app.fed).doc('config')
+.onSnapshot(function (doc) {
+  app.loaded.globConfig = true
 
-firestore.collection(app.fed).doc('categories').collection(app.cat).doc('participants')
-  .onSnapshot(function (doc) {
-    app.loaded.participants = true
-    let data = doc.data()
-    Object.keys(data).forEach(function (uid) {
-      app.$set(app.participants, uid, data[uid])
-    })
-  })
+  app.$set(app.globConfig, 'projector', doc.data().projector)
+  app.cat = app.globConfig.projector.category
 
-firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection('overall').where('display', '==', true)
-  .onSnapshot(function (docs) {
-    app.loaded.scores = true
+  for (let i = 0; i < app.conns.length; i++) {
+    console.log('closing - config update')
+    app.conns[i]()
+  }
+  app.conns = []
 
-    docs.docChanges().forEach(function (change) {
-      let doc = change.doc
-      console.log(doc.id, change)
-      if (change.type === 'removed') return app.$set(app.scores, doc.id, undefined)
-      app.$set(app.scores, doc.id, doc.data())
-    })
-  })
+  app.conns.push(firestore.collection(app.fed).doc('categories').collection(app.cat).doc('config')
+    .onSnapshot(function (doc) {
+      app.loaded.config = true
+      let data = doc.data()
+      Object.assign(app.config, data)
+      app.$set(app.config, 'events', data.events)
+    }))
+
+  app.conns.push(firestore.collection(app.fed).doc('categories').collection(app.cat).doc('participants')
+    .onSnapshot(function (doc) {
+      app.loaded.participants = true
+      let data = doc.data()
+      app.participants = {}
+      Object.keys(data).forEach(function (uid) {
+        app.$set(app.participants, uid, data[uid])
+      })
+    }))
+
+  app.conns.push(firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection('overall').where('projector', '==', true)
+    .onSnapshot(function (docs) {
+      app.loaded.scores = true
+      app.scores = {}
+      docs.docChanges().forEach(function (change) {
+        let doc = change.doc
+        if (change.type === 'removed') return app.$set(app.scores, doc.id, undefined)
+        app.$set(app.scores, doc.id, doc.data())
+      })
+    }))
+})
 
 auth.onAuthStateChanged(function (user) {
   if (user) {

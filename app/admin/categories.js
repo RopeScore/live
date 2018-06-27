@@ -15,7 +15,10 @@ var app = new Vue({
       admins: {},
       newAdmins: []
     },
-    showApiKey: false,
+    show: {
+      writeKey: false,
+      readKey: false
+    },
     newAdminEmail: ''
   },
   methods: {
@@ -24,15 +27,15 @@ var app = new Vue({
         firestore.collection(app.fed).doc('config').update({genKey: true})
       }
     },
-    copyKey: function () {
+    copy: function (id) {
       var self = this
-      var cache = self.showApiKey
-      this.showApiKey = true
+      var cache = self.show.writeKey
+      this.show.writeKey = true
       setTimeout(function () {
-        var copyText = document.getElementById('apikey')
+        var copyText = document.getElementById(id)
         copyText.select()
         document.execCommand('Copy')
-        self.showApiKey = cache
+        self.show.writeKey = cache
         console.log('copied')
       })
     },

@@ -71,11 +71,24 @@ router.get('/:fed', (req, res, next) => {
   res.set('Cache-Control', 'public, max-age=1800, s-maxage=3600')
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categoriesLookup').get().then(doc => {
     let data = doc.data()
-    let categories = []
+    let groups = []
+    let categories = 0
+    let sorter = (a, b) => a.name.localeCompare(b.name)
     if (doc.exists) {
-      let keys = Object.keys(data)
-      categories = keys.map(id => { return {id, name: data[id]} })
-      categories.sort((a, b) => a.name.localeCompare(b.name))
+      let gkeys = Object.keys(data)
+      groups = gkeys.map(name => {
+        let ckeys = Object.keys(data[name])
+        let cats = ckeys.map(id => { return {id, name: data[name][id]} })
+        cats.sort(sorter)
+        return {name, categories: cats}
+      })
+      groups.sort(sorter)
+      groups = groups.filter(curr => {
+        console.log(curr, Array.isArray(curr.categories), curr.categories.length)
+        return Array.isArray(curr.categories) && curr.categories.length > 0
+      })
+      console.log(categories)
+      categories = groups.reduce((curr, sum) => sum + (Array.isArray(curr.categories) ? curr.categories.length : 0), 0)
     }
 
     res.render('app', { // eslint-disable-line
@@ -87,6 +100,7 @@ router.get('/:fed', (req, res, next) => {
         brand: true,
         admin: false,
 
+        groups,
         categories,
         fed: req.params.fed
       },

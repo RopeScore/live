@@ -1,11 +1,16 @@
-<div class="table" v-if="loaded.config && loaded.participants && loaded.scores && loaded.ranks">
+<div
+  class="table"
+  v-if="loaded.config && loaded.participants && loaded.scores && loaded.ranks">
   <table :name="abbr" class="mt">
     <thead>
       <tr>
-        <th bold="true" :colspan="colCount() + 3">{{ config.name }} Scores: {{ unabbr(abbr) }}</th>
+        <th bold="true" :colspan="(anyMembers ? 4 : 3) + colCount()">{{ config.name }}
+          Scores:
+          {{ unabbr(abbr) }}</th>
       </tr>
-       <tr>
-        <th>Name</th>
+      <tr>
+        <th>{{ (anyMembers ? 'Team ' : '') }}Name</th>
+        <th v-show="anyMembers">Team Members</th>
         <th>Club</th>
         <th>id</th>
 
@@ -26,6 +31,7 @@
     <tbody>
       <tr v-for="score in ranked">
         <td>{{ (participants[score.uid] ? participants[score.uid].name : '') }}</td>
+        <td v-show="anyMembers">{{ (participants[score.uid] ? participants[score.uid].members : '') }}</td>
         <td>{{ (participants[score.uid] ? participants[score.uid].club : '') }}</td>
         <td>{{ score.uid }}</td>
 
@@ -45,7 +51,7 @@
     </tbody>
   </table>
 </div>
-<div v-else>
+<div v-else="v-else">
   <div class="pc">
     <div id="pro-bar" class="pb" :style="{width: percentage}">
       <div id="pro-lab" class="prl">{{ percentage }}</div>

@@ -44,8 +44,9 @@ module.exports = (req, res, next) => {
     name: req.body.name,
     events: events
   }
+  admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories').set({})
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
-    .collection(req.params.cat).doc('config').set(config, {merge: true})
+    .collection(req.params.cat).doc('config').set(config, {mergeFields: ['events', 'name']})
     .then(ref => {
       res.json({message: 'Category Config Updated successfully'})
     })

@@ -1,11 +1,14 @@
-<div class="table" v-if="loaded.config && loaded.participants && loaded.scores && loaded.ranks">
+<div
+  class="table"
+  v-if="loaded.config && loaded.participants && loaded.scores && loaded.ranks">
   <table name="overall" class="mt">
     <thead>
       <tr>
-        <th bold="true" :colspan="3 + colCount() + 3">{{ config.name }} Overall Scores</th>
+        <th bold="true" :colspan="(anyMembers ? 4 : 3) + colCount() + 3">{{ config.name }}
+          Overall Scores</th>
       </tr>
       <tr>
-        <th colspan="3" rowspan="2"></th>
+        <th :colspan="(anyMembers ? 4 : 3)" rowspan="2"></th>
         <th v-if="hasType('sr')" :colspan="colCount('sr')">Single Rope</th>
         <th v-if="hasType('dd')" :colspan="colCount('dd')">Double Dutch</th>
         <th colspan="3" rowspan="2">Overall</th>
@@ -14,7 +17,8 @@
         <th colspan="2" v-for="event in sortedEvents">{{ trim(unabbr(event.abbr)) }}</th>
       </tr>
       <tr>
-        <th>Name</th>
+        <th>{{ (anyMembers ? 'Team ' : '') }}Name</th>
+        <th v-show="anyMembers">Team Members</th>
         <th>Club</th>
         <th>id</th>
 
@@ -41,6 +45,7 @@
     <tbody>
       <tr v-for="score in ranked">
         <td>{{ (participants[score.uid] ? participants[score.uid].name : '') }}</td>
+        <td v-show="anyMembers">{{ (participants[score.uid] ? participants[score.uid].members : '') }}</td>
         <td>{{ (participants[score.uid] ? participants[score.uid].club : '') }}</td>
         <td>{{ score.uid }}</td>
 
@@ -59,14 +64,14 @@
           <td class="red" v-if="showCol(event.abbr, 'rank')">{{ (score.events[event.abbr] ? score.events[event.abbr].rank || '' : '') }}</td>
         </template>
 
-        <td>{{ score.score || '' }}</td>
-        <td class="green">{{ score.rsum || '' }}</td>
-        <td class="red">{{ score.rank || '' }}</td>
+        <td>{{ (typeof score.score !== 'undefined' ? score.score : '') }}</td>
+        <td class="green">{{ (typeof score.rsum !== 'undefined' ? score.rsum : '') }}</td>
+        <td class="red">{{ (typeof score.rank !== 'undefined' ? score.rank : '') }}</td>
       </tr>
     </tbody>
   </table>
 </div>
-<div v-else>
+<div v-else="v-else">
   <div class="pc">
     <div id="pro-bar" class="pb" :style="{width: percentage}">
       <div id="pro-lab" class="prl">{{ percentage }}</div>

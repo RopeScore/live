@@ -27,18 +27,42 @@ exports.app = functions.https.onRequest(app)
 
 exports.createLookup = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
   let data = change.after.data()
+  let before = change.before.data()
   let obj = {}
 
-  obj[context.params.cat] = (data.visible && data.name ? data.name : admin.firestore.FieldValue.delete())
+  if (change.after.exists) {
+    obj[data.group || 'Ungrouped'] = {}
+    obj[data.group || 'Ungrouped'][context.params.cat] = (data.delete ? admin.firestore.FieldValue.delete() : data.name || 'Unnamed')
+  } else if (change.before.exists) {
+    obj[before.group || 'Ungrouped'] = {}
+    obj[before.group || 'Ungrouped'][context.params.cat] = admin.firestore.FieldValue.delete()
+  }
+
+  if (change.before.exists && change.after.exists && data.group !== before.group) {
+    obj[before.group || 'Ungrouped'] = {}
+    obj[before.group || 'Ungrouped'][context.params.cat] = admin.firestore.FieldValue.delete()
+  }
 
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookup').set(obj, {merge: true})
 })
 
 exports.createAdminLookup = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
   let data = change.after.data()
+  let before = change.before.data()
   let obj = {}
 
-  obj[context.params.cat] = (data.delete ? admin.firestore.FieldValue.delete() : data.name || 'Unnamed')
+  if (change.after.exists) {
+    obj[data.group || 'Ungrouped'] = {}
+    obj[data.group || 'Ungrouped'][context.params.cat] = (data.delete ? admin.firestore.FieldValue.delete() : data.name || 'Unnamed')
+  } else if (change.before.exists) {
+    obj[before.group || 'Ungrouped'] = {}
+    obj[before.group || 'Ungrouped'][context.params.cat] = admin.firestore.FieldValue.delete()
+  }
+
+  if (change.before.exists && data.group !== before.group) {
+    obj[before.group || 'Ungrouped'] = {}
+    obj[before.group || 'Ungrouped'][context.params.cat] = admin.firestore.FieldValue.delete()
+  }
 
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookupAdmin').set(obj, {merge: true})
 })
@@ -61,13 +85,13 @@ exports.genKey = functions.firestore.document('live/federations/{fed}/config').o
 exports.makeAdmins = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
   let data = change.after.data()
 
-  if (typeof data.newAdmins !== 'undefined' && data.newAdmins.length > 0) {
+  if (typeof data.newAdmins !== 'undefined' && Array.isArray(data.newAdmins) && data.newAdmins.length > 0) {
     let email = data.newAdmins[0]
     return admin.auth().getUserByEmail(email).then(function (userRecord) {
       console.log('Successfully fetched user data:', userRecord.toJSON())
       data.newAdmins.shift()
       let obj = {
-        admins: data.admins,
+        admins: data.admins || {},
         newAdmins: data.newAdmins
       }
       obj.admins[userRecord.uid] = email
@@ -77,13 +101,15 @@ exports.makeAdmins = functions.firestore.document('live/federations/{fed}/config
       data.newAdmins.shift()
       return change.after.ref.update({newAdmins: data.newAdmins})
     })
+  } else {
+    return false
   }
 })
 
 exports.delCat = functions.firestore.document('/live/federations/{fed}/categories/{cat}/config').onWrite((change, context) => {
   let data = change.after.data()
 
-  if (data.delete === true) {
+  if (change.after.exists && data.delete === true) {
     let ref = change.after.ref.parent.parent
     return delCol.deleteCollection(ref, context.params.cat, 50)
   } else {

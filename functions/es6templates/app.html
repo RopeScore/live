@@ -19,7 +19,7 @@
     ${(nav ? `<nav>
       <ul class="topnav">
         <li onclick="goHome()" class="pointer">
-          <div>RopeScore</div>
+          <div>RopeScore Live</div>
         </li>
         </li>${nav.map(el => `
         <li id="${el.id}" ${(id===el.id ? 'class="current"' : '')}>
@@ -34,7 +34,9 @@
         RopeScore
       </h1>
       <h2>A Scoring System for Rope Skipping</h2>
-      <p>Unnofficial Live Scores, note that these must not be taken as final.</p>
+      <p><a href="https://ropescore.com" target="_blank">Read More</a></p>
+      <p>This page may contain scores that haven't yet been announced as official by the tournament director.
+      Please note that results displayed might change.</p>
     </div>` : ``)}
     <div class="content">${template}</div>
     <footer>
@@ -42,8 +44,9 @@
     </footer>
     ${(!nav ? `<span id="login" class="hidden"></span>` : ``)}
     <!-- Scripts -->
-    <script src="/__/firebase/4.11.0/firebase.js"></script>
-    <script src="/__/firebase/4.11.0/firebase-firestore.js"></script>
+    <script src="/__/firebase/5.1.0/firebase-app.js"></script>
+    <script src="/__/firebase/5.1.0/firebase-auth.js"></script>
+    <script src="/__/firebase/5.1.0/firebase-firestore.js"></script>
     <script src="/__/firebase/init.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js" integrity="sha256-CMMTrj5gGwOAXBeFi7kNokqowkzbeL8ydAJy39ewjkQ=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.0/src/js.cookie.js" integrity="sha256-ZTMFCvouhTVozUsLgEjtZOlJY+OAiLImV1p8yoBU9OI=" crossorigin="anonymous"></script>

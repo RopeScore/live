@@ -1,0 +1,75 @@
+<div
+  class="table proj"
+  v-if="loaded.config && loaded.participants && loaded.scores && loaded.ranks">
+  <table name="overall" class="mt center">
+    <thead>
+      <tr>
+        <th colspan="3" rowspan="2"></th>
+        <th v-if="hasType('sr')" :colspan="colCount('sr')">Single Rope</th>
+        <th v-if="hasType('dd')" :colspan="colCount('dd')">Double Dutch</th>
+        <th colspan="2" rowspan="2">Overall</th>
+      </tr>
+      <tr>
+        <th colspan="1" v-for="event in sortedEvents()">{{ trim(unabbr(event.abbr)) }}</th>
+      </tr>
+      <tr>
+        <th>{{ (anyMembers ? 'Team ' : '') }}Name</th>
+        <th>Club</th>
+        <th>id</th>
+
+        <template v-for="event in sortedEvents()">
+          <!-- <th v-if="showCol(event.abbr, 'score')">Score</th> -->
+          <th class="green" v-if="showCol(event.abbr, 'rsum')">Rank Sum</th>
+          <th class="red" v-if="showCol(event.abbr, 'rank')">Rank</th>
+        </template>
+
+        <!-- <th>Score</th> -->
+        <th class="green">Rank Sum</th>
+        <th class="red">Rank</th>
+      </tr>
+    </thead>
+    <tbody class="xlg">
+      <tr v-for="score in ranked">
+        <td>{{ (participants[score.uid] ? participants[score.uid].name : '') }}</td>
+        <td>{{ (participants[score.uid] ? participants[score.uid].club : '') }}</td>
+        <td>{{ score.uid }}</td>
+
+        <template v-for="event in sortedEvents()">
+          <!-- <td ng-if="showCol(event.abbr, 'score')">{{ (score.events[event.abbr] ?
+          (typeof score.events[event.abbr].Y !== 'undefined' ? score.events[event.abbr].Y
+          : score.events[event.abbr].A) : '') }}</td> -->
+          <td class="green" v-if="showCol(event.abbr, 'rsum')">{{ (score.events[event.abbr] ? score.events[event.abbr].rsum || '' : '') }}</td>
+          <td class="red" v-if="showCol(event.abbr, 'rank')">{{ (score.events[event.abbr] ? score.events[event.abbr].rank || '' : '') }}</td>
+        </template>
+
+        <!-- <td>{{ (typeof score.score !== 'undefined' ? score.score : '') }}</td> -->
+        <td class="green">{{ (typeof score.rsum !== 'undefined' ? score.rsum : '') }}</td>
+        <td class="red">{{ (typeof score.rank !== 'undefined' ? score.rank : '') }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div v-else="v-else">
+  <div class="pc">
+    <div id="pro-bar" class="pb" :style="{width: percentage}">
+      <div id="pro-lab" class="prl">{{ percentage }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="ad">
+  <div>
+    <img src="https://ropescore.com/static/img/icon.png"/>
+    <div class="adlines">
+      <h1>More on</h1>
+      <h1>ropescore.live</h1>
+    </div>
+  </div>
+  <div>
+    <img src="https://the-tricktionary.com/static/img/icon.png"/>
+    <div class="adlines">
+      <h1>Presented by</h1>
+      <h1>the-Tricktionary.com</h1>
+    </div>
+  </div>
+</div>

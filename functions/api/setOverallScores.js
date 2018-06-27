@@ -52,6 +52,7 @@ module.exports = (req, res, next) => {
   let batch = admin.firestore().batch()
   let colRef = admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('scores').collection('overall')
+  batch.set(colRef.parent, {})
   for (let part of req.body.scores) {
     if (typeof part.uid === 'undefined') continue
     let score = {events: {}}
@@ -62,29 +63,29 @@ module.exports = (req, res, next) => {
     }
 
     if (typeof part.display !== 'undefined') score.display = part.display
-    score.score = Number(part.score) || del()
-    score.rsum = Number(part.rsum) || del()
-    score.rank = Number(part.rank) || del()
+    score.score = (isNaN(Number(part.score)) ? del() : Number(part.score))
+    score.rsum = (isNaN(Number(part.rsum)) ? del() : Number(part.rsum))
+    score.rank = (isNaN(Number(part.rank)) ? del() : Number(part.rank))
 
     for (let evt of part.events) {
       if (typeof evt.abbr === 'undefined') continue
       score.events[evt.abbr] = {}
-      score.events[evt.abbr].T1 = Number(evt.T1) || del()
-      score.events[evt.abbr].T2 = Number(evt.T2) || del()
-      score.events[evt.abbr].T3 = Number(evt.T3) || del()
-      score.events[evt.abbr].T4 = Number(evt.T4) || del()
-      score.events[evt.abbr].T5 = Number(evt.T5) || del()
+      score.events[evt.abbr].T1 = (isNaN(Number(evt.T1)) ? del() : Number(evt.T1))
+      score.events[evt.abbr].T2 = (isNaN(Number(evt.T2)) ? del() : Number(evt.T2))
+      score.events[evt.abbr].T3 = (isNaN(Number(evt.T3)) ? del() : Number(evt.T3))
+      score.events[evt.abbr].T4 = (isNaN(Number(evt.T4)) ? del() : Number(evt.T4))
+      score.events[evt.abbr].T5 = (isNaN(Number(evt.T5)) ? del() : Number(evt.T5))
 
-      score.events[evt.abbr].cScore = Number(evt.cScore) || del()
-      score.events[evt.abbr].dScore = Number(evt.dScore) || del()
+      score.events[evt.abbr].cScore = (isNaN(Number(evt.cScore)) ? del() : Number(evt.cScore))
+      score.events[evt.abbr].dScore = (isNaN(Number(evt.dScore)) ? del() : Number(evt.dScore))
 
-      score.events[evt.abbr].A = Number(evt.A) || del()
-      score.events[evt.abbr].Y = Number(evt.Y) || del()
+      score.events[evt.abbr].A = (isNaN(Number(evt.A)) ? del() : Number(evt.A))
+      score.events[evt.abbr].Y = (isNaN(Number(evt.Y)) ? del() : Number(evt.Y))
 
-      score.events[evt.abbr].cRank = Number(evt.cRank) || del()
-      score.events[evt.abbr].dRank = Number(evt.dRank) || del()
-      score.events[evt.abbr].rsum = Number(evt.rsum) || del()
-      score.events[evt.abbr].rank = Number(evt.rank) || del()
+      score.events[evt.abbr].cRank = (isNaN(Number(evt.cRank)) ? del() : Number(evt.cRank))
+      score.events[evt.abbr].dRank = (isNaN(Number(evt.dRank)) ? del() : Number(evt.dRank))
+      score.events[evt.abbr].rsum = (isNaN(Number(evt.rsum)) ? del() : Number(evt.rsum))
+      score.events[evt.abbr].rank = (isNaN(Number(evt.rank)) ? del() : Number(evt.rank))
     }
     batch.set(colRef.doc('' + part.uid), score, {merge: true})
   }

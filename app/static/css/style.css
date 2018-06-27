@@ -14,16 +14,25 @@ body.nonav {
   position: fixed;
   bottom: 0;
   left: 0;
-  height: 60px;
+  height: 65px;
   width: 100%;
   background: #fff;
   box-shadow: 0 0 2em 0 #fff;
-  text-align: right
+  z-index: 100000;
+  display: flex;
+  justify-content: space-between;
+  padding-right: .5em;
+  padding-left: .5em;
 }
 
 .ad img {
-  width: 1.5em;
+  width: 3.5em;
   border: none;
+}
+
+.adlines {
+  display: inline-block;
+  line-height: .9;
 }
 
 .proj {
@@ -47,7 +56,7 @@ table.select tr td {
   align-items: center;
 }
 
-table.select tr td:hover {
+table.select tr td:not(.noclick):hover {
   background: #ddd;
   cursor: hand;
   cursor: pointer;

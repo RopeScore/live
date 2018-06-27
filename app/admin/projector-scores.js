@@ -80,7 +80,9 @@ firestore.collection(app.fed).doc('config')
 
               app.conns.push(firestore.collection(app.fed).doc('categories').collection(app.globConfig.projector.category).doc('scores').collection(abbrs[i]).where('projector', '==', true)
                 .onSnapshot(function (snapshot) {
-                  snapshot.docChanges.forEach(function (change) {
+                  snapshot.docChanges().forEach(function (change) {
+                    let doc = change.doc
+
                     app.loadCache[abbrs[i] + change.doc.id] = true
                     app.$set(app.scores[abbrs[i]], change.doc.id, change.doc.data())
 
@@ -95,6 +97,7 @@ firestore.collection(app.fed).doc('config')
                     }
 
                     if (change.type === 'removed') {
+                      app.$set(app.scores[abbrs[i]], doc.id, undefined)
                       let idx = app.cycling.findIndex(function (obj) { return obj.uid === change.doc.id && obj.abbr === abbrs[i] })
                       console.log(idx)
                       if (idx >= 0) {

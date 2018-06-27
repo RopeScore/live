@@ -1,0 +1,12 @@
+<div class="table">
+  <table class="select">
+    ${displays.map(disp => `
+    <tr onclick="window.location.pathname = '/admin/${fed}/projector/${disp.path}'">
+      <td>
+        <span class="lg">${disp.name}</span>
+        <i class="fas fa-angle-right fa-lg"></i>
+      </td>
+    </tr>
+    `).join('')}
+  </table>
+</div>
