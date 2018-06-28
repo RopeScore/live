@@ -30,7 +30,7 @@ exports.createLookup = functions.firestore.document('/live/federations/{fed}/cat
   let before = change.before.data()
   let obj = {}
 
-  if (change.after.exists) {
+  if (change.after.exists && data.visible) {
     obj[data.group || 'Ungrouped'] = {}
     obj[data.group || 'Ungrouped'][context.params.cat] = (data.delete ? admin.firestore.FieldValue.delete() : data.name || 'Unnamed')
   } else if (change.before.exists) {

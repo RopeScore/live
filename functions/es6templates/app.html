@@ -3,12 +3,13 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- The above 3 meta tags *must* come first in the head; any other head content
+    must come *after* these tags -->
     <meta name="theme-color" content="#efefef">
     <link rel="manifest" href="/static/manifest.json">
     <link rel="preload" href="/static/img/icon.png" as="image">
     <link rel="icon" href="/static/img/icon.png">
-    <title>RopeScore</title>
+    <title>RopeScore Live</title>
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://ropescore.com/static/css/style.css">
@@ -21,46 +22,66 @@
         <li onclick="goHome()" class="pointer">
           <div>RopeScore Live</div>
         </li>
-        </li>${nav.map(el => `
-        <li id="${el.id}" ${(id===el.id ? 'class="current"' : '')}>
-          <a href="${el.link}">${el.title}</a>
-        </li>`).join('')}
-      </ul>
-    </nav>` : ``)}
-    ${(brand ? `
-    <div class="brand">
-      <h1 class="huge">
-        <img src="/static/img/icon.png" alt="logo" class="logo"/>
-        RopeScore
-      </h1>
-      <h2>A Scoring System for Rope Skipping</h2>
-      <p><a href="https://ropescore.com" target="_blank">Read More</a></p>
-      <p>This page may contain scores that haven't yet been announced as official by the tournament director.
-      Please note that results displayed might change.</p>
-    </div>` : ``)}
-    <div class="content">${template}</div>
-    <footer>
-      &copy; Svante Bengtson 2017-2018 &ndash; <a href="https://ropescore.com/privacy">Privacy and Cookie Policy</a>
-    </footer>
-    ${(!nav ? `<span id="login" class="hidden"></span>` : ``)}
-    <!-- Scripts -->
-    <script src="/__/firebase/5.1.0/firebase-app.js"></script>
-    <script src="/__/firebase/5.1.0/firebase-auth.js"></script>
-    <script src="/__/firebase/5.1.0/firebase-firestore.js"></script>
-    <script src="/__/firebase/init.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js" integrity="sha256-CMMTrj5gGwOAXBeFi7kNokqowkzbeL8ydAJy39ewjkQ=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.0/src/js.cookie.js" integrity="sha256-ZTMFCvouhTVozUsLgEjtZOlJY+OAiLImV1p8yoBU9OI=" crossorigin="anonymous"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js" integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9" crossorigin="anonymous"></script>
-    <script src="https://cdn.ravenjs.com/3.24.0/vue/raven.min.js" crossorigin="anonymous"></script>
-    <script>Raven.config('https://97530d06d7f5493da6e5ebbe96779b06@sentry.io/1048286').install()</script>
-    <script src="/main.js"></script>
-    ${scripts.map(el => `<script src="${el}"></script>`).join('')}
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-121325052-2"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+      </li>${nav.map(el => `
+      <li id="${el.id}" ${(id===el.id ? 'class="current"' : '')}>
+        <a href="${el.link}">${el.title}</a>
+      </li>`).join('')}
+    </ul>
+  </nav>` : ``)} ${(brand ? `
+  <div class="brand">
+    <h1 class="huge">
+      <img src="/static/img/icon.png" alt="logo" class="logo"/>
+      RopeScore
+    </h1>
+    <h2>A Scoring System for Rope Skipping</h2>
+    <p>
+      <a href="https://ropescore.com" target="_blank">Read More</a>
+    </p>
+    <p>This page may contain scores that haven't yet been announced as official by
+      the tournament director. Please note that results displayed might change.</p>
+  </div>` : ``)}
+  <div class="content">${template}</div>
+  <footer>
+    &copy; Svante Bengtson 2017-2018 &ndash;
+    <a href="https://ropescore.com/privacy">Privacy and Cookie Policy</a>
+  </footer>
+  ${(!nav ? `<span id="login" class="hidden"></span>` : ``)}
+  <!-- Scripts -->
+  <script src="/__/firebase/5.1.0/firebase-app.js"></script>
+  <script src="/__/firebase/5.1.0/firebase-auth.js"></script>
+  <script src="/__/firebase/5.1.0/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"
+    integrity="sha256-CMMTrj5gGwOAXBeFi7kNokqowkzbeL8ydAJy39ewjkQ="
+    crossorigin="anonymous"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.0/src/js.cookie.js"
+    integrity="sha256-ZTMFCvouhTVozUsLgEjtZOlJY+OAiLImV1p8yoBU9OI="
+    crossorigin="anonymous"></script>
+  <script
+    defer="defer"
+    src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"
+    integrity="sha384-3LK/3kTpDE/Pkp8gTNp2gR/2gOiwQ6QaO7Td0zV76UFJVhqLl4Vl3KL1We6q6wR9"
+    crossorigin="anonymous"></script>
+  <script
+    src="https://cdn.ravenjs.com/3.24.0/vue/raven.min.js"
+    crossorigin="anonymous"></script>
+  <script>
+    Raven.config('https://97530d06d7f5493da6e5ebbe96779b06@sentry.io/1048286').install()
+  </script>
+  <script src="/main.js"></script>
+  ${scripts.map(el => `<script src="${el}"></script>`).join('')}
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script
+    async="async"
+    src="https://www.googletagmanager.com/gtag/js?id=UA-121325052-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
 
-      gtag('config', 'UA-121325052-2');
-    </script>
+    gtag('config', 'UA-121325052-2');
+  </script>
