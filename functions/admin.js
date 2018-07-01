@@ -27,7 +27,7 @@ const nav = [
 ]
 
 function authMiddleware (req, res, next) {
-  if (typeof req.cookies.ropescore_uid === 'undefined') {
+  if (typeof req.cookies.__session === 'undefined') {
     res.render('app', {
       locals: {
         scripts: [],
@@ -54,7 +54,7 @@ router.get('/', authMiddleware, (req, res) => {
     collections.forEach(collection => {
       promises.push(collection.doc('config').get().then(snapshot => {
         let data = snapshot.data()
-        if (data.admins[req.cookies.ropescore_uid]) {
+        if (data.admins[req.cookies.__session]) {
           federations.push(collection.id)
         }
       }))

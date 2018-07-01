@@ -52,9 +52,9 @@ function signOut () { // eslint-disable-line
 auth.onAuthStateChanged(function (user) {
   if (user) {
     document.getElementById('login').innerHTML = '<a onclick="signOut()">Log Out</a>'
-    Cookies.set('ropescore_uid', user.uid)
+    Cookies.set('__session', user.uid)
   } else {
     document.getElementById('login').innerHTML = '<a href="/login">Log In</a>'
-    Cookies.remove('ropescore_uid')
+    Cookies.remove('__session')
   }
 })

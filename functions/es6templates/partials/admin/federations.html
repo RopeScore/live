@@ -7,6 +7,10 @@
         <i class="fas fa-angle-right fa-lg"></i>
       </td>
     </tr>
-    `).join('')}
+    `).join('')} ${(federations.length === 0 ? `<tr>
+      <td class="noclick">
+        <span class="lg">Not admin in any federation</span>
+      </td>
+    </tr>` : ``)}
   </table>
 </div>

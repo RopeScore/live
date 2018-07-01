@@ -14,6 +14,11 @@
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="https://ropescore.com/static/css/style.css">
     <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    ${(nav ? `<style>
+      ul.topnav.responsive {
+        height: calc(44px + (3em * ${nav.length}));
+      }
+    </style>` : ``)}
   </head>
 
   <body ${(!nav ? `class="nonav"` : ``)}>
@@ -23,9 +28,15 @@
           <div>RopeScore Live</div>
         </li>
       </li>${nav.map(el => `
-      <li id="${el.id}" ${(id===el.id ? 'class="current"' : '')}>
+      <li
+        id="${el.id}"
+        ${(id===el.id ? 'class="current"' : '')}
+        onclick="toggleNav()">
         <a href="${el.link}">${el.title}</a>
       </li>`).join('')}
+      <li class="icon" onclick="toggleNav()">
+        <i class="fas fa-bars"></i>
+      </li>
     </ul>
   </nav>` : ``)} ${(brand ? `
   <div class="brand">

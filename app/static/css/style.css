@@ -167,3 +167,67 @@ input.pretty:hover, input.pretty:focus {
   padding-right: .3em;
   padding-left: .3em;
 }
+
+ul.topnav li.icon {
+  display: none;
+  cursor: pointer;
+  cursor: hand;
+}
+
+ul.topnav li.current {
+  background-color: #bbb;
+}
+
+@media screen and (max-width: 550px) {
+  nav.responsive {
+    height: 45px;
+  }
+  nav ul li {
+    padding: 3px 10px;
+    display: block !important;
+  }
+  .topnav {
+    position: fixed;
+  }
+  ul.topnav li.icon {
+    float: right;
+    display: inline-block;
+    color: #000;
+    padding-top: 5px;
+  }
+  ul.topnav li:first-child {
+    height: 39px;
+    padding: 0;
+  }
+  ul.topnav.responsive {
+    position: fixed;
+    height: calc(44px + (3em * 5))
+  }
+  ul.topnav li.icon {
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+  ul.topnav li:not(.icon):not(:first-child) {
+    width: 100vw;
+    vertical-align: middle;
+    height: 3em;
+    border-radius: 0;
+    margin: 0;
+    padding: 0;
+  }
+  ul.topnav li:not(.icon):not(:first-child):not(:last-child) {
+    border-bottom: 1px solid #bbb;
+  }
+  ul.topnav li:not(.icon):not(:first-child) a {
+    display: block;
+    text-align: left;
+    font-size: 2.6em;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    padding-left: .1em;
+    padding-top: 0;
+    line-height: 1;
+  }
+}
