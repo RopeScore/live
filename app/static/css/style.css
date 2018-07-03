@@ -140,6 +140,11 @@ input.pretty:hover, input.pretty:focus {
   outline: none;
 }
 
+.nobreak {
+  white-space: nowrap;
+  display: inline-block;
+}
+
 /* progress bar */
 
 .pc {
@@ -167,6 +172,8 @@ input.pretty:hover, input.pretty:focus {
   padding-right: .3em;
   padding-left: .3em;
 }
+
+/* nav */
 
 ul.topnav li.icon {
   display: none;
