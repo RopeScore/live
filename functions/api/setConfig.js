@@ -44,10 +44,10 @@ module.exports = (req, res, next) => {
     }
   })
   let config = {
-    name: req.body.name || 'Unnamed',
     group: req.body.group || del(),
     events: events
   }
+  if (typeof req.body.name !== 'undefined') config.name = req.body.name
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories').set({})
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('config').set(config, {mergeFields: ['events', 'name', 'group']})
