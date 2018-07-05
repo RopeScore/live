@@ -6,8 +6,8 @@ const del = admin.firestore.FieldValue.delete
  * @api {post} /:fed/:cat Set Category config
  * @apiName setConfig
  * @apiGroup Categories
- * @apiPermission federation
- * @apiVersion 1.3.0
+ * @apiPermission write
+ * @apiVersion 1.4.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
  *
@@ -29,6 +29,8 @@ const del = admin.firestore.FieldValue.delete
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')
+  if (!req.authentication.permissions.write) return next({statusCode: 401, error: `You do not have write permissions for ${req.params.fed}`})
+
   console.log(req.body)
   let events = {}
   req.body.events.forEach(obj => {
@@ -59,6 +61,32 @@ module.exports = (req, res, next) => {
       next({statusCode: 500, error: 'Could not update category config'})
     })
 }
+
+/**
+ * @api {post} /:fed/:cat Set Category config
+ * @apiName setConfig
+ * @apiGroup Categories
+ * @apiPermission federation
+ * @apiVersion 1.3.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiParam {String} name The new name of the Category
+ * @apiParam {String} [group] The category group the category is in
+ * @apiParam {Object[]} events new Array of enabled events
+ * @apiParam {String} events.abbr The "standard" abbreviation of the event
+ * @apiParam {String} events.name The preferred name of the event, if not avilable the abbr will be used
+ * @apiParam {Boolean} events.speed if the event is a speed event or not
+ * @apiParam {Object} events.cols columns to show
+ * @apiParam {String[]} events.cols.overall columns to show in the overall table
+ * @apiParam {String[]} events.cols.event columns to show in the event's table
+ *
+ * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
+ */
 
 /**
  * @api {post} /:fed/:cat Set Category config

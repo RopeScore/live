@@ -4,8 +4,8 @@ const admin = require('firebase-admin')
  * @api {get} /:fed/:cat/scores/overall Get all stored overall scores
  * @apiName getOverallScores
  * @apiGroup Scores
- * @apiPermission federation
- * @apiVersion 1.0.0
+ * @apiPermission read
+ * @apiVersion 1.4.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
  *
@@ -44,6 +44,8 @@ const admin = require('firebase-admin')
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')
+  if (!req.authentication.permissions.read) return next({statusCode: 401, error: `You do not have read permissions for ${req.params.fed}`})
+
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('scores').collection('overall').get()
     .then(docs => {
@@ -62,3 +64,46 @@ module.exports = (req, res, next) => {
       res.json({scores})
     })
 }
+
+/**
+ * @api {get} /:fed/:cat/scores/overall Get all stored overall scores
+ * @apiName getOverallScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ * @apiVersion 1.0.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiSuccess {Object[]} scores Array of objects with scores
+ * @apiSuccess {String} scores.uid id of the participant
+ * @apiSuccess {Boolean} [scores.display] If the score is publicly displayed
+ *
+ * @apiSuccess {Number} [scores.score] sum of all events scores
+ * @apiSuccess {Number} [scores.rsum] sum of all events ranks
+ * @apiSuccess {Number} [scores.rank] Overall rank
+ *
+ * @apiSuccess {Object[]} scores.events Array of objects with scores per event
+ * @apiSuccess {Number} scores.event.abbr the abbr event the score applies to
+ * @apiSuccess {Number} [scores.event.T1] Diff score (freestyles)
+ * @apiSuccess {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiSuccess {Number} [scores.event.T2] Pres Score (freestyles)
+ * @apiSuccess {Number} [scores.event.T3] RQ score (freestyles)
+ * @apiSuccess {Number} [scores.event.T4] T2 + T3 (freestyles)
+ * @apiSuccess {Number} [scores.event.T5] Deduc score (freestyles)
+ *
+ * @apiSuccess {Number} [scores.event.cScore] T4 - .5*T5 (freestyles)
+ * @apiSuccess {Number} [scores.event.dScore] T5 - .5*T5 (freestyles)
+ *
+ * @apiSuccess {Number} [scores.event.A] (T1 + T4 - T5) * fac (freestyles)
+ * @apiSuccess {Number} [scores.event.Y] (T - W) * fac (speed)
+ *
+ * @apiSuccess {Number} [scores.event.cRank] rank for cScore (freestyle)
+ * @apiSuccess {Number} [scores.event.dRank] rank for dScore (freestyle)
+ * @apiSuccess {Number} [scores.event.rsum] cRank + dRank (freestyle)
+ * @apiSuccess {Number} [scores.event.rank] total rank (of Y for speed, of rsum for freestyle)
+ *
+ * @apiError {String} message error message
+ */

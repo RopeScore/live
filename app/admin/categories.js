@@ -29,14 +29,14 @@ var app = new Vue({
     },
     copy: function (id) {
       var self = this
-      var cache = self.show.writeKey
-      this.show.writeKey = true
+      var cache = self.show[id]
+      this.show[id] = true
       setTimeout(function () {
         var copyText = document.getElementById(id)
         copyText.select()
         document.execCommand('Copy')
-        self.show.writeKey = cache
-        console.log('copied')
+        self.show[id] = cache
+        console.log('copied', id)
       })
     },
     newAdmin: function () {

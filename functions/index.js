@@ -67,12 +67,13 @@ exports.createAdminLookup = functions.firestore.document('/live/federations/{fed
   return admin.firestore().collection('live').doc('federations').collection(context.params.fed).doc('categoriesLookupAdmin').set(obj, {merge: true})
 })
 
-exports.genKey = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
+exports.genKeys = functions.firestore.document('live/federations/{fed}/config').onWrite((change, context) => {
   let data = change.after.data()
 
   if (data.genKey === true) {
     let obj = {
       apikey: crypto.randomBytes(20).toString('hex'),
+      apireadkey: crypto.randomBytes(20).toString('hex'),
       genKey: false
     }
 

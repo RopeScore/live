@@ -6,8 +6,8 @@ const del = admin.firestore.FieldValue.delete
  * @api {post} /:fed/:cat/scores/:event Update multiple scores for an event
  * @apiName setScores
  * @apiGroup Scores
- * @apiPermission federation
- * @apiVersion 1.2.0
+ * @apiPermission write
+ * @apiVersion 1.4.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
  *
@@ -47,6 +47,8 @@ const del = admin.firestore.FieldValue.delete
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')
+  if (!req.authentication.permissions.write) return next({statusCode: 401, error: `You do not have write permissions for ${req.params.fed}`})
+
   console.log(req.body)
   let batch = admin.firestore().batch()
   let colRef = admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
@@ -61,7 +63,7 @@ module.exports = (req, res, next) => {
       continue
     }
 
-    if (typeof part.display !== 'undefined') score.display = part.display
+    if (typeof part.display !== 'undefined') score.display = Boolean(part.display)
     score.dns = Boolean(part.dns) || del()
 
     score.T1 = (isNaN(Number(part.T1)) ? del() : Number(part.T1))
@@ -97,6 +99,50 @@ module.exports = (req, res, next) => {
       next({statusCode: 500, error: `Could not update ${req.params.event} scores`})
     })
 }
+
+/**
+ * @api {post} /:fed/:cat/scores/:event Update multiple scores for an event
+ * @apiName setScores
+ * @apiGroup Scores
+ * @apiPermission federation
+ * @apiVersion 1.2.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ * @apiParam {String} event event to get scores for
+ *
+ * @apiParam {Object[]} scores Array of objects with scores
+ * @apiParam {String} scores.uid id of the participant
+ * @apiParam {Boolean} [scores.display] If the score is publicly displayed
+ * @apiParam {Boolean} [scores.dns] "<b>D</b>id <b>N</b>ot <b>S</b>kip", only true if the skipper explicitly didn't participate in the event, not true if the participant just hasn't skipped <em>yet</em>
+ * @apiParam {Boolean} [scores.delete] Removes the score, overrides all other parms
+ *
+ * @apiParam {Number} [scores.T1] Diff score (freestyle)
+ * @apiParam {Number} [scores.T2] Pres Score (freestyle)
+ * @apiParam {Number} [scores.T2] Pres Score (freestyle)
+ * @apiParam {Number} [scores.T3] RQ score (freestyle)
+ * @apiParam {Number} [scores.T4] T2 + T3 (freestyle)
+ * @apiParam {Number} [scores.T5] Deduc score (freestyle)
+ *
+ * @apiParam {Number} [scores.cScore] T4 - (T5 * .5) (freestyle)
+ * @apiParam {Number} [scores.dScore] T5 - (T5 * .5) (freestyle)
+ *
+ * @apiParam {Number} [scores.PreA] T1 + T4 - T5 (freestyle)
+ * @apiParam {Number} [scores.PreY] T - W (speed)
+ *
+ * @apiParam {Number} [scores.A] (T1 + T4 - T5) * fac (freestyle)
+ * @apiParam {Number} [scores.Y] (T - W) * fac (speed)
+ *
+ * @apiParam {Number} [scores.cRank] rank for cScore (freestyle)
+ * @apiParam {Number} [scores.dRank] rank for dScore (freestyle)
+ * @apiParam {Number} [scores.rsum] cRank + dRank (freestyle)
+ * @apiParam {Number} [scores.rank] total rank (of Y for speed, of rsum for freestyle)
+ *
+ * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
+ */
 
 /**
  * @api {post} /:fed/:cat/scores/:event Update multiple scores for an event

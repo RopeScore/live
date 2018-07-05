@@ -4,8 +4,8 @@ const admin = require('firebase-admin')
  * @api {post} /:fed/:cat/participants Bulk add Category Participants
  * @apiName setParticipants
  * @apiGroup Participants
- * @apiPermission federation
- * @apiVersion 1.1.0
+ * @apiPermission write
+ * @apiVersion 1.4.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
  *
@@ -23,6 +23,8 @@ const admin = require('firebase-admin')
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')
+  if (!req.authentication.permissions.write) return next({statusCode: 401, error: `You do not have write permissions for ${req.params.fed}`})
+
   console.log(req.body)
   let participants = {}
 
@@ -45,6 +47,28 @@ module.exports = (req, res, next) => {
       next({statusCode: 500, error: 'Could not update participants'})
     })
 }
+
+/**
+ * @api {post} /:fed/:cat/participants Bulk add Category Participants
+ * @apiName setParticipants
+ * @apiGroup Participants
+ * @apiPermission federation
+ * @apiVersion 1.1.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiParam {Object[]} participants An array of participants
+ * @apiParam {String} participants.uid UID of the participant
+ * @apiParam {String} [participants.name] Name of the participant
+ * @apiParam {String} [participants.club] The Club of the participant
+ * @apiParam {String} [participants.members] If the participant is a team this can be used to specify team members
+ *
+ * @apiSuccess {String} message success message
+ * @apiError   {String} message error message
+ */
 
 /**
  * @api {post} /:fed/:cat/participants Bulk add Category Participants

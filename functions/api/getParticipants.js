@@ -4,8 +4,8 @@ const admin = require('firebase-admin')
  * @api {get} /:fed/:cat/participants View Category Participants
  * @apiName getParticipants
  * @apiGroup Participants
- * @apiPermission federation
- * @apiVersion 1.1.0
+ * @apiPermission read
+ * @apiVersion 1.4.0
  *
  * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
  *
@@ -22,6 +22,8 @@ const admin = require('firebase-admin')
  */
 module.exports = (req, res, next) => {
   res.set('Cache-Control', 'private')
+  if (!req.authentication.permissions.read) return next({statusCode: 401, error: `You do not have read permissions for ${req.params.fed}`})
+
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('categories')
     .collection(req.params.cat).doc('participants').get()
     .then(doc => {
@@ -44,6 +46,27 @@ module.exports = (req, res, next) => {
       }
     })
 }
+
+/**
+ * @api {get} /:fed/:cat/participants View Category Participants
+ * @apiName getParticipants
+ * @apiGroup Participants
+ * @apiPermission federation
+ * @apiVersion 1.1.0
+ *
+ * @apiHeader {String} Authorization Bearer with api key (<code>Bearer &lt;apikey&gt;</code>)
+ *
+ * @apiParam {String} fed federation
+ * @apiParam {String} cat id of the category
+ *
+ * @apiSuccess {Object[]} participants An array of participants
+ * @apiSuccess {String} participants.uid UID of the participant
+ * @apiSuccess {String} participants.name Name of the participant
+ * @apiSuccess {String} participants.club The Club of the participant
+ * @apiSuccess {String} participants.members The Club of the participant
+ *
+ * @apiError {String} message error message
+ */
 
 /**
  * @api {get} /:fed/:cat/participants View Category Participants

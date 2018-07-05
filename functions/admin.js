@@ -31,7 +31,7 @@ function authMiddleware (req, res, next) {
     res.render('app', {
       locals: {
         scripts: [],
-        id: 'dash',
+        id: 'error',
         title: '',
         nav,
         brand: true,

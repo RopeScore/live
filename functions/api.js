@@ -23,7 +23,7 @@ function authMiddleware (req, res, next) {
   console.log(req.params.fed)
 
   if (typeof req.params.fed === 'undefined') {
-    next({statusCode: 400, error: 'Only Avilable'})
+    next({statusCode: 400, error: 'Federation has to be specified'})
   }
 
   admin.firestore().collection('live').doc('federations').collection(req.params.fed).doc('config').get()
@@ -31,13 +31,23 @@ function authMiddleware (req, res, next) {
       if (doc.exists) {
         let data = doc.data()
 
-        req.authenticated = req.authentication === data.apikey
+        if (req.authentication === data.apikey) {
+          req.authenticated = {
+            read: true,
+            write: true
+          }
+        } else if (req.authentication === data.apireadkey) {
+          req.authenticated = {
+            read: true,
+            write: false
+          }
+        }
 
         // provide the result of the authentication; generally some kind of user
         // object on success and some kind of error as to why authentication failed
         // otherwise.
         if (req.authenticated) {
-          req.authentication = { user: 'bob' }
+          req.authentication = { federation: req.params.fed, permissions: req.authenticated }
         } else {
           req.authentication = { error: 'INVALID_API_KEY' }
         }
