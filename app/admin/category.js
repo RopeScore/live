@@ -72,9 +72,8 @@ var app = new Vue({
       var val = true
       if (force) {
         val = true
-      } else if (abbr === 'overall') {
-        val = !this.scores.overall[uid].display
       } else {
+        if (this.scores[abbr][uid].dns) return false
         val = !this.scores[abbr][uid].display
       }
       firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({display: val})
