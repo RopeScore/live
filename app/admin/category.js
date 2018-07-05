@@ -69,13 +69,14 @@ var app = new Vue({
       return this.config.events[abbr].speed || false
     },
     togglePub: function (abbr, uid, force) {
-      var val = true
+      let val = true
       if (force) {
         val = true
       } else {
-        if (this.scores[abbr][uid].dns) return false
         val = !this.scores[abbr][uid].display
       }
+      if (this.scores[abbr][uid].dns) val = false
+
       firestore.collection(app.fed).doc('categories').collection(app.cat).doc('scores').collection(abbr).doc(uid).update({display: val})
     },
     delCat: function () {
