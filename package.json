@@ -11,11 +11,15 @@
   "dependencies": {
     "firebase-tools": "*",
     "standard": "*",
-    "apidoc": "*"
+    "apidoc": "*",
+    "snyk": "^1.151.1"
   },
   "devDependencies": {},
   "scripts": {
     "apidoc": "apidoc -i functions/ -e functions/node_modules/ -o app/apidoc/",
-    "deploy": "firebase deploy --project ropescore"
-  }
+    "deploy": "firebase deploy --project ropescore",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
+  },
+  "snyk": true
 }
