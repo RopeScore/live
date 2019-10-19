@@ -18,7 +18,7 @@
     "express": "^4.15.3",
     "express-authentication": "^0.3.2",
     "express-es6-template-engine": "^2.0.1",
-    "firebase-admin": "^5.12.1",
+    "firebase-admin": "^8.0.0",
     "firebase-functions": "^1.0.1",
     "raven": "^2.4.2",
     "standard": "^11.0.1"
