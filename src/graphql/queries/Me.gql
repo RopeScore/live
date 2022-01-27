@@ -1,0 +1,10 @@
+query Me {
+  me {
+    ... on Device {
+      id
+    }
+    ... on User {
+      id
+    }
+  }
+}

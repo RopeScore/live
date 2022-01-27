@@ -1,0 +1,13 @@
+fragment BaseScoresheet on Scoresheet {
+  id
+
+  rulesId
+
+  createdAt
+  updatedAt
+  openedAt
+  completedAt
+  submittedAt
+
+  options
+}

@@ -1,21 +1,52 @@
 {
-  "name": "RopeScore-Live",
-  "productName": "RopeScore-Live",
+  "name": "@ropescore/live",
+  "version": "0.0.0",
+  "private": true,
+  "author": "Svante Bengtson <svante@swantzter.se> (https://swantzter.se)",
+  "license": "MIT",
   "homepage": "https://ropescore.live",
-  "description": "A Live Display website for RopeScore",
-  "author": "Svante Bengtson",
-  "repository": "svbeon/RopeScore-Live",
-  "bugs": {
-    "email": "contact@ropescore.com"
+  "repository": "https://github.com/RopeScore/live",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run codegen && vite build",
+    "serve": "vite preview",
+    "lint": "eslint . --ignore-path .gitignore --ext .ts,.vue,.js",
+    "lint:fix": "npm run lint -- --fix",
+    "typecheck": "vue-tsc --noEmit",
+    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen:watch": "npm run codegen -- --watch"
   },
   "dependencies": {
-    "firebase-tools": "*",
-    "standard": "*",
-    "apidoc": "*"
+    "@apollo/client": "^3.4.15",
+    "@ropescore/components": "^1.0.4",
+    "@sentry/tracing": "^6.13.2",
+    "@sentry/vue": "^6.13.2",
+    "@vue/apollo-composable": "^4.0.0-alpha.15",
+    "@vueuse/core": "^7.5.5",
+    "graphql": "^15.6.0",
+    "vue": "^3.2.19",
+    "vue-router": "^4.0.11"
   },
-  "devDependencies": {},
-  "scripts": {
-    "apidoc": "apidoc -i functions/ -e functions/node_modules/ -o app/apidoc/",
-    "deploy": "firebase deploy --project ropescore"
+  "devDependencies": {
+    "@graphql-codegen/cli": "^2.2.0",
+    "@graphql-codegen/introspection": "^2.1.0",
+    "@graphql-codegen/typescript": "^2.2.2",
+    "@graphql-codegen/typescript-operations": "^2.1.4",
+    "@graphql-codegen/typescript-vue-apollo": "^3.1.4",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "@vitejs/plugin-vue": "^1.9.2",
+    "@vue/compiler-sfc": "^3.2.19",
+    "eslint": "^7.32.0",
+    "eslint-config-standard-with-typescript": "^21.0.1",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-vue": "^7.18.0",
+    "typescript": "^4.4.3",
+    "vite": "^2.5.10",
+    "vite-plugin-pwa": "^0.11.2",
+    "vite-plugin-windicss": "^1.4.8",
+    "vue-tsc": "^0.3.0"
   }
 }
