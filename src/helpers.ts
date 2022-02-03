@@ -61,10 +61,10 @@ export function getCompetitionEventType (cEvtDef: string) {
 
 export function processMark (mark: Mark | StreamMark, tally: ScoreTally, marks: Map<number, Mark | StreamMark>) {
   // we'va already processed this mark, abort
-  if (marks.has(mark.sequence)) return
+  if (marks.has(mark.sequence + (tally.offset ?? 0))) return
 
   if (isUndoMark(mark)) {
-    const undoneMark = marks.get(mark.target)
+    const undoneMark = marks.get(mark.target + (tally.offset ?? 0))
     if (!undoneMark) throw new Error('Undone mark missing')
     if (!isUndoMark(undoneMark)) {
       tally[undoneMark.schema] = (tally[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
@@ -72,10 +72,11 @@ export function processMark (mark: Mark | StreamMark, tally: ScoreTally, marks: 
   } else if (mark.schema === 'clear') {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     for (const prop of Object.keys(tally)) delete tally[prop]
+    tally.offset = mark.sequence
   } else {
     tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
   }
 
   // and finally mark that we've processed this mark
-  marks.set(mark.sequence, mark)
+  marks.set(mark.sequence + (tally.offset ?? 0), mark)
 }
