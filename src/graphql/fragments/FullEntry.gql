@@ -10,5 +10,7 @@ fragment FullEntry on Entry {
   competitionEventLookupCode
 
   didNotSkipAt
+
   heat
+  pool
 }

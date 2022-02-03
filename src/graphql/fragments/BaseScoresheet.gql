@@ -2,6 +2,8 @@ fragment BaseScoresheet on Scoresheet {
   id
 
   rulesId
+  judgeId
+  judgeType
 
   createdAt
   updatedAt
@@ -10,4 +12,5 @@ fragment BaseScoresheet on Scoresheet {
   submittedAt
 
   options
+  marks
 }

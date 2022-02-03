@@ -5,6 +5,6 @@ export default createRouter({
   routes: [
     { path: '/', component: async () => import('./views/Home.vue') },
     { path: '/groups', component: async () => import('./views/Groups.vue') },
-    { path: '/groups/:id', component: async () => import('./views/Group.vue') }
+    { path: '/groups/:groupId', component: async () => import('./views/Group.vue'), meta: { fullscreen: true } }
   ]
 })

@@ -24,6 +24,7 @@
     "@vue/apollo-composable": "^4.0.0-alpha.15",
     "@vueuse/core": "^7.5.5",
     "graphql": "^15.6.0",
+    "graphql-ws": "^5.5.5",
     "vue": "^3.2.19",
     "vue-router": "^4.0.11"
   },
@@ -43,7 +44,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-vue": "^7.18.0",
-    "typescript": "^4.4.3",
+    "typescript": "4.4",
     "vite": "^2.5.10",
     "vite-plugin-pwa": "^0.11.2",
     "vite-plugin-windicss": "^1.4.8",

@@ -1,0 +1,3 @@
+subscription StreamMarkAdded ($scoresheetIds: [ID!]) {
+  streamMarkAdded(scoresheetIds: $scoresheetIds)
+}

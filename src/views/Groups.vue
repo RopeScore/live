@@ -4,29 +4,23 @@
       v-if="auth.loading.value"
       class="flex justify-center items-center text-2xl"
     >
-      Connecting
-    </div>
-    <div
-      v-else
-      class="flex justify-center items-center text-2xl font-bold"
-    >
-      {{ auth.user.value?.id }}
+      Loading
     </div>
   </nav>
 
-  <div v-if="auth.token.value" class="flex flex-col gap-4 px-2">
+  <div v-if="auth.token.value" class="flex flex-col gap-4">
     <router-link
       v-for="group of groups"
       :key="group.id"
       :to="`/groups/${group.id}`"
-      class="bg-green-500 hover:bg-green-600 rounded text-white px-4 py-6 cursor-pointer"
+      class="bg-gray-100 hover:bg-gray-300 rounded px-2 py-1 min-h-[4rem] flex flex-col justify-center"
     >
-      {{ group.name }}
+      <span class="font-semibold">{{ group.name }}</span>
     </router-link>
   </div>
 
-  <div v-if="!auth.token.value" class="px-2">
-    <h1 class="font-semibold text-2xl mt-4 px-2">
+  <div v-if="!auth.token.value">
+    <h1 class="font-semibold text-2xl mt-4">
       Register
     </h1>
     <!-- <text-field v-model="newName" label="System name" /> -->
@@ -50,7 +44,19 @@
       >https://ropescore.com/privacy</a>
     </div>
 
-    <text-button @click="auth.register()">Register</text-button>
+    <text-button @click="auth.register()">
+      Register
+    </text-button>
+  </div>
+
+  <div v-else class="mt-4">
+    <p>
+      System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.user.value?.id }}</code>
+    </p>
+    <p>
+      You need to add this system as a viewer of the group in RopeScore core,
+      do this by entering the ID shown above. It is case sensitive.
+    </p>
   </div>
 
   <div
