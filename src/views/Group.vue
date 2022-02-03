@@ -11,7 +11,11 @@
 
     <main
       class="grid"
-      :class="`grid-cols-${cols}`"
+      :class="{
+        'grid-cols-3': cols === 3,
+        'grid-cols-2': cols === 2,
+        'grid-cols-1': cols === 1
+      }"
     >
       <template
         v-for="entry of entries"
