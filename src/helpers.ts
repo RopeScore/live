@@ -70,9 +70,10 @@ export function processMark (mark: Mark | StreamMark, tally: ScoreTally, marks: 
       tally[undoneMark.schema] = (tally[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
   } else if (mark.schema === 'clear') {
+    const offset = tally.offset ?? 0
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     for (const prop of Object.keys(tally)) delete tally[prop]
-    tally.offset = mark.sequence
+    tally.offset = mark.sequence + offset
   } else {
     tally[mark.schema] = (tally[mark.schema] ?? 0) + (mark.value ?? 1)
   }
