@@ -87,7 +87,8 @@ const entries = useResult(entriesQuery.result, [], res => {
 
 const cols = computed(() => {
   const pools = entries.value.length
-  if (pools % 3 === 0 && pools > 3) return 3
+  if (pools === 3) return 2
+  else if (pools % 3 === 0) return 3
   else if (pools % 2 === 0) return 2
   else if (pools === 1) return 1
   else return 3
