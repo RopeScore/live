@@ -12,10 +12,9 @@
       {{ entry.pool }}
     </div>
     <div
-      class="absolute top-0 right-2 text-gray-300"
+      class="font-bold text-4xl absolute top-0 right-2 max-w-[66%] overflow-x-hidden .custom-wrap"
     >
-      {{ entry.id }}
-      <br>{{ scoresheet?.id }}
+      {{ entry.participantName }}
     </div>
 
     <div class="font-semibold text-20xl tabular-nums w-full text-center font-mono">
@@ -44,3 +43,9 @@ defineProps({
   }
 })
 </script>
+
+<style scoped>
+.custom-wrap {
+  text-overflow: ellipsis;
+}
+</style>

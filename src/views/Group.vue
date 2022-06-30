@@ -29,6 +29,12 @@
         />
         <unsupported-competition-event v-else :entry="entry" />
       </template>
+
+      <div v-show="entries.length === 0 && !entriesQuery.loading" class="bg-gray-300 flex items-center justify-center relative">
+        <p class="text-center">
+          Empty heat loaded
+        </p>
+      </div>
     </main>
   </div>
   <template v-else-if="auth.loading.value">
@@ -87,7 +93,8 @@ const entries = useResult(entriesQuery.result, [], res => {
 
 const cols = computed(() => {
   const pools = entries.value.length
-  if (pools === 3) return 2
+  if (pools === 0) return 1
+  else if (pools === 3) return 2
   else if (pools % 3 === 0) return 3
   else if (pools % 2 === 0) return 2
   else if (pools === 1) return 1
