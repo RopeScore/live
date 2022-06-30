@@ -49,7 +49,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, reactive, watch } from 'vue'
-import { BaseScoresheetFragment, useHeatEntriesQuery, useStreamMarkAddedSubscription } from '../graphql/generated'
+import { BaseScoresheetFragment, useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription } from '../graphql/generated'
 import { useRoute } from 'vue-router'
 import { useResult } from '@vue/apollo-composable'
 import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally, StreamMark } from '../helpers'
@@ -66,7 +66,7 @@ const heat = ref<number>(1)
 
 const selectedHeat = ref<number>(heat.value)
 
-const entriesQuery = useHeatEntriesQuery({
+const entriesQuery = useHeatEntriesScoresheetsQuery({
   groupId: route.params.groupId as string,
   heat: selectedHeat as unknown as number
 }, {
