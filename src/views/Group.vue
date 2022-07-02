@@ -30,7 +30,7 @@
         <unsupported-competition-event v-else :entry="entry" />
       </template>
 
-      <div v-show="entries.length === 0 && !entriesQuery.loading" class="bg-gray-300 flex items-center justify-center relative">
+      <div v-show="entries.length === 0 && !entriesQuery.loading.value" class="bg-gray-300 flex items-center justify-center relative">
         <p class="text-center">
           Empty heat loaded
         </p>
