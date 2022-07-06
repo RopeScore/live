@@ -1,6 +1,6 @@
-import { provideApolloClient, useResult } from '@vue/apollo-composable'
-import { useLocalStorage } from '@vueuse/core'
-import { watch } from 'vue'
+import { provideApolloClient } from '@vue/apollo-composable'
+import { MaybeRef, useLocalStorage } from '@vueuse/core'
+import { watch, computed } from 'vue'
 import { apolloClient } from '../apollo'
 import { useMeQuery, useRegisterUserMutation } from '../graphql/generated'
 
@@ -15,7 +15,7 @@ export function useAuth () {
     if (pT === null && nT !== null) return refetch()
   })
 
-  async function register () {
+  async function register ({ name }: { name: MaybeRef<string> }) {
     const res = await mutation.mutate()
     if (res?.data?.registerUser) {
       token.value = res.data.registerUser
@@ -28,8 +28,8 @@ export function useAuth () {
     await apolloClient.resetStore()
   }
 
-  const user = useResult(result, null, res => res?.me)
-  const isLoggedIn = useResult(result, false, res => !!res?.me)
+  const user = computed(() => result.value?.me)
+  const isLoggedIn = computed(() => !!result.value?.me)
 
   return {
     token,

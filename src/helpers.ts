@@ -1,4 +1,6 @@
-import { BaseScoresheetFragment } from './graphql/generated'
+import { ScoresheetBaseFragment } from './graphql/generated'
+
+export type CompetitionEvent = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}`
 
 export type ScoreTally = Partial<Record<string, number>>
 
@@ -23,6 +25,13 @@ export type StreamMark = Mark & {
 }
 
 /**
+ * Gets the 4-character abbreviation of a competition event definition
+ */
+export function getAbbr (cEvtDef: CompetitionEvent) {
+  return cEvtDef.split('.')[4]
+}
+
+/**
  * Filters an array of scoresheets returning only scoresheets for the specified
  * competition event and only the newest scoresheet for each judge assignment.
  *
@@ -30,11 +39,11 @@ export type StreamMark = Mark & {
  * timestamp 1 and a TallyScoresheet at timestamp 5, only the TallyScoresheet
  * will be left
  */
-export function filterLatestScoresheets (scoresheets: BaseScoresheetFragment[]) {
+export function filterLatestScoresheets (scoresheets: ScoresheetBaseFragment[]) {
   return [...scoresheets]
     .sort((a, b) => b.createdAt - a.createdAt)
     .filter((scsh, idx, arr) =>
-      idx === arr.findIndex(s => s.judgeId === scsh.judgeId && s.judgeType === scsh.judgeType)
+      idx === arr.findIndex(s => s.judge.id === scsh.judge.id && s.judgeType === scsh.judgeType)
     )
 }
 
