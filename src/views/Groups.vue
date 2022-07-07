@@ -9,21 +9,34 @@
   </nav>
 
   <div v-if="auth.token.value" class="flex flex-col gap-4">
-    <router-link
+    <div
       v-for="group of groups"
       :key="group.id"
-      :to="`/groups/${group.id}`"
-      class="bg-gray-100 hover:bg-gray-300 rounded px-2 py-1 min-h-[4rem] flex flex-col justify-center"
+      class="border rounded p-2"
     >
-      <span class="font-semibold">{{ group.name }}</span>
-    </router-link>
+      <div>
+        <span class="font-semibold">{{ group.name }}</span>
+      </div>
+
+      <menu class="p-0 m-0 flex justify-end">
+        <button-link :to="`/groups/${group.id}/live`">
+          Live
+        </button-link>
+        <button-link :to="`/groups/${group.id}/on-floor`">
+          On Floor
+        </button-link>
+        <button-link :to="`/groups/${group.id}/next-up`">
+          Next Up
+        </button-link>
+      </menu>
+    </div>
   </div>
 
   <div v-if="!auth.token.value">
     <h1 class="font-semibold text-2xl mt-4">
       Register
     </h1>
-    <!-- <text-field v-model="newName" label="System name" /> -->
+    <text-field v-model="newName" label="System name" />
 
     <div
       class="border-l border-l-4 py-2 px-4 mt-2 bg-blue-100 border-l-blue-300"
@@ -44,7 +57,7 @@
       >https://ropescore.com/privacy</a>
     </div>
 
-    <text-button @click="auth.register()">
+    <text-button @click="auth.register({ name: newName })">
       Register
     </text-button>
   </div>
@@ -75,18 +88,17 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useAuth } from '../hooks/auth'
 import { useGroupsQuery } from '../graphql/generated'
-import { useResult } from '@vue/apollo-composable'
 
-import { TextButton } from '@ropescore/components'
+import { TextButton, ButtonLink, TextField } from '@ropescore/components'
 
 const auth = useAuth()
 
-// const newName = ref('')
+const newName = ref('')
 
 const { result, loading, error } = useGroupsQuery(() => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isLoggedIn.value }))
 
-const groups = useResult(result, [], res => res?.groups)
+const groups = computed(() => result.value?.groups)
 </script>

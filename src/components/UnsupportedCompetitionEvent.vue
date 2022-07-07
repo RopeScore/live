@@ -10,7 +10,7 @@
 
     <p class="text-center">
       Unsupported Competition Event:
-      <code class="block">{{ entry.competitionEventLookupCode }}</code>
+      <code class="block">{{ entry.competitionEventId }}</code>
       cannot display live score
     </p>
   </div>
@@ -18,11 +18,11 @@
 
 <script lang="ts" setup>
 import { PropType } from 'vue'
-import { FullEntryFragment } from '../graphql/generated'
+import { EntryFragment } from '../graphql/generated'
 
 defineProps({
   entry: {
-    type: Object as PropType<FullEntryFragment>,
+    type: Object as PropType<EntryFragment>,
     required: true
   }
 })

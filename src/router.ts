@@ -5,7 +5,8 @@ export default createRouter({
   routes: [
     { path: '/', component: async () => import('./views/Home.vue') },
     { path: '/groups', component: async () => import('./views/Groups.vue') },
-    { path: '/groups/:groupId', component: async () => import('./views/Group.vue'), meta: { fullscreen: true } },
-    { path: '/groups/:groupId/on-floor', component: async () => import('./views/OnFloor.vue'), meta: { fullscreen: true } }
+    { path: '/groups/:groupId/live', component: async () => import('./views/Live.vue'), meta: { fullscreen: true } },
+    { path: '/groups/:groupId/on-floor', component: async () => import('./views/OnFloor.vue'), meta: { fullscreen: true } },
+    { path: '/groups/:groupId/next-up', component: async () => import('./views/NextUp.vue'), meta: { fullscreen: true } }
   ]
 })

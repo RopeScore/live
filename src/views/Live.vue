@@ -1,14 +1,5 @@
 <template>
-  <div v-if="auth.isLoggedIn.value" class="grid grid-rows-[3.5rem,auto]">
-    <header class="bg-gray-100 flex justify-between items-center px-4 sticky top-0 z-1000">
-      <div class="flex items-baseline mb-2">
-        <text-field type="number" label="Heat" :model-value="heat" @update:model-value="heat = $event" />
-        <text-button :loading="entriesQuery.loading.value" @click="loadHeat(heat)">
-          Load
-        </text-button>
-      </div>
-    </header>
-
+  <div v-if="auth.isLoggedIn.value" class="grid grid-rows-1">
     <main
       class="grid"
       :class="{
@@ -22,7 +13,7 @@
         :key="entry.id"
       >
         <speed-live-score
-          v-if="getCompetitionEventType(entry.competitionEventLookupCode) === CompetitionEventType.Speed"
+          v-if="getCompetitionEventType(entry.competitionEventId) === CompetitionEventType.Speed"
           :entry="entry"
           :scoresheet="primaryScoresheets[entry.id]"
           :tally="tallies[primaryScoresheets[entry.id]?.id]?.tally"
@@ -36,6 +27,10 @@
         </p>
       </div>
     </main>
+
+    <div class="fixed bottom-2 right-2">
+      {{ currentHeat }}
+    </div>
   </div>
   <template v-else-if="auth.loading.value">
     Connecting
@@ -48,42 +43,39 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, reactive, watch } from 'vue'
-import { BaseScoresheetFragment, useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription } from '../graphql/generated'
+import { computed, reactive, watch } from 'vue'
+import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment } from '../graphql/generated'
 import { useRoute } from 'vue-router'
-import { useResult } from '@vue/apollo-composable'
 import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally, StreamMark } from '../helpers'
 import { useAuth } from '../hooks/auth'
 
-import { TextField, TextButton } from '@ropescore/components'
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
 
 const auth = useAuth()
 const route = useRoute()
 
-const heat = ref<number>(1)
+const groupInfo = useGroupInfoQuery({
+  groupId: route.params.groupId as string
+})
+const heatChangeSubscription = useHeatChangedSubscription({
+  groupId: route.params.groupId as string
+})
 
-const selectedHeat = ref<number>(heat.value)
+watch(heatChangeSubscription.result, () => groupInfo.refetch())
+
+const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
 
 const entriesQuery = useHeatEntriesScoresheetsQuery({
   groupId: route.params.groupId as string,
-  heat: selectedHeat as unknown as number
+  heat: currentHeat as unknown as number
 }, {
   pollInterval: 15_000,
   fetchPolicy: 'cache-and-network'
 })
 
-function loadHeat (heat: number) {
-  if (selectedHeat.value !== heat) {
-    selectedHeat.value = heat
-  } else {
-    entriesQuery.refetch()
-  }
-}
-
-const entries = useResult(entriesQuery.result, [], res => {
-  return [...res.group.entriesByHeat].sort((a, b) => {
+const entries = computed(() => {
+  return [...(entriesQuery.result.value?.group?.entriesByHeat ?? [])].sort((a, b) => {
     if (typeof a.pool === 'number' && typeof b.pool === 'number') return a.pool - b.pool
     else if (typeof a.pool === 'number') return -1
     else if (typeof b.pool === 'number') return 1
@@ -101,16 +93,24 @@ const cols = computed(() => {
   else return 3
 })
 
-const scoresheetIds = useResult(entriesQuery.result, [], res => {
-  return res.group.entriesByHeat.flatMap(ent => {
-    return filterLatestScoresheets(ent.scoresheets)
-      .filter(scsh => scsh.options?.live === true && !scsh.completedAt)
-      .map(scsh => scsh.id)
-  })
+const scoresheetChangedSubscription = useScoresheetChangedSubscription({
+  entryIds: computed(() => entries.value.map(e => e.id)) as unknown as string[]
 })
 
-const primaryScoresheets = useResult(entriesQuery.result, {} as Record<string, BaseScoresheetFragment>, res => {
-  return Object.fromEntries(res.group.entriesByHeat.map(ent => {
+watch(scoresheetChangedSubscription.result, () => {
+  entriesQuery.refetch()
+})
+
+const scoresheetIds = computed(() => {
+  return entriesQuery.result.value?.group?.entriesByHeat.flatMap(ent => {
+    return filterLatestScoresheets(ent.scoresheets)
+      .filter(scsh => scsh.__typename === 'MarkScoresheet' && scsh.options?.live === true && !scsh.completedAt)
+      .map(scsh => scsh.id)
+  }) ?? []
+})
+
+const primaryScoresheets = computed(() => {
+  return Object.fromEntries((entriesQuery.result.value?.group?.entriesByHeat ?? []).map(ent => {
     return [
       ent.id,
       filterLatestScoresheets(ent.scoresheets)
@@ -123,7 +123,7 @@ const tallies = reactive<Record<string, { tally: ScoreTally, marks: Map<number, 
 
 watch(primaryScoresheets, scshs => {
   for (const scsh of Object.values(scshs)) {
-    if (!scsh) continue
+    if (!scsh || scsh.__typename !== 'MarkScoresheet') continue
     if (scsh?.completedAt) {
       const tallyInfo = {
         tally: reactive<ScoreTally>({}),

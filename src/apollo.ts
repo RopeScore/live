@@ -6,7 +6,7 @@ import { WebSocketLink } from './graphql-ws'
 import { watch } from 'vue'
 
 const wsLink = new WebSocketLink({
-  url: 'wss://api.ropescore.com/',
+  url: 'wss://api.ropescore.com/graphql',
   lazy: true,
   connectionParams: () => {
     const auth = useAuth()
@@ -21,7 +21,7 @@ const wsLink = new WebSocketLink({
 })
 
 const httpLink = createHttpLink({
-  uri: 'https://api.ropescore.com/'
+  uri: 'https://api.ropescore.com/graphql'
 })
 
 const authLink = setContext(async (_, { headers }) => {
@@ -34,7 +34,11 @@ const authLink = setContext(async (_, { headers }) => {
   }
 })
 
-const cache = new InMemoryCache()
+const cache = new InMemoryCache({
+  possibleTypes: {
+    Scoresheet: ['TallyScoresheet', 'MarkScoresheet']
+  }
+})
 
 const splitLink = split(
   ({ query }) => {

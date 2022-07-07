@@ -2,9 +2,11 @@ query HeatEntriesScoresheets ($groupId: ID!, $heat: Int!) {
   group (groupId: $groupId) {
     id
     entriesByHeat (heat: $heat) {
-      ...FullEntry
+      ...EntryFragment
       scoresheets {
-        ...BaseScoresheet
+        ...ScoresheetBaseFragment
+        ...MarkScoresheetFragment
+        ...TallyScoresheetFragment
       }
     }
   }
