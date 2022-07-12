@@ -6,7 +6,7 @@ import { WebSocketLink } from './graphql-ws'
 import { watch } from 'vue'
 
 const wsLink = new WebSocketLink({
-  url: 'wss://api.ropescore.com/graphql',
+  url: import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? 'wss://api.ropescore.com/graphql',
   lazy: true,
   connectionParams: () => {
     const auth = useAuth()
@@ -21,7 +21,7 @@ const wsLink = new WebSocketLink({
 })
 
 const httpLink = createHttpLink({
-  uri: 'https://api.ropescore.com/graphql'
+  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT ?? 'https://api.ropescore.com/graphql'
 })
 
 const authLink = setContext(async (_, { headers }) => {
@@ -35,6 +35,15 @@ const authLink = setContext(async (_, { headers }) => {
 })
 
 const cache = new InMemoryCache({
+  typePolicies: {
+    User: {
+      fields: {
+        streamShares: {
+          merge: false
+        }
+      }
+    }
+  },
   possibleTypes: {
     Scoresheet: ['TallyScoresheet', 'MarkScoresheet']
   }

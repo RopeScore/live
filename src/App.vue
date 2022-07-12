@@ -12,6 +12,9 @@
       </router-link>
 
       <nav>
+        <button-link to="/device-stream">
+          Device Stream
+        </button-link>
         <button-link to="/groups">
           Groups
         </button-link>

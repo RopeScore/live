@@ -14,11 +14,12 @@
       >
         <speed-live-score
           v-if="getCompetitionEventType(entry.competitionEventId) === CompetitionEventType.Speed"
+          :pool="entry.pool!"
           :entry="entry"
-          :scoresheet="primaryScoresheets[entry.id]"
+          :scoresheet="(primaryScoresheets[entry.id] as MarkScoresheetFragment & ScoresheetBaseFragment)"
           :tally="tallies[primaryScoresheets[entry.id]?.id]?.tally"
         />
-        <unsupported-competition-event v-else :entry="entry" />
+        <unsupported-competition-event v-else :entry="entry" :pool="entry.pool!" />
       </template>
 
       <div v-show="entries.length === 0 && !entriesQuery.loading.value" class="bg-gray-300 flex items-center justify-center relative">
@@ -44,7 +45,7 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch } from 'vue'
-import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment } from '../graphql/generated'
+import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment, ScoresheetBaseFragment } from '../graphql/generated'
 import { useRoute } from 'vue-router'
 import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally, StreamMark } from '../helpers'
 import { useAuth } from '../hooks/auth'

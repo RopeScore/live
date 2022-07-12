@@ -1,0 +1,5 @@
+mutation RequestStreamShare ($deviceId: ID!) {
+  requestDeviceStreamShare (deviceId: $deviceId) {
+    ...DeviceStreamShareFragment
+  }
+}

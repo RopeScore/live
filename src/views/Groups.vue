@@ -1,12 +1,12 @@
 <template>
-  <nav>
+  <div>
     <div
       v-if="auth.loading.value"
       class="flex justify-center items-center text-2xl"
     >
       Loading
     </div>
-  </nav>
+  </div>
 
   <div v-if="auth.token.value" class="flex flex-col gap-4">
     <div

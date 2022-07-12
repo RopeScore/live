@@ -1,0 +1,13 @@
+query UserStreamShares {
+  me {
+    ... on User {
+      id
+      streamShares {
+        ...DeviceStreamShareFragment
+      }
+    }
+    ... on Device {
+      id
+    }
+  }
+}

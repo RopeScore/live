@@ -1,0 +1,3 @@
+subscription DeviceStreamMarkAdded ($deviceIds: [ID!]!) {
+  deviceStreamMarkAdded (deviceIds: $deviceIds)
+}

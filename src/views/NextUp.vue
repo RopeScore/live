@@ -97,7 +97,7 @@ const heats = computed(() => {
 })
 
 const nextTwo = computed(() => {
-  return [heatPlusN(1), heatPlusN(2)].filter(n => typeof n === 'number')
+  return [heatPlusN(1), heatPlusN(2)].filter(n => typeof n === 'number') as number[]
 })
 
 function heatPlusN (n: number) {
