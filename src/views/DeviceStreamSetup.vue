@@ -67,7 +67,16 @@
         <tr>
           <th>Pool</th>
           <th>Device</th>
-          <th />
+          <th>
+            <text-button
+              dense
+              color="blue"
+              :disabled="pools.length >= acceptedDevices.length"
+              @click="pools.push({})"
+            >
+              Add Pool
+            </text-button>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -89,21 +98,6 @@
           </td>
         </tr>
       </tbody>
-      <tfoot>
-        <tr>
-          <td colspan="2" />
-          <td>
-            <text-button
-              dense
-              color="blue"
-              :disabled="pools.length >= acceptedDevices.length"
-              @click="pools.push({})"
-            >
-              Add Pool
-            </text-button>
-          </td>
-        </tr>
-      </tfoot>
     </table>
   </div>
 
