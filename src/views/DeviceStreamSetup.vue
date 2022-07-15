@@ -132,11 +132,17 @@
   </div>
 
   <div v-else class="mt-4">
+    <div>
+      <select-field
+        v-model="localManual"
+        label="Preferred Server"
+        :data-list="localApis"
+        class="max-w-60"
+      />
+      <p>Server: {{ apiDomain }}</p>
+    </div>
     <p>
       System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.user.value?.id }}</code>
-    </p>
-    <p>
-      Server: {{ localDomain }}
     </p>
     <p>
       You need to add this system as a viewer of the group in RopeScore core,
@@ -162,7 +168,7 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useAuth } from '../hooks/auth'
-import { localDomain } from '../apollo'
+import { apiDomain, localManual, localApis } from '../apollo'
 import { useStreamPools } from '../hooks/stream-pools'
 import { formatDate } from '../helpers'
 import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
