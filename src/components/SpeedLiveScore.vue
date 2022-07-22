@@ -18,7 +18,7 @@
       {{ entry.participant.name }}
     </div>
 
-    <div class="font-semibold text-20xl tabular-nums w-full text-center font-mono">
+    <div class="font-semibold tabular-nums w-full text-center font-mono custom-size">
       {{ tally?.step ?? 0 }}
     </div>
 
@@ -37,11 +37,11 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
+import { computed, PropType, toRef } from 'vue'
 import { EntryFragment, MarkScoresheetFragment, ScoresheetBaseFragment } from '../graphql/generated'
 import { ScoreTally, getAbbr } from '../helpers'
 
-defineProps({
+const props = defineProps({
   pool: {
     type: Number,
     required: true
@@ -61,12 +61,28 @@ defineProps({
   tally: {
     type: Object as PropType<Readonly<ScoreTally> | null>,
     default: null
+  },
+  cols: {
+    type: Number,
+    default: null
   }
+})
+
+const cols = toRef(props, 'cols')
+const fontSize = computed(() => {
+  if (!cols.value) return '20rem'
+  return `${100 / (cols.value * 2)}vw`
 })
 </script>
 
 <style scoped>
 .custom-wrap {
   text-overflow: ellipsis;
+}
+
+.custom-size {
+  --val: v-bind(fontSize);
+  font-size: var(--val, 20rem);
+  line-height: 1;
 }
 </style>

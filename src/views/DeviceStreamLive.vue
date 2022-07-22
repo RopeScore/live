@@ -1,13 +1,6 @@
 <template>
   <div v-if="auth.isLoggedIn.value" class="grid grid-rows-1">
-    <main
-      class="grid"
-      :class="{
-        'grid-cols-3': cols === 3,
-        'grid-cols-2': cols === 2,
-        'grid-cols-1': cols === 1
-      }"
-    >
+    <main class="grid custom-grid">
       <template
         v-for="(pool, idx) of pools"
         :key="pool.idx"
@@ -17,6 +10,7 @@
           :pool="idx + 1"
           :tally="tallies[pool.deviceId]?.tally"
           :device-id="pool.deviceId"
+          :cols="cols"
         />
         <device-not-set v-else :pool="idx + 1" />
       </template>
@@ -54,11 +48,13 @@ const pools = useStreamPools()
 const cols = computed(() => {
   const len = pools.value.length
   if (len === 0) return 1
-  else if (len === 3) return 2
-  else if (len % 3 === 0) return 3
-  else if (len % 2 === 0) return 2
   else if (len === 1) return 1
-  else return 3
+  else if (len <= 4) return 2
+  else if (len <= 6) return 3
+  else if (len <= 8) return 4
+  else if (len <= 9) return 3
+  else if (len <= 12) return 4
+  else return 5
 })
 
 const tallies = reactive<Record<string, { tally: ScoreTally, marks: Map<number, DeviceStreamMark>, completed: boolean }>>({})
@@ -100,3 +96,9 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.custom-grid {
+  grid-template-columns: repeat(v-bind(cols), minmax(0, 1fr));
+}
+</style>

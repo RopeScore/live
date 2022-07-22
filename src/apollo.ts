@@ -16,6 +16,9 @@ const resolvedReachable = useFetch(
 ).get().json()
 useIntervalFn(() => {
   localDiscover.execute()
+  if (typeof localDiscover.data.value === 'string' && /\.local\.ropescore\.com(:\d+)?$/.test(localDiscover.data.value)) {
+    resolvedReachable.execute()
+  }
 }, 60_000)
 
 export const localApis = ['', 'local-001']
@@ -23,11 +26,12 @@ export const localManual = useLocalStorage<string>('rs-local-api', null)
 const manualReachable = useFetch(
   computed(() => `https://${localManual.value}.local.ropescore.com/.well-known/apollo/server-health`),
   {
-    refetch: computed(() => !!localManual.value),
+    refetch: computed(() => !!localManual.value && localManual.value !== 'null'),
     immediate: !!localManual.value
   }
 ).get().json()
 useIntervalFn(() => {
+  if (!localManual.value || localManual.value === 'null') return
   manualReachable.execute()
 }, 60_000)
 

@@ -1,13 +1,6 @@
 <template>
   <div v-if="auth.isLoggedIn.value" class="grid grid-rows-1">
-    <main
-      class="grid"
-      :class="{
-        'grid-cols-3': cols === 3,
-        'grid-cols-2': cols === 2,
-        'grid-cols-1': cols === 1
-      }"
-    >
+    <main class="grid custom-grid">
       <template
         v-for="entry of entries"
         :key="entry.id"
@@ -18,6 +11,7 @@
           :entry="entry"
           :scoresheet="(primaryScoresheets[entry.id] as MarkScoresheetFragment & ScoresheetBaseFragment)"
           :tally="tallies[primaryScoresheets[entry.id]?.id]?.tally"
+          :cols="cols"
         />
         <unsupported-competition-event v-else :entry="entry" :pool="entry.pool!" />
       </template>
@@ -85,13 +79,15 @@ const entries = computed(() => {
 })
 
 const cols = computed(() => {
-  const pools = entries.value.length
-  if (pools === 0) return 1
-  else if (pools === 3) return 2
-  else if (pools % 3 === 0) return 3
-  else if (pools % 2 === 0) return 2
-  else if (pools === 1) return 1
-  else return 3
+  const len = entries.value.length
+  if (len === 0) return 1
+  else if (len === 1) return 1
+  else if (len <= 4) return 2
+  else if (len <= 6) return 3
+  else if (len <= 8) return 4
+  else if (len <= 9) return 3
+  else if (len <= 12) return 4
+  else return 5
 })
 
 const scoresheetChangedSubscription = useScoresheetChangedSubscription({
@@ -169,3 +165,9 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.custom-grid {
+  grid-template-columns: repeat(v-bind(cols), minmax(0, 1fr));
+}
+</style>
