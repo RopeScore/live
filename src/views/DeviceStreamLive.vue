@@ -7,7 +7,7 @@
       >
         <speed-live-score
           v-if="pool.deviceId"
-          :pool="idx + 1"
+          :pool="pool.label || idx + 1"
           :tally="tallies[pool.deviceId]?.tally"
           :device-id="pool.deviceId"
           :cols="cols"

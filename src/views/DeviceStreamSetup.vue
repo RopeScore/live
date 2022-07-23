@@ -66,6 +66,9 @@
       <thead>
         <tr>
           <th>Pool</th>
+          <th class="max-w-30">
+            Label
+          </th>
           <th>Device</th>
           <th>
             <text-button
@@ -82,6 +85,15 @@
       <tbody>
         <tr v-for="(pool, idx) of pools" :key="idx">
           <td>{{ idx + 1 }}</td>
+          <td>
+            <text-field
+              :model-value="pool.label"
+              dense
+              label="Pool Label"
+              type="number"
+              @update:model-value="pool.label = $event"
+            />
+          </td>
           <td>
             <select-field
               :model-value="pool.deviceId"
