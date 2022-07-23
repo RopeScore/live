@@ -12,6 +12,9 @@
       </router-link>
 
       <nav>
+        <button-link to="/podium">
+          Podium
+        </button-link>
         <button-link to="/device-stream">
           Device Stream
         </button-link>
