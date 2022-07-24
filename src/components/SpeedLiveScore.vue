@@ -1,13 +1,13 @@
 <template>
   <div
-    class="border border-black flex items-center justify-center relative"
+    class="border border-black bg-white dark:border-gray-600 dark:bg-black dark:text-white flex items-center justify-center relative"
     :class="{
       'bg-green-100': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
       'bg-gray-300': entry?.didNotSkipAt
     }"
   >
     <div
-      class="font-bold text-8xl absolute top-0 left-2 text-gray-600"
+      class="font-bold text-8xl absolute top-0 left-2 text-gray-600 dark:text-gray-400"
     >
       {{ pool }}
     </div>
