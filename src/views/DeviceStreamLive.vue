@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isLoggedIn.value" class="grid grid-rows-1">
+  <div v-if="auth.isLoggedIn.value" class="grid grid-rows-1 bg-white dark:bg-black">
     <main class="grid custom-grid">
       <template
         v-for="(pool, idx) of pools"
