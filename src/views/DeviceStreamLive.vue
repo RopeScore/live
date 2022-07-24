@@ -12,7 +12,7 @@
           :device-id="pool.deviceId"
           :cols="cols"
         />
-        <device-not-set v-else :pool="idx + 1" />
+        <device-not-set v-else :pool="pool.label || idx + 1" />
       </template>
 
       <div v-show="pools.length === 0" class="bg-gray-300 flex items-center justify-center relative">
