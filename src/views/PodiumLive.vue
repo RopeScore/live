@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-black grid grid-cols-3 gap-6 px-8 py-6 h-[100vh] overflow-y-hidden">
+  <main class="bg-white dark:bg-black grid grid-cols-3 gap-6 px-8 py-6 h-[100vh] overflow-y-hidden">
     <div
       v-for="pos in positions"
       :key="pos"
@@ -9,7 +9,7 @@
       }"
     >
       <h2
-        class="text-white text-8xl font-bold text-center mb-4"
+        class="text-black dark:text-white text-8xl font-bold text-center mb-4"
       >
         {{ pos }}
       </h2>
@@ -24,7 +24,8 @@
         <img
           v-for="(flag, idx) of state?.[pos] ?? []"
           :key="idx + flag"
-          class="w-full"
+          class="w-full border-2 border-gray-800 dark:border-gray-400"
+          :alt="flag"
           :src="`/flags/${flag}.svg`"
         >
       </div>
