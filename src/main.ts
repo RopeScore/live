@@ -7,11 +7,14 @@ import App from './App.vue'
 import router from './router'
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { apolloClient } from './apollo'
+import { createHead } from '@vueuse/head'
 
 const app = createApp(App)
+const head = createHead()
 
 app.provide(DefaultApolloClient, apolloClient)
   .use(router)
+  .use(head)
   .mount('#app')
 
 if (import.meta.env.PROD) {

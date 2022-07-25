@@ -41,6 +41,11 @@ import { useAuth } from '../hooks/auth'
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import { useStreamPools } from '../hooks/stream-pools'
 import DeviceNotSet from '../components/DeviceNotSet.vue'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Device Stream (Live) | RopeScore Live'
+})
 
 const auth = useAuth()
 const pools = useStreamPools()

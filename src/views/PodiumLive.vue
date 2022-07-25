@@ -35,6 +35,11 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Podium (Live) | RopeScore Live'
+})
 
 const bc = new BroadcastChannel('rs-podium')
 

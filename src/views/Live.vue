@@ -46,6 +46,11 @@ import { useAuth } from '../hooks/auth'
 
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Competition (Live) | RopeScore Live'
+})
 
 const auth = useAuth()
 const route = useRoute()

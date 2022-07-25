@@ -55,6 +55,11 @@ import { useLocalStorage } from '@vueuse/core'
 
 import countries from '../assets/countries.json'
 import { TextButton, SelectField, ButtonLink } from '@ropescore/components'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Podium | RopeScore Live'
+})
 
 const bc = new BroadcastChannel('rs-podium')
 

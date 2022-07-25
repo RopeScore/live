@@ -44,6 +44,11 @@ import { computed, watch } from 'vue'
 import { useGroupInfoQuery, useHeatChangedSubscription, useHeatEntriesQuery } from '../graphql/generated'
 import { useRoute } from 'vue-router'
 import { useAuth } from '../hooks/auth'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Competition (On Floor) | RopeScore Live'
+})
 
 const auth = useAuth()
 const route = useRoute()

@@ -184,8 +184,13 @@ import { apiDomain, localManual, localApis } from '../apollo'
 import { useStreamPools } from '../hooks/stream-pools'
 import { formatDate } from '../helpers'
 import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
+import { useHead } from '@vueuse/head'
 
 import { TextButton, TextField, SelectField, ButtonLink } from '@ropescore/components'
+
+useHead({
+  title: 'Device Stream | RopeScore Live'
+})
 
 const auth = useAuth()
 

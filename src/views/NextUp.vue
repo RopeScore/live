@@ -49,6 +49,11 @@ import { useGroupEntriesQuery, useGroupInfoQuery, useHeatChangedSubscription, us
 import { useRoute } from 'vue-router'
 import { useAuth } from '../hooks/auth'
 import EntryInfoCard from '../components/EntryInfoCard.vue'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Competition (Next Up) | RopeScore Live'
+})
 
 const auth = useAuth()
 const route = useRoute()

@@ -103,6 +103,11 @@ import { apiDomain, localManual, localApis } from '../apollo'
 import { useGroupsQuery } from '../graphql/generated'
 
 import { TextButton, ButtonLink, TextField, SelectField } from '@ropescore/components'
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Groups | RopeScore Live'
+})
 
 const auth = useAuth()
 
