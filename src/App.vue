@@ -4,6 +4,8 @@
     :class="{
       'grid-rows-[3.5rem,auto,2rem]': !fullscreen,
       'grid-rows-1': fullscreen,
+      'h-[100vh]': fullscreen,
+      'overflow-y-hidden': fullscreen,
       dark: darkMode === 'dark'
     }"
   >

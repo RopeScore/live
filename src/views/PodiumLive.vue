@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-white dark:bg-black grid grid-cols-3 gap-6 px-8 py-6 h-[100vh] overflow-y-hidden">
+  <main class="bg-white dark:bg-black grid grid-cols-3 gap-6 px-8 py-6">
     <div
       v-for="pos in positions"
       :key="pos"
