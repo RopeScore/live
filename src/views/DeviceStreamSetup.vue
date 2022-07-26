@@ -23,6 +23,13 @@
         <tr>
           <th>Device ID</th>
           <th>Device Name</th>
+          <th>Battery</th>
+          <th class="relative">
+            Last Battery Status
+            <span v-if="sharesQuery.loading.value" class="absolute right-1 top-1">
+              <icon-loading class="animate-spin" />
+            </span>
+          </th>
           <th>Request Status</th>
           <th>Expires At</th>
         </tr>
@@ -32,6 +39,28 @@
           <td>{{ share.device.id }}</td>
           <td>{{ share.device.name }}</td>
           <td
+            v-if="share.device.battery"
+            class="min-w-[10ch] text-right"
+            :class="{
+              'bg-green-300': share.device.battery.batteryLevel > 30,
+              'bg-orange-200': share.device.battery.batteryLevel <= 30 && share.device.battery.batteryLevel > 15,
+              'bg-red-200': share.device.battery.batteryLevel <= 15,
+            }"
+          >
+            {{ share.device.battery.batteryLevel }} %
+          </td>
+          <td v-else class="bg-gray-200" />
+
+          <td v-if="share.device.battery" :class="{ 'bg-orange-200': tooLongAgo(share.device.battery.updatedAt) }">
+            <relative-time :datetime="toISO(share.device.battery.updatedAt)">
+              {{ toISO(share.device.battery.updatedAt) }}
+            </relative-time>
+            <span v-if="!share.device.battery.automatic"> (manual)</span>
+          </td>
+          <td v-else class="bg-gray-200">
+            never
+          </td>
+          <td
             :class="{
               'bg-orange-300': share.status === DeviceStreamShareStatus.Pending,
               'bg-green-300': share.status === DeviceStreamShareStatus.Accepted
@@ -39,11 +68,15 @@
           >
             {{ share.status }}
           </td>
-          <td>{{ formatDate(share.expiresAt) }}</td>
+          <td :class="{ 'bg-orange-200': expiresSoon(share.expiresAt) }">
+            <relative-time :datetime="toISO(share.expiresAt)">
+              {{ toISO(share.expiresAt) }}
+            </relative-time>
+          </td>
         </tr>
       </tbody>
       <tfoot>
-        <td colspan="2">
+        <td colspan="4">
           <text-field v-model="newDeviceId" label="Device ID" dense />
         </td>
         <td colspan="2">
@@ -187,6 +220,7 @@ import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSh
 import { useHead } from '@vueuse/head'
 
 import { TextButton, TextField, SelectField, ButtonLink } from '@ropescore/components'
+import IconLoading from 'virtual:icons/mdi/loading'
 
 useHead({
   title: 'Device Stream | RopeScore Live'
@@ -226,4 +260,16 @@ sharesQuery.onResult(res => {
     if (pool.deviceId != null && !deviceIds.has(pool.deviceId)) pool.deviceId = undefined
   }
 })
+
+function toISO (ts: number | Date) {
+  return new Date(ts).toISOString()
+}
+
+function tooLongAgo (ts: number) {
+  return ts < Date.now() - (1000 * 60 * 30) // 30 min
+}
+
+function expiresSoon (ts: number) {
+  return ts < Date.now() + (1000 * 60 * 60) // 1h
+}
 </script>

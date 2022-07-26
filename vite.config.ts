@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import WindiCSS from 'vite-plugin-windicss'
+import Icons from 'unplugin-icons/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vitejs.dev/config/
@@ -12,8 +13,23 @@ export default defineConfig({
     port: 5005
   },
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: tag => [
+            // @github/time-elements
+            'relative-time',
+            'time-until',
+            'time-ago',
+            'local-time'
+          ].includes(tag)
+        }
+      }
+    }),
     WindiCSS(),
+    Icons({
+      compiler: 'vue3'
+    }),
     VitePWA({
       manifest: {
         name: 'RopeScore Live',
