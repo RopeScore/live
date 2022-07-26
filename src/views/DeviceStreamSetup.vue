@@ -10,6 +10,9 @@
 
   <div v-if="auth.token.value" class="container mx-auto">
     <div class="flex justify-end">
+      <text-button :loading="sharesQuery.loading.value" @click="sharesQuery.refetch()">
+        Refresh
+      </text-button>
       <button-link to="/device-stream/live">
         Show Scores
       </button-link>
@@ -31,7 +34,7 @@
             </span>
           </th>
           <th>Request Status</th>
-          <th>Expires At</th>
+          <th>Expires</th>
         </tr>
       </thead>
       <tbody>
@@ -189,17 +192,6 @@
     <p>
       System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.user.value?.id }}</code>
     </p>
-    <p>
-      You need to add this system as a viewer of the group in RopeScore core,
-      do this by entering the ID shown above. It is case sensitive.
-    </p>
-  </div>
-
-  <div
-    v-if="sharesQuery.loading.value"
-    class="p-2"
-  >
-    Loading...
   </div>
 
   <div
@@ -215,7 +207,6 @@ import { ref, computed } from 'vue'
 import { useAuth } from '../hooks/auth'
 import { apiDomain, localManual, localApis } from '../apollo'
 import { useStreamPools } from '../hooks/stream-pools'
-import { formatDate } from '../helpers'
 import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
 
