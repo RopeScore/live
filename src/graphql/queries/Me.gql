@@ -2,9 +2,11 @@ query Me {
   me {
     ... on Device {
       id
+      name
     }
     ... on User {
       id
+      name
     }
   }
 }

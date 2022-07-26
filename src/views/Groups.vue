@@ -75,6 +75,7 @@
     <p>
       System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.user.value?.id }}</code>
     </p>
+    <system-name />
     <p>
       You need to add this system as a viewer of the group in RopeScore core,
       do this by entering the ID shown above. It is case sensitive.
@@ -101,9 +102,10 @@ import { ref, computed } from 'vue'
 import { useAuth } from '../hooks/auth'
 import { apiDomain, localManual, localApis } from '../apollo'
 import { useGroupsQuery } from '../graphql/generated'
-
-import { TextButton, ButtonLink, TextField, SelectField } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
+
+import SystemName from '../components/SystemName.vue'
+import { TextButton, ButtonLink, TextField, SelectField } from '@ropescore/components'
 
 useHead({
   title: 'Groups | RopeScore Live'

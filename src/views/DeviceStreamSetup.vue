@@ -192,6 +192,7 @@
     <p>
       System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.user.value?.id }}</code>
     </p>
+    <system-name />
   </div>
 
   <div
@@ -212,6 +213,7 @@ import { useHead } from '@vueuse/head'
 
 import { TextButton, TextField, SelectField, ButtonLink } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
+import SystemName from '../components/SystemName.vue'
 
 useHead({
   title: 'Device Stream | RopeScore Live'
