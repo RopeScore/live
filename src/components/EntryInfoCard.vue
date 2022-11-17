@@ -3,14 +3,14 @@
     <div class="uppercase">
       {{ getAbbr(entry.competitionEventId) }}
     </div>
-    <div class="text-2xl">
+    <div class="text-2xl" :class="{ 'line-through': !!entry.didNotSkipAt }">
       {{ entry.participant.name }}
     </div>
     <div class="mb-1">
       {{ entry.participant.club }}<span class="text-transparent">.</span>
     </div>
     <div>{{ entry.category.name }}</div>
-    <div>Pool: {{ entry.pool }}</div>
+    <div>Pool: <span class="font-bold">{{ entry.pool }}</span></div>
   </div>
 </template>
 
