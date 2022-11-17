@@ -107,3 +107,8 @@ const dateFormatter = Intl.DateTimeFormat(locales, {
 export function formatDate (timestamp: number | Date): string {
   return dateFormatter.format(timestamp)
 }
+
+const listFormatter = new Intl.ListFormat(locales)
+export function formatList (list: string[]) {
+  return listFormatter.format(list)
+}
