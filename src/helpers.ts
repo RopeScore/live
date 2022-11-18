@@ -11,6 +11,13 @@ export interface GenericMark {
   readonly value?: number
 }
 
+export interface ClearMark {
+  readonly timestamp: number
+  readonly sequence: number // should always === index
+  readonly schema: 'clear'
+}
+export function isClearMark (x: any): x is ClearMark { return x && x.schema === 'clear' }
+
 export interface UndoMark {
   readonly timestamp: number
   readonly sequence: number // should always === index
@@ -19,13 +26,7 @@ export interface UndoMark {
 }
 export function isUndoMark (x: any): x is UndoMark { return x && x.schema === 'undo' }
 
-export type Mark = GenericMark | UndoMark
-export type StreamMark = Mark & {
-  readonly scoresheetId: string
-}
-export type DeviceStreamMark = Mark & {
-  readonly deviceId: string
-}
+export type Mark = GenericMark | ClearMark | UndoMark
 
 /**
  * Gets the 4-character abbreviation of a competition event definition
@@ -71,17 +72,17 @@ export function getCompetitionEventType (cEvtDef: string) {
   }
 }
 
-export function processMark (mark: Mark | StreamMark, tally: ScoreTally, marks: Map<number, Mark | StreamMark>) {
+export function processMark (mark: Mark, tally: ScoreTally, marks: Map<number, Mark>) {
   // we'va already processed this mark, abort
   if (marks.has(mark.sequence)) return
 
   if (isUndoMark(mark)) {
     const undoneMark = marks.get(mark.target)
     if (!undoneMark) throw new Error('Undone mark missing')
-    if (!isUndoMark(undoneMark)) {
+    if (!isUndoMark(undoneMark) && !isClearMark(undoneMark)) {
       tally[undoneMark.schema] = (tally[undoneMark.schema] ?? 0) - (undoneMark.value ?? 1)
     }
-  } else if (mark.schema === 'clear') {
+  } else if (isClearMark(mark)) {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     for (const prop of Object.keys(tally)) delete tally[prop]
     // No more processing!

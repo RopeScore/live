@@ -1,3 +1,7 @@
 subscription StreamMarkAdded ($scoresheetIds: [ID!]!) {
-  streamMarkAdded (scoresheetIds: $scoresheetIds)
+  streamMarkAdded (scoresheetIds: $scoresheetIds) {
+    sequence
+    tally
+    scoresheet { id }
+  }
 }

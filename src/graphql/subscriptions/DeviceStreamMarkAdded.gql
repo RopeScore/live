@@ -1,3 +1,7 @@
 subscription DeviceStreamMarkAdded ($deviceIds: [ID!]!) {
-  deviceStreamMarkAdded (deviceIds: $deviceIds)
+  deviceStreamMarkAdded (deviceIds: $deviceIds) {
+    sequence
+    tally
+    device { id }
+  }
 }

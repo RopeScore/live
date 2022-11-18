@@ -38,10 +38,10 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment, ScoresheetBaseFragment } from '../graphql/generated'
 import { useRoute } from 'vue-router'
-import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally, StreamMark } from '../helpers'
+import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally } from '../helpers'
 import { useAuth } from '../hooks/auth'
 
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
@@ -62,9 +62,13 @@ const heatChangeSubscription = useHeatChangedSubscription({
   groupId: route.params.groupId as string
 })
 
-watch(heatChangeSubscription.result, () => groupInfo.refetch())
-
-const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
+const currentHeat = ref(1)
+watch(groupInfo.result, result => {
+  if (typeof result?.group?.currentHeat === 'number') currentHeat.value = result?.group?.currentHeat
+})
+watch(heatChangeSubscription.result, result => {
+  if (typeof result?.heatChanged === 'number') currentHeat.value = result?.heatChanged
+})
 
 const entriesQuery = useHeatEntriesScoresheetsQuery({
   groupId: route.params.groupId as string,
@@ -121,7 +125,7 @@ const primaryScoresheets = computed(() => {
   }))
 })
 
-const tallies = reactive<Record<string, { tally: ScoreTally, marks: Map<number, StreamMark>, completed: boolean }>>({})
+const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean }>>({})
 
 watch(primaryScoresheets, scshs => {
   for (const scsh of Object.values(scshs)) {
@@ -129,13 +133,14 @@ watch(primaryScoresheets, scshs => {
     if (scsh?.completedAt) {
       const tallyInfo = {
         tally: reactive<ScoreTally>({}),
-        marks: new Map(),
+        lastSequence: 0,
         completed: true
       }
       tallies[scsh.id] = tallyInfo
 
+      const marks = new Map()
       for (const mark of scsh.marks ?? []) {
-        processMark(mark as Mark, tallyInfo.tally, tallyInfo.marks)
+        processMark(mark as Mark, tallyInfo.tally, marks)
       }
     }
   }
@@ -150,23 +155,25 @@ const markStreamSubscription = useStreamMarkAddedSubscription({
 watch(
   markStreamSubscription.result,
   res => {
-    const mark = res?.streamMarkAdded as StreamMark
+    if (!res) return
+    const scoresheetId = res.streamMarkAdded.scoresheet.id
+    const sequence = res.streamMarkAdded.sequence
+    const tally = res.streamMarkAdded.tally as ScoreTally
 
-    if (!mark) return
-
-    let tallyInfo = tallies[mark.scoresheetId]
+    let tallyInfo = tallies[scoresheetId]
     if (!tallyInfo) {
       tallyInfo = {
         tally: reactive<ScoreTally>({}),
-        marks: new Map(),
+        lastSequence: 0,
         completed: false
       }
-      tallies[mark.scoresheetId] = tallyInfo
+      tallies[scoresheetId] = tallyInfo
     }
 
-    // if (tallyInfo.completed) return
-
-    processMark(mark, tallyInfo.tally, tallyInfo.marks)
+    if (sequence >= tallyInfo.lastSequence) {
+      tallyInfo.tally = reactive(tally)
+      tallyInfo.lastSequence = sequence
+    }
   }
 )
 </script>

@@ -35,7 +35,7 @@
 <script lang="ts" setup>
 import { computed, reactive, watch } from 'vue'
 import { useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
-import { processMark, ScoreTally, DeviceStreamMark } from '../helpers'
+import { processMark, ScoreTally, Mark } from '../helpers'
 import { useAuth } from '../hooks/auth'
 
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
@@ -62,7 +62,7 @@ const cols = computed(() => {
   else return 5
 })
 
-const tallies = reactive<Record<string, { tally: ScoreTally, marks: Map<number, DeviceStreamMark>, completed: boolean }>>({})
+const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean }>>({})
 
 const deviceIds = computed(() => pools.value.map(p => p.deviceId).filter(id => typeof id === 'string'))
 
@@ -75,28 +75,24 @@ const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
 watch(
   markStreamSubscription.result,
   res => {
-    const mark = res?.deviceStreamMarkAdded as DeviceStreamMark
+    if (!res) return
+    const deviceId = res.deviceStreamMarkAdded.device.id
+    const sequence = res.deviceStreamMarkAdded.sequence
+    const tally = res.deviceStreamMarkAdded.tally as ScoreTally
 
-    if (!mark) return
-
-    let tallyInfo = tallies[mark.deviceId]
+    let tallyInfo = tallies[deviceId]
     if (!tallyInfo) {
       tallyInfo = {
         tally: reactive<ScoreTally>({}),
-        marks: new Map(),
+        lastSequence: 0,
         completed: false
       }
-      tallies[mark.deviceId] = tallyInfo
+      tallies[deviceId] = tallyInfo
     }
 
-    if (mark.schema === 'clear') {
-      tallies[mark.deviceId] = {
-        tally: reactive<ScoreTally>({}),
-        marks: new Map(),
-        completed: false
-      }
-    } else {
-      processMark(mark, tallyInfo.tally, tallyInfo.marks)
+    if (sequence >= tallyInfo.lastSequence) {
+      tallyInfo.tally = reactive(tally)
+      tallyInfo.lastSequence = sequence
     }
   }
 )

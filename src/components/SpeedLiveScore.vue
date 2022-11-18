@@ -3,7 +3,9 @@
     class="border border-black bg-white dark:border-gray-600 dark:bg-black dark:text-white flex items-center justify-center relative"
     :class="{
       'bg-green-100': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
-      'bg-gray-300': entry?.didNotSkipAt
+      'dark:bg-green-900': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
+      'bg-gray-300': entry?.didNotSkipAt,
+      'dark:bg-dark-500': entry?.didNotSkipAt
     }"
   >
     <div
@@ -18,7 +20,7 @@
       {{ entry.participant.name }}
     </div>
 
-    <div class="font-semibold tabular-nums w-full text-center font-mono custom-size">
+    <div v-if="!entry?.didNotSkipAt" class="font-semibold tabular-nums w-full text-center font-mono custom-size">
       {{ tally?.step ?? 0 }}
     </div>
 
