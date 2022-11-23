@@ -6,14 +6,18 @@ import '../node_modules/@ropescore/components/dist/style.css'
 import '@github/time-elements'
 import App from './App.vue'
 import router from './router'
-import { DefaultApolloClient } from '@vue/apollo-composable'
-import { apolloClient } from './apollo'
+import { ApolloClients } from '@vue/apollo-composable'
+import { apolloClient, apolloClientAlternate } from './apollo'
 import { createHead } from '@vueuse/head'
 
 const app = createApp(App)
 const head = createHead()
 
-app.provide(DefaultApolloClient, apolloClient)
+app
+  .provide(ApolloClients, {
+    default: apolloClient,
+    alternate: apolloClientAlternate
+  })
   .use(router)
   .use(head)
   .mount('#app')

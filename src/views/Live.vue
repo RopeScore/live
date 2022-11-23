@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch, ref } from 'vue'
-import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment, ScoresheetBaseFragment } from '../graphql/generated'
+import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment, ScoresheetBaseFragment, StreamMarkAddedSubscription } from '../graphql/generated'
 import { useRoute } from 'vue-router'
 import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally } from '../helpers'
 import { useAuth } from '../hooks/auth'
@@ -151,31 +151,41 @@ const markStreamSubscription = useStreamMarkAddedSubscription({
 }, {
   enabled: computed(() => scoresheetIds.value.length > 0) as unknown as boolean
 })
+const markStreamSubscriptionAlt = useStreamMarkAddedSubscription({
+  scoresheetIds: scoresheetIds as unknown as string[]
+}, {
+  enabled: computed(() => scoresheetIds.value.length > 0) as unknown as boolean,
+  clientId: 'alternate'
+})
 
-watch(
-  markStreamSubscription.result,
-  res => {
-    if (!res) return
-    const scoresheetId = res.streamMarkAdded.scoresheet.id
-    const sequence = res.streamMarkAdded.sequence
-    const tally = res.streamMarkAdded.tally as ScoreTally
+function markStreamWatcher (res: StreamMarkAddedSubscription | null | undefined) {
+  if (!res) return
+  const scoresheetId = res.streamMarkAdded.scoresheet.id
+  const sequence = res.streamMarkAdded.sequence
+  const tally = res.streamMarkAdded.tally as ScoreTally
+  const mark = res.streamMarkAdded.mark as Mark
 
-    let tallyInfo = tallies[scoresheetId]
-    if (!tallyInfo) {
-      tallyInfo = {
-        tally: reactive<ScoreTally>({}),
-        lastSequence: 0,
-        completed: false
-      }
-      tallies[scoresheetId] = tallyInfo
+  let tallyInfo = tallies[scoresheetId]
+  if (!tallyInfo) {
+    tallyInfo = {
+      tally: reactive<ScoreTally>({}),
+      lastSequence: 0,
+      completed: false
     }
-
-    if (sequence >= tallyInfo.lastSequence) {
-      tallyInfo.tally = reactive(tally)
-      tallyInfo.lastSequence = sequence
-    }
+    tallies[scoresheetId] = tallyInfo
   }
-)
+
+  if (sequence >= tallyInfo.lastSequence) {
+    tallyInfo.tally = reactive(tally)
+    tallyInfo.lastSequence = sequence
+  }
+  if (mark.schema === 'clear') {
+    tallyInfo.lastSequence = 0
+  }
+}
+
+watch(markStreamSubscription.result, markStreamWatcher)
+watch(markStreamSubscriptionAlt.result, markStreamWatcher)
 </script>
 
 <style scoped>

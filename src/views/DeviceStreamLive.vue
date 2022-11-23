@@ -34,7 +34,7 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch } from 'vue'
-import { useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
+import { DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
 import { processMark, ScoreTally, Mark } from '../helpers'
 import { useAuth } from '../hooks/auth'
 
@@ -71,31 +71,41 @@ const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
 }, {
   enabled: computed(() => deviceIds.value.length > 0) as unknown as boolean
 })
+const markStreamSubscriptionAlt = useDeviceStreamMarkAddedSubscription({
+  deviceIds: deviceIds as unknown as string[]
+}, {
+  enabled: computed(() => deviceIds.value.length > 0) as unknown as boolean,
+  clientId: 'alternate'
+})
 
-watch(
-  markStreamSubscription.result,
-  res => {
-    if (!res) return
-    const deviceId = res.deviceStreamMarkAdded.device.id
-    const sequence = res.deviceStreamMarkAdded.sequence
-    const tally = res.deviceStreamMarkAdded.tally as ScoreTally
+function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | undefined) {
+  if (!res) return
+  const deviceId = res.deviceStreamMarkAdded.device.id
+  const sequence = res.deviceStreamMarkAdded.sequence
+  const tally = res.deviceStreamMarkAdded.tally as ScoreTally
+  const mark = res.deviceStreamMarkAdded.mark as Mark
 
-    let tallyInfo = tallies[deviceId]
-    if (!tallyInfo) {
-      tallyInfo = {
-        tally: reactive<ScoreTally>({}),
-        lastSequence: 0,
-        completed: false
-      }
-      tallies[deviceId] = tallyInfo
+  let tallyInfo = tallies[deviceId]
+  if (!tallyInfo) {
+    tallyInfo = {
+      tally: reactive<ScoreTally>({}),
+      lastSequence: 0,
+      completed: false
     }
-
-    if (sequence >= tallyInfo.lastSequence) {
-      tallyInfo.tally = reactive(tally)
-      tallyInfo.lastSequence = sequence
-    }
+    tallies[deviceId] = tallyInfo
   }
-)
+
+  if (sequence >= tallyInfo.lastSequence) {
+    tallyInfo.tally = reactive(tally)
+    tallyInfo.lastSequence = sequence
+  }
+  if (mark.schema === 'clear') {
+    tallyInfo.lastSequence = 0
+  }
+}
+
+watch(markStreamSubscription.result, markStreamWatcher)
+watch(markStreamSubscriptionAlt.result, markStreamWatcher)
 </script>
 
 <style scoped>

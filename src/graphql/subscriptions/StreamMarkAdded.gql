@@ -2,6 +2,7 @@ subscription StreamMarkAdded ($scoresheetIds: [ID!]!) {
   streamMarkAdded (scoresheetIds: $scoresheetIds) {
     sequence
     tally
+    mark
     scoresheet { id }
   }
 }

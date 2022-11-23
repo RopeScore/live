@@ -46,34 +46,50 @@ export const apiDomain = computed(() => {
   } else return 'api.ropescore.com'
 })
 
-const wsLink = new WebSocketLink({
-  url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${apiDomain.value}/graphql` },
-  lazy: true,
-  connectionParams: () => {
+function createLink () {
+  const wsLink = new WebSocketLink({
+    url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${apiDomain.value}/graphql` },
+    lazy: true,
+    connectionParams: () => {
+      const auth = useAuth()
+      watch(auth.token, () => {
+        wsLink.client.restart()
+      })
+
+      return {
+        Authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+      }
+    }
+  })
+
+  const httpLink = createHttpLink({
+    uri: () => { return import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `https://${apiDomain.value}/graphql` }
+  })
+
+  const authLink = setContext(async (_, { headers }) => {
     const auth = useAuth()
-    watch(auth.token, () => {
-      wsLink.client.restart()
-    })
-
     return {
-      Authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+      headers: {
+        ...headers,
+        authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+      }
     }
-  }
-})
+  })
 
-const httpLink = createHttpLink({
-  uri: () => { return import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `https://${apiDomain.value}/graphql` }
-})
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query)
+      return (
+        definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+      )
+    },
+    wsLink,
+    authLink.concat(httpLink)
+  )
 
-const authLink = setContext(async (_, { headers }) => {
-  const auth = useAuth()
-  return {
-    headers: {
-      ...headers,
-      authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
-    }
-  }
-})
+  return splitLink
+}
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -90,19 +106,12 @@ const cache = new InMemoryCache({
   }
 })
 
-const splitLink = split(
-  ({ query }) => {
-    const definition = getMainDefinition(query)
-    return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
-    )
-  },
-  wsLink,
-  authLink.concat(httpLink)
-)
-
 export const apolloClient = new ApolloClient({
-  link: splitLink,
+  link: createLink(),
+  cache
+})
+
+export const apolloClientAlternate = new ApolloClient({
+  link: createLink(),
   cache
 })
