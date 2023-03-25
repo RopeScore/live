@@ -10,7 +10,7 @@
 
     <p class="text-center">
       Unsupported Competition Event:
-      <code class="block">{{ entry.competitionEventId }}</code>
+      <code class="block">{{ entry?.competitionEventId ?? competitionEventId }}</code>
       cannot display live score
     </p>
 
@@ -33,7 +33,13 @@ defineProps({
   },
   entry: {
     type: Object as PropType<EntryFragment>,
-    required: true
+    required: false,
+    default: () => ({})
+  },
+  competitionEventId: {
+    type: String,
+    required: false,
+    default: null
   }
 })
 </script>

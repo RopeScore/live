@@ -5,14 +5,26 @@
         v-for="(pool, idx) of pools"
         :key="pool.idx"
       >
+        <device-not-set v-if="!pool.deviceId" :pool="pool.label || idx + 1" />
         <speed-live-score
-          v-if="pool.deviceId"
+          v-else-if="tallies[pool.deviceId]?.info == null || tallies[pool.deviceId]?.info?.judgeType === 'S' || tallies[pool.deviceId]?.info?.judgeType === 'Shj'"
           :pool="pool.label || idx + 1"
           :tally="tallies[pool.deviceId]?.tally"
           :device-id="pool.deviceId"
           :cols="cols"
         />
-        <device-not-set v-else :pool="pool.label || idx + 1" />
+        <timing-live-score
+          v-else-if="tallies[pool.deviceId]?.info?.judgeType === 'T'"
+          :pool="pool.label || idx + 1"
+          :tally="tallies[pool.deviceId]?.tally"
+          :device-id="pool.deviceId"
+          :cols="cols"
+        />
+        <unsupported-competition-event
+          v-else
+          :pool="pool.label || idx + 1"
+          :competition-event-id="pool.deviceId ? tallies[pool.deviceId]?.info?.judgeType ?? '---' : '---'"
+        />
       </template>
 
       <div v-show="pools.length === 0" class="bg-gray-300 flex items-center justify-center relative">
@@ -34,14 +46,16 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch } from 'vue'
-import { DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
-import { processMark, ScoreTally, Mark } from '../helpers'
+import { DeviceStreamJudgeInfo, DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
+import { ScoreTally, Mark } from '../helpers'
 import { useAuth } from '../hooks/auth'
-
-import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import { useStreamPools } from '../hooks/stream-pools'
-import DeviceNotSet from '../components/DeviceNotSet.vue'
 import { useHead } from '@vueuse/head'
+
+import DeviceNotSet from '../components/DeviceNotSet.vue'
+import SpeedLiveScore from '../components/SpeedLiveScore.vue'
+import TimingLiveScore from '../components/TimingLiveScore.vue'
+import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
 
 useHead({
   title: 'Device Stream (Live) | RopeScore Live'
@@ -62,7 +76,7 @@ const cols = computed(() => {
   else return 5
 })
 
-const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean }>>({})
+const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean, info?: DeviceStreamJudgeInfo }>>({})
 
 const deviceIds = computed(() => pools.value.map(p => p.deviceId).filter(id => typeof id === 'string'))
 
@@ -84,13 +98,15 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | unde
   const sequence = res.deviceStreamMarkAdded.sequence
   const tally = res.deviceStreamMarkAdded.tally as ScoreTally
   const mark = res.deviceStreamMarkAdded.mark as Mark
+  const info = res.deviceStreamMarkAdded.info
 
   let tallyInfo = tallies[deviceId]
   if (!tallyInfo) {
     tallyInfo = {
       tally: reactive<ScoreTally>({}),
       lastSequence: 0,
-      completed: false
+      completed: false,
+      ...(info != null ? { info } : {})
     }
     tallies[deviceId] = tallyInfo
   }

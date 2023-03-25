@@ -3,6 +3,11 @@ subscription DeviceStreamMarkAdded ($deviceIds: [ID!]!) {
     sequence
     tally
     mark
+    info {
+      competitionEventId
+      rulesId
+      judgeType
+    }
     device { id }
   }
 }

@@ -37,7 +37,7 @@
     </main>
     <router-view v-else />
     <footer v-if="!fullscreen" class="flex col-span-2 justify-between items-center bg-gray-100 dark:bg-gray-700 dark:text-white px-4">
-      <span>&copy; Swantzter 2018-2022</span>
+      <span>&copy; Swantzter 2018-2023</span>
       <span>{{ version }}</span>
     </footer>
   </div>
