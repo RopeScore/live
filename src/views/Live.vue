@@ -95,7 +95,7 @@ const cols = computed(() => {
   else if (len <= 6) return 3
   else if (len <= 8) return 4
   else if (len <= 9) return 3
-  else if (len <= 12) return 4
+  else if (len <= 12) return 6
   else return 5
 })
 
