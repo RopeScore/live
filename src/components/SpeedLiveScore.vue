@@ -39,9 +39,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, PropType, toRef } from 'vue'
-import { EntryFragment, MarkScoresheetFragment, ScoresheetBaseFragment } from '../graphql/generated'
-import { ScoreTally, getAbbr } from '../helpers'
+import { computed, type PropType, toRef } from 'vue'
+import { type EntryFragment, type MarkScoresheetFragment, type ScoresheetBaseFragment } from '../graphql/generated'
+import { type ScoreTally, getAbbr } from '../helpers'
 
 const props = defineProps({
   pool: {

@@ -1,4 +1,4 @@
-import { ScoresheetBaseFragment } from './graphql/generated'
+import { type ScoresheetBaseFragment } from './graphql/generated'
 
 export type CompetitionEvent = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}`
 

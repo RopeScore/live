@@ -46,8 +46,8 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch } from 'vue'
-import { DeviceStreamJudgeInfo, DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
-import { ScoreTally, Mark } from '../helpers'
+import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
+import { type ScoreTally, type Mark } from '../helpers'
 import { useAuth } from '../hooks/auth'
 import { useStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'

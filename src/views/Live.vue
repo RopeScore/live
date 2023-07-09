@@ -39,9 +39,9 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch, ref } from 'vue'
-import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, MarkScoresheetFragment, ScoresheetBaseFragment, StreamMarkAddedSubscription } from '../graphql/generated'
+import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, type MarkScoresheetFragment, type ScoresheetBaseFragment, type StreamMarkAddedSubscription } from '../graphql/generated'
 import { useRoute } from 'vue-router'
-import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, Mark, processMark, ScoreTally } from '../helpers'
+import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, type Mark, processMark, type ScoreTally } from '../helpers'
 import { useAuth } from '../hooks/auth'
 
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'

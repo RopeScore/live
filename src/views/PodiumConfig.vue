@@ -1,12 +1,13 @@
 <template>
-  <div class="mb-4 flex justify-center">
-    <text-button color="blue" @click="bc.postMessage('raise')">
-      Raise
-    </text-button>
-    <text-button color="orange" @click="bc.postMessage('lower')">
-      Lower
-    </text-button>
-    <div class="w-40" />
+  <div class="mb-4 mx-auto container flex justify-between">
+    <div>
+      <text-button color="blue" @click="bc.postMessage('raise')">
+        Raise
+      </text-button>
+      <text-button color="orange" @click="bc.postMessage('lower')">
+        Lower
+      </text-button>
+    </div>
     <button-link to="/podium/live">
       Display
     </button-link>

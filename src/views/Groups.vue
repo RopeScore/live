@@ -31,7 +31,10 @@
               </button-link>
               <div>
                 <button-link :to="`/groups/${group.id}/on-floor`">
-                  On Floor (Transparent)
+                  On Floor
+                </button-link>
+                <button-link :to="`/groups/${group.id}/on-floor?key-color=transparent`">
+                  (Transparent)
                 </button-link>
                 <button-link :to="`/groups/${group.id}/on-floor?key-color=green`">
                   (Green)

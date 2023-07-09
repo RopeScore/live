@@ -80,20 +80,21 @@
       </tbody>
       <tfoot>
         <td colspan="4">
-          <text-field v-model="newDeviceId" label="Device ID" dense />
+          <text-field v-model="newDeviceId" form="request-share" label="Device ID" dense />
         </td>
         <td colspan="2">
           <text-button
             color="blue"
             dense
             :loading="requestShare.loading.value"
-            @click="requestShare.mutate({ deviceId: newDeviceId })"
+            form="request-share"
           >
             Request Share
           </text-button>
         </td>
       </tfoot>
     </table>
+    <form id="request-share" @submit.prevent="requestShare.mutate({ deviceId: newDeviceId })" />
 
     <h2 class="mt-4 text-xl">
       Pools

@@ -2,7 +2,12 @@
   <div
     v-if="auth.isLoggedIn.value"
     class="fixed bottom-0 right-0 left-0 top-0"
-    :class="{ 'bg-green-500': keyColor === 'green', 'bg-blue-500': keyColor === 'blue' }"
+    :class="{
+      'bg-green-500': keyColor === 'green',
+      'bg-blue-500': keyColor === 'blue',
+      'bg-white': !keyColor,
+      'dark:bg-black': !keyColor
+    }"
   >
     <div class="fixed bottom-0 right-0 left-0">
       <div v-if="entries.length === 1" class="bg-white flex flex-col w-max min-w-125 p-4 pr-8 mb-6 bg-gray-200 custom--clip">
@@ -78,7 +83,7 @@ const heatChangeSubscription = useHeatChangedSubscription({
 
 const keyColor = computed(() => route.query['key-color'] as string)
 
-watch(heatChangeSubscription.result, () => groupInfo.refetch())
+watch(heatChangeSubscription.result, () => { groupInfo.refetch() })
 
 const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
 

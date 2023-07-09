@@ -6,7 +6,7 @@
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl">
             {{ currentHeat }}
           </div>
-          <div class="flex justify-start align-middle gap-2 items-center content-center flex-wrap">
+          <div :style="`--cols: ${entries[currentHeat].length}`" class="grid grid-rows-1 grid-cols-var gap-2">
             <entry-info-card
               v-for="entry of entries[currentHeat]"
               :key="entry.id"
@@ -22,7 +22,7 @@
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl dark:text-white">
             {{ heat }}
           </div>
-          <div class="flex justify-start align-middle gap-2 items-center content-center flex-wrap">
+          <div :style="`--cols: ${entries[heat].length}`" class="grid grid-rows-1 grid-cols-var gap-2">
             <entry-info-card
               v-for="entry of entries[heat]"
               :key="entry.id"
@@ -65,7 +65,7 @@ const heatChangeSubscription = useHeatChangedSubscription({
   groupId: route.params.groupId as string
 })
 
-watch(heatChangeSubscription.result, () => groupInfo.refetch())
+watch(heatChangeSubscription.result, () => { groupInfo.refetch() })
 
 const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
 
@@ -111,3 +111,9 @@ function heatPlusN (n: number) {
   return heats.value[heatIdx + n]
 }
 </script>
+
+<style scoped>
+.grid-cols-var {
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+}
+</style>

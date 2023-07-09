@@ -15,8 +15,8 @@
 </template>
 
 <script setup lang="ts">
-import { PropType } from 'vue'
-import { EntryFragment } from '../graphql/generated'
+import { type PropType } from 'vue'
+import { type EntryFragment } from '../graphql/generated'
 import { getAbbr } from '../helpers'
 
 defineProps({

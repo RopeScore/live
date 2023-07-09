@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
-import { EntryFragment } from '../graphql/generated'
+import { type PropType } from 'vue'
+import { type EntryFragment } from '../graphql/generated'
 
 defineProps({
   pool: {
