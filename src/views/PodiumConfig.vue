@@ -25,7 +25,7 @@
         {{ pos }}
       </h2>
 
-      <div v-for="(flag, idx) of state[pos]" :key="idx + flag" class="grid grid-cols-4">
+      <div v-for="(flag, idx) of state[pos]" :key="idx + flag" class="grid grid-cols-[auto,max-content] items-baseline">
         <select-field
           v-model="state[pos][idx]"
           class="col-span-3"
@@ -37,7 +37,7 @@
         </text-button>
       </div>
 
-      <div class="grid grid-cols-4">
+      <div class="grid grid-cols-1">
         <select-field
           :model-value="addNew[pos].value"
           class="col-span-3"

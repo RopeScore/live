@@ -1,15 +1,33 @@
 .custom-size {
-  text-shadow: 0 0 .5em black;
+  text-shadow: 0 0 .5em white;
 }
 
 .flag-bg {
+  background: linear-gradient(0deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, .9) 80%,
+      rgba(255, 255, 255, 1) 100%);
+}
+
+.full-bg {
+  background: linear-gradient(0deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, .9) 50%,
+      rgba(255, 255, 255, 1) 100%);
+}
+
+.dark .custom-size {
+  text-shadow: 0 0 .5em black;
+}
+
+.dark .flag-bg {
   background: linear-gradient(0deg,
       rgba(0, 0, 0, 0) 0%,
       rgba(0, 0, 0, .9) 80%,
       rgba(0, 0, 0, 1) 100%);
 }
 
-.full-bg {
+.dark .full-bg {
   background: linear-gradient(0deg,
       rgba(0, 0, 0, 0) 0%,
       rgba(0, 0, 0, .9) 50%,
