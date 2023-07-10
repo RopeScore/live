@@ -12,6 +12,7 @@
           :tally="tallies[pool.deviceId]?.tally"
           :device-id="pool.deviceId"
           :cols="cols"
+          :bg-url="poolBgUrl(pool.label || idx + 1)"
         />
         <timing-live-score
           v-else-if="tallies[pool.deviceId]?.info?.judgeType === 'T'"
@@ -19,6 +20,7 @@
           :tally="tallies[pool.deviceId]?.tally"
           :device-id="pool.deviceId"
           :cols="cols"
+          :bg-url="poolBgUrl(pool.label || idx + 1)"
         />
         <unsupported-competition-event
           v-else
@@ -37,12 +39,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
 import { type ScoreTally, type Mark } from '../helpers'
-import { useAuth } from '../hooks/auth'
 import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'
+import { useFetch, useTimeoutPoll } from '@vueuse/core'
 
 import DeviceNotSet from '../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
@@ -53,7 +55,6 @@ useHead({
   title: '📺 Device Stream (Live)'
 })
 
-const auth = useAuth()
 const { pools, settings } = useDeviceStreamPools()
 
 const cols = computed(() => {
@@ -114,6 +115,66 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | unde
 
 watch(markStreamSubscription.result, markStreamWatcher)
 watch(markStreamSubscriptionAlt.result, markStreamWatcher)
+
+const poolBackgrounds = ref<Array<{ poolLabel: number, bgUrl?: string }>>([])
+
+function poolBgUrl (poolLabel: number) {
+  return poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.bgUrl
+}
+
+const servoPollUrl = ref<string>('')
+
+interface ServoHeatPoolInfo {
+  PROGRAM: 'ON' | ''
+  Station: number
+  HeatNumber: string
+  Event: string
+  Team: string
+  TeamCountryCode: string
+  TeamCountryName: string
+  TeamCountryFlagUrl: string
+  [nameKey: `Part${number}`]: string
+  [lastNameKey: `Part${number}_Last`]: string
+}
+
+const servoCurrentHeatFetch = useFetch(servoPollUrl, {
+  headers: {
+    accept: 'application/json'
+  }
+}, {
+  immediate: false
+}).get().json<ServoHeatPoolInfo[]>()
+
+watch(servoCurrentHeatFetch.data, heatInfo => {
+  if (heatInfo == null) {
+    poolBackgrounds.value = []
+    return
+  }
+  poolBackgrounds.value = heatInfo.map(hi => ({
+    poolLabel: hi.Station,
+    bgUrl: hi.TeamCountryFlagUrl ?? (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode}.svg` : undefined)
+  }))
+})
+
+const servoPoll = useTimeoutPoll(() => {
+  servoCurrentHeatFetch.execute()
+}, 10_000, { immediate: false })
+
+watch(() => settings.value.poolBackgrounds, poolBackgrounds => {
+  // start by just disabling all polling
+  servoPoll.pause()
+
+  if (poolBackgrounds?.system === 'servo' && poolBackgrounds.competitionId != null) {
+    let url
+    try {
+      url = new URL(`/api/v1/competitions/${poolBackgrounds.competitionId}/info/current`, poolBackgrounds.baseUrl)
+    } catch {
+      return
+    }
+    servoPollUrl.value = url.href
+    servoPoll.resume()
+  }
+}, { immediate: true })
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border border-black bg-white dark:border-gray-600 dark:bg-black dark:text-white flex items-center justify-center relative"
+    class="border border-black bg-white dark:border-gray-600 dark:bg-black dark:text-white flex items-center justify-center relative overflow-hidden"
     :class="{
       'bg-green-100': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
       'dark:bg-green-900': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
@@ -8,6 +8,12 @@
       'dark:bg-dark-500': entry?.didNotSkipAt
     }"
   >
+    <div v-if="bgUrl" class="absolute bottom-0 right-0 left-0 max-h-[75%]">
+      <img :src="bgUrl" alt=" ">
+      <div class="absolute inset-0 flag-bg" />
+    </div>
+    <div class="absolute inset-0 full-bg" />
+
     <div
       class="font-bold text-8xl absolute top-0 left-2 text-gray-600 dark:text-gray-400"
     >
@@ -20,11 +26,11 @@
       {{ entry.participant.name }}
     </div>
 
-    <div v-if="!entry?.didNotSkipAt" class="font-semibold tabular-nums w-full text-center font-mono custom-size">
+    <div v-if="!entry?.didNotSkipAt" class="z-1 font-semibold tabular-nums w-full text-center font-mono custom-size">
       {{ tally?.seconds ?? 0 }}
     </div>
 
-    <div class="absolute bottom-2 left-2 text-gray-500">
+    <div class="absolute top-2 right-2 text-gray-500">
       <div v-if="deviceId">
         {{ deviceId }}
       </div>
@@ -67,6 +73,10 @@ const props = defineProps({
   cols: {
     type: Number,
     default: null
+  },
+  bgUrl: {
+    type: String,
+    default: undefined
   }
 })
 
@@ -88,3 +98,5 @@ const fontSize = computed(() => {
   line-height: 1;
 }
 </style>
+
+<style src="./flag-bg.css"></style>

@@ -87,6 +87,31 @@
     </table>
     <form id="request-share" @submit.prevent="requestShare.mutate({ deviceId: newDeviceId })" />
 
+    <h2 class="text-xl">
+      Pool Backgrounds
+    </h2>
+    <div>
+      <select-field
+        :model-value="settings.poolBackgrounds?.system"
+        label="Pool Backgrounds System"
+        :data-list="['servo']"
+        @update:model-value="setPoolBackgroundsSystem($event)"
+      />
+      <text-field
+        v-if="settings.poolBackgrounds?.system === 'servo'"
+        v-model="settings.poolBackgrounds.baseUrl"
+        label="Servo Scoring Base URL"
+        type="url"
+      />
+      <number-field
+        v-if="settings.poolBackgrounds?.system === 'servo'"
+        v-model="settings.poolBackgrounds.competitionId"
+        label="Servo Scoring Competition ID"
+        :min="0"
+        :step="1"
+      />
+    </div>
+
     <h2 class="mt-4 text-xl">
       Pools
     </h2>
@@ -114,11 +139,13 @@
         <tr v-for="(pool, idx) of pools" :key="idx">
           <td>{{ idx + 1 }}</td>
           <td>
-            <text-field
+            <number-field
               :model-value="pool.label"
               dense
               label="Pool Label"
               type="number"
+              :step="1"
+              :min="1"
               @update:model-value="pool.label = $event"
             />
           </td>
@@ -156,7 +183,7 @@ import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
 
-import { TextButton, TextField, SelectField, ButtonLink } from '@ropescore/components'
+import { TextButton, TextField, SelectField, ButtonLink, NumberField } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
 
 useHead({
@@ -186,6 +213,17 @@ requestShare.onDone(() => {
 })
 
 const { pools, settings } = useDeviceStreamPools()
+
+function setPoolBackgroundsSystem (system: string | undefined) {
+  if (system === 'servo' && settings.value.poolBackgrounds?.system !== 'servo') {
+    settings.value.poolBackgrounds = {
+      system: 'servo',
+      baseUrl: 'https://scoring.ijru.sport'
+    }
+  } else {
+    settings.value.poolBackgrounds = null
+  }
+}
 
 // Remove devices you no longer have access to from pools
 sharesQuery.onResult(res => {

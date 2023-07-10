@@ -7,7 +7,8 @@ interface StreamPool {
 
 interface ServoPoolBackgroundsConfig {
   system: 'servo'
-  url: string
+  baseUrl: string
+  competitionId?: number
 }
 
 interface DeviceStreamSettings {

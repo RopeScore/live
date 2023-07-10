@@ -1,0 +1,32 @@
+.custom-size {
+  text-shadow: 0 0 .5em black;
+}
+
+.flag-bg {
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, .9) 80%,
+      rgba(0, 0, 0, 1) 100%);
+}
+
+.full-bg {
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, .9) 50%,
+      rgba(0, 0, 0, 1) 100%);
+}
+
+img {
+  position: relative;
+}
+
+img[alt]:after {
+  content: ' ';
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: black;
+}
