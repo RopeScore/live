@@ -11,7 +11,7 @@ const newName = ref('')
 
 <template>
   <div
-    class="grid  bg-white border-t px-4 items-stretch gap-4"
+    class="grid bg-white border-t px-4 items-stretch gap-4"
     :class="{
       'grid-cols-1': !auth.isLoggedIn.value,
       'grid-cols-[max-content,max-content,auto]': auth.isLoggedIn.value
@@ -24,7 +24,7 @@ const newName = ref('')
         dense
         label="Preferred Server"
         :data-list="localApis"
-        class="min-w-[14ch]"
+        class="!min-w-[12ch]"
       />
     </div>
 
