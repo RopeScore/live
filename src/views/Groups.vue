@@ -1,57 +1,46 @@
 <template>
-  <div>
-    <div
-      v-if="auth.loading.value"
-      class="flex justify-center items-center text-2xl"
-    >
-      Loading
-    </div>
-  </div>
+  <template v-for="groupType in ['uncompleted', 'completed']" :key="groupType">
+    <component :is="groupType === 'completed' ? 'details' : 'div'" :class="{ 'mt-4': groupType === 'completed' }">
+      <summary v-if="groupType === 'completed'">
+        Completed Groups
+      </summary>
 
-  <div v-if="auth.isLoggedIn.value">
-    <template v-for="groupType in ['uncompleted', 'completed']" :key="groupType">
-      <component :is="groupType === 'completed' ? 'details' : 'div'" :class="{ 'mt-4': groupType === 'completed' }">
-        <summary v-if="groupType === 'completed'">
-          Completed Groups
-        </summary>
-
-        <div class="flex flex-col gap-4">
-          <div
-            v-for="group of groupType === 'completed' ? completedGroups : groups"
-            :key="group.id"
-            class="border rounded p-2"
-          >
-            <div>
-              <span class="font-semibold">{{ group.name }}</span>
-            </div>
-
-            <menu class="p-0 m-0 flex justify-end items-start flex-col">
-              <button-link :to="`/groups/${group.id}/live`">
-                Live
-              </button-link>
-              <div>
-                <button-link :to="`/groups/${group.id}/on-floor`">
-                  On Floor
-                </button-link>
-                <button-link :to="`/groups/${group.id}/on-floor?key-color=transparent`">
-                  (Transparent)
-                </button-link>
-                <button-link :to="`/groups/${group.id}/on-floor?key-color=green`">
-                  (Green)
-                </button-link>
-                <button-link :to="`/groups/${group.id}/on-floor?key-color=blue`">
-                  (Blue)
-                </button-link>
-              </div>
-              <button-link :to="`/groups/${group.id}/next-up`">
-                Next Up
-              </button-link>
-            </menu>
+      <div class="flex flex-col gap-4">
+        <div
+          v-for="group of groupType === 'completed' ? completedGroups : groups"
+          :key="group.id"
+          class="border rounded p-2"
+        >
+          <div>
+            <span class="font-semibold">{{ group.name }}</span>
           </div>
+
+          <menu class="p-0 m-0 flex justify-end items-start flex-col">
+            <button-link :to="`/groups/${group.id}/live`">
+              Live
+            </button-link>
+            <div>
+              <button-link :to="`/groups/${group.id}/on-floor`">
+                On Floor
+              </button-link>
+              <button-link :to="`/groups/${group.id}/on-floor?key-color=transparent`">
+                (Transparent)
+              </button-link>
+              <button-link :to="`/groups/${group.id}/on-floor?key-color=green`">
+                (Green)
+              </button-link>
+              <button-link :to="`/groups/${group.id}/on-floor?key-color=blue`">
+                (Blue)
+              </button-link>
+            </div>
+            <button-link :to="`/groups/${group.id}/next-up`">
+              Next Up
+            </button-link>
+          </menu>
         </div>
-      </component>
-    </template>
-  </div>
+      </div>
+    </component>
+  </template>
 
   <div
     v-if="loading"

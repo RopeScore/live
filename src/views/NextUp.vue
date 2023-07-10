@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isLoggedIn.value" class="grid grid-rows-[1fr,2fr] bg-white dark:bg-black">
+  <div class="grid grid-rows-[1fr,2fr] bg-white dark:bg-black">
     <div class="bg-green-100 dark:bg-green-500">
       <div class="container mx-auto flex items-center h-full p-y-8">
         <div class="min-w-full overflow-x-auto grid grid-cols-[3rem,auto] gap-2">
@@ -33,14 +33,6 @@
       </div>
     </div>
   </div>
-  <template v-else-if="auth.loading.value">
-    Connecting
-  </template>
-  <template v-else>
-    You are not logged in, <router-link to="/groups">
-      Go back
-    </router-link>
-  </template>
 </template>
 
 <script lang="ts" setup>

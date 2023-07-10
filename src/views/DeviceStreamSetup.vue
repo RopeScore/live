@@ -1,14 +1,5 @@
 <template>
-  <div>
-    <div
-      v-if="auth.loading.value"
-      class="flex justify-center items-center text-2xl"
-    >
-      Loading
-    </div>
-  </div>
-
-  <div v-if="auth.token.value" class="container mx-auto">
+  <div class="container mx-auto">
     <div class="flex justify-end">
       <text-button :loading="sharesQuery.loading.value" @click="sharesQuery.refetch()">
         Refresh
@@ -148,36 +139,6 @@
         </tr>
       </tbody>
     </table>
-  </div>
-
-  <div v-if="!auth.token.value">
-    <h1 class="font-semibold text-2xl mt-4">
-      Register
-    </h1>
-    <text-field v-model="newName" label="System name" />
-
-    <div
-      class="border-l border-l-4 py-2 px-4 mt-2 bg-blue-100 border-l-blue-300"
-    >
-      Note that live scoring will send and store data in the cloud,
-      Swantzter is the data controller for this and can be reached on
-      <a
-        class="text-blue-700 hover:text-blue-900 underline"
-        href="mailto:privacy@swantzter.se"
-        target="_blank"
-      >privacy@swantzter.se</a>.
-      Please make sure you have read the (short and simple!) privacy policy
-      available on
-      <a
-        class="text-blue-700 hover:text-blue-900 underline"
-        href="https://ropescore.com/privacy"
-        target="_blank"
-      >https://ropescore.com/privacy</a>
-    </div>
-
-    <text-button @click="auth.register({ name: newName })">
-      Register
-    </text-button>
   </div>
 
   <div

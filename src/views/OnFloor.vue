@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="auth.isLoggedIn.value"
     class="fixed bottom-0 right-0 left-0 top-0"
     :class="{
       'bg-green-500': keyColor === 'green',
@@ -49,14 +48,6 @@
       </div>
     </div>
   </div>
-  <template v-else-if="auth.loading.value">
-    Connecting
-  </template>
-  <template v-else>
-    You are not logged in, <router-link to="/groups">
-      Go back
-    </router-link>
-  </template>
 </template>
 
 <script lang="ts" setup>

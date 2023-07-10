@@ -1,5 +1,5 @@
 <template>
-  <div v-if="auth.isLoggedIn.value" class="grid grid-rows-1 bg-white dark:bg-black">
+  <div class="grid grid-rows-1 bg-white dark:bg-black">
     <main class="grid custom-grid">
       <template
         v-for="(pool, idx) of pools"
@@ -34,14 +34,6 @@
       </div>
     </main>
   </div>
-  <template v-else-if="auth.loading.value">
-    Connecting
-  </template>
-  <template v-else>
-    You are not logged in, <router-link to="/device-stream">
-      Go back
-    </router-link>
-  </template>
 </template>
 
 <script lang="ts" setup>
