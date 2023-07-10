@@ -180,22 +180,6 @@
     </text-button>
   </div>
 
-  <div v-else class="mt-4">
-    <div>
-      <select-field
-        v-model="localManual"
-        label="Preferred Server"
-        :data-list="localApis"
-        class="max-w-60"
-      />
-      <p>Server: {{ apiDomain }}</p>
-    </div>
-    <p>
-      System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.user.value?.id }}</code>
-    </p>
-    <system-name />
-  </div>
-
   <div
     v-if="sharesQuery.error.value"
     class="p-2"
@@ -207,14 +191,12 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useAuth } from '../hooks/auth'
-import { apiDomain, localManual, localApis } from '../apollo'
-import { useStreamPools } from '../hooks/stream-pools'
+import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
 
 import { TextButton, TextField, SelectField, ButtonLink } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
-import SystemName from '../components/SystemName.vue'
 
 useHead({
   title: 'Device Stream | RopeScore Live'
@@ -242,7 +224,7 @@ requestShare.onDone(() => {
   newDeviceId.value = ''
 })
 
-const pools = useStreamPools()
+const { pools, settings } = useDeviceStreamPools()
 
 // Remove devices you no longer have access to from pools
 sharesQuery.onResult(res => {

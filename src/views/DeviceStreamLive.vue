@@ -49,7 +49,7 @@ import { computed, reactive, watch } from 'vue'
 import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
 import { type ScoreTally, type Mark } from '../helpers'
 import { useAuth } from '../hooks/auth'
-import { useStreamPools } from '../hooks/stream-pools'
+import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'
 
 import DeviceNotSet from '../components/DeviceNotSet.vue'
@@ -62,7 +62,7 @@ useHead({
 })
 
 const auth = useAuth()
-const pools = useStreamPools()
+const { pools, settings } = useDeviceStreamPools()
 
 const cols = computed(() => {
   const len = pools.value.length

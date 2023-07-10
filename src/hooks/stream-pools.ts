@@ -5,8 +5,21 @@ interface StreamPool {
   label?: number
 }
 
-const pools = useLocalStorage<StreamPool[]>('rs-stream-pools', [])
+interface ServoPoolBackgroundsConfig {
+  system: 'servo'
+  url: string
+}
 
-export function useStreamPools () {
-  return pools
+interface DeviceStreamSettings {
+  poolBackgrounds?: ServoPoolBackgroundsConfig | null
+}
+
+const pools = useLocalStorage<StreamPool[]>('rs-device-stream-pools', [])
+const settings = useLocalStorage<DeviceStreamSettings>('rs-device-stream-settings', {})
+
+export function useDeviceStreamPools () {
+  return {
+    pools,
+    settings
+  }
 }

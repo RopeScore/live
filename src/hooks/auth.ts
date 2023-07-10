@@ -9,7 +9,9 @@ export function useAuth () {
   const { loading, refetch, result } = useMeQuery({})
   const token = useLocalStorage<null | string>('rs-auth', null)
   const registerMutation = useRegisterUserMutation()
+  const loadingRegister = registerMutation.loading
   const updateMutation = useUpdateUserMutation()
+  const loadingUpdate = updateMutation.loading
 
   watch(token, (nT, pT) => {
     console.log('token', nT)
@@ -39,6 +41,8 @@ export function useAuth () {
   return {
     token,
     loading,
+    loadingRegister,
+    loadingUpdate,
     user,
     isLoggedIn,
 

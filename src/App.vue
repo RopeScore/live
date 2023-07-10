@@ -2,14 +2,14 @@
   <div
     class="grid grid-cols-1 min-h-[100vh] w-full"
     :class="{
-      'grid-rows-[3.5rem,auto,2rem]': !fullscreen,
+      'grid-rows-[3.5rem,auto,2rem,2rem]': !fullscreen,
       'grid-rows-1': fullscreen,
       'h-[100vh]': fullscreen,
       'overflow-y-hidden': fullscreen,
       dark: darkMode === 'dark'
     }"
   >
-    <header v-if="!fullscreen" class="col-span-2 bg-gray-100 flex justify-between items-center px-4 sticky top-0 z-1000">
+    <header v-if="!fullscreen" class="bg-gray-100 flex justify-between items-center px-4 sticky top-0 z-1000">
       <router-link to="/">
         <span class="text-2xl font-semibold">RopeScore Live</span>
       </router-link>
@@ -32,11 +32,14 @@
         </button-link>
       </nav>
     </header>
+
     <main v-if="!fullscreen" class="px-2 py-4">
       <router-view />
     </main>
     <router-view v-else />
-    <footer v-if="!fullscreen" class="flex col-span-2 justify-between items-center bg-gray-100 dark:bg-gray-700 dark:text-white px-4">
+
+    <system-settings-footer v-if="!fullscreen" />
+    <footer v-if="!fullscreen" class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 dark:text-white px-4">
       <span>&copy; Swantzter 2018-2023</span>
       <span>{{ version }}</span>
     </footer>
@@ -49,6 +52,7 @@ import { useRoute } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
 
 import { ButtonLink, TextButton } from '@ropescore/components'
+import SystemSettingsFooter from './components/SystemSettingsFooter.vue'
 
 const route = useRoute()
 
