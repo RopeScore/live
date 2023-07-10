@@ -23,11 +23,6 @@
 import { useSW } from '../hooks/sw'
 
 import { TextButton, ButtonLink } from '@ropescore/components'
-import { useHead } from '@vueuse/head'
-
-useHead({
-  title: 'RopeScore Live'
-})
 
 const { needRefresh, updateSW } = useSW()
 </script>

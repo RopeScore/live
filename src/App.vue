@@ -50,9 +50,14 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
+import { useHead } from '@vueuse/head'
 
 import { ButtonLink, TextButton } from '@ropescore/components'
 import SystemSettingsFooter from './components/SystemSettingsFooter.vue'
+
+useHead({
+  titleTemplate: title => !title ? 'RopeScore Live' : `${title} | RopeScore Live`
+})
 
 const route = useRoute()
 

@@ -58,7 +58,7 @@ import TimingLiveScore from '../components/TimingLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
 
 useHead({
-  title: 'Device Stream (Live) | RopeScore Live'
+  title: '📺 Device Stream (Live)'
 })
 
 const auth = useAuth()

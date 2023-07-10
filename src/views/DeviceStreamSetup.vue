@@ -199,7 +199,7 @@ import { TextButton, TextField, SelectField, ButtonLink } from '@ropescore/compo
 import IconLoading from 'virtual:icons/mdi/loading'
 
 useHead({
-  title: 'Device Stream | RopeScore Live'
+  title: 'Device Stream'
 })
 
 const auth = useAuth()

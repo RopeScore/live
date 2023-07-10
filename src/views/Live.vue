@@ -49,7 +49,7 @@ import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEve
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'Competition (Live) | RopeScore Live'
+  title: '📺 Competition (Live)'
 })
 
 const auth = useAuth()

@@ -68,7 +68,7 @@ import { useHead } from '@vueuse/head'
 import { formatList } from '../helpers'
 
 useHead({
-  title: 'Competition (On Floor) | RopeScore Live'
+  title: '📺 Competition (On Floor)'
 })
 
 const auth = useAuth()

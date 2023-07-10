@@ -52,7 +52,7 @@ import EntryInfoCard from '../components/EntryInfoCard.vue'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'Competition (Next Up) | RopeScore Live'
+  title: '📺 Competition (Next Up)'
 })
 
 const auth = useAuth()

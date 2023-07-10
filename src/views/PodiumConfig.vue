@@ -59,7 +59,7 @@ import { TextButton, SelectField, ButtonLink } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
 
 useHead({
-  title: 'Podium | RopeScore Live'
+  title: 'Podium'
 })
 
 const bc = new BroadcastChannel('rs-podium')

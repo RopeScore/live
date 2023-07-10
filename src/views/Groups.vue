@@ -77,7 +77,7 @@ import { useHead } from '@vueuse/head'
 import { ButtonLink } from '@ropescore/components'
 
 useHead({
-  title: 'Groups | RopeScore Live'
+  title: 'Groups'
 })
 
 const auth = useAuth()
