@@ -113,3 +113,15 @@ const listFormatter = new Intl.ListFormat(locales)
 export function formatList (list: string[]) {
   return listFormatter.format(list)
 }
+
+export async function getOpfsImgUrl (src: string) {
+  const origUrl = new URL(src)
+  if (origUrl.protocol === 'opfs:') {
+    const opfsRoot = await navigator.storage.getDirectory()
+    const fileHandle = await opfsRoot.getFileHandle(origUrl.pathname)
+    const file = await fileHandle.getFile()
+    return URL.createObjectURL(file)
+  } else {
+    return src
+  }
+}

@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-white dark:bg-black grid grid-cols-3 gap-6 px-8 py-6">
+  <main class="grid grid-cols-3 gap-6 px-8 py-6">
     <div
       v-for="pos in positions"
       :key="pos"
@@ -34,8 +34,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useHead } from '@vueuse/head'
+import { usePodium } from '../hooks/podium'
+import { getOpfsImgUrl } from '../helpers'
 
 useHead({
   title: '📺 Podium (Live)'
@@ -47,6 +49,7 @@ const positions = ['2nd', '1st', '3rd'] as const
 
 const state = ref<Record<'1st' | '2nd' | '3rd', string[]>>()
 const raised = ref(false)
+const { settings } = usePodium()
 
 bc.addEventListener('message', evt => {
   if (evt.data === 'raise') {
@@ -57,6 +60,11 @@ bc.addEventListener('message', evt => {
     raised.value = false
   }
 })
+
+const bgUrlVar = ref('')
+watch(() => settings.value.background, async newBg => {
+  bgUrlVar.value = newBg ? `url(${await getOpfsImgUrl(newBg)})` : ''
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -66,5 +74,17 @@ bc.addEventListener('message', evt => {
 
 .custom-duration {
   transition-duration: 10s;
+}
+
+main {
+  --bgUrl: v-bind(bgUrlVar);
+  background: linear-gradient(0deg, rgba(255,255,255,.3) 0%, rgba(255,255,255,.8) 50%, rgba(255,255,255,1) 100%), var(--bgUrl, white);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.dark main {
+  background: linear-gradient(0deg, rgba(0,0,0,.3) 0%, rgba(0,0,0,.8) 50%, rgba(0,0,0,1) 100%), var(--bgUrl, black);
 }
 </style>

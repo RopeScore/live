@@ -25,7 +25,7 @@
         {{ pos }}
       </h2>
 
-      <div v-for="(flag, idx) of state[pos]" :key="idx + flag" class="grid grid-cols-[auto,max-content] items-baseline">
+      <div v-for="(flag, idx) of state[pos]" :key="idx + flag" class="grid grid-cols-[auto_max-content] items-baseline">
         <select-field
           v-model="state[pos][idx]"
           class="col-span-3"
@@ -48,15 +48,24 @@
       </div>
     </div>
   </div>
+
+  <div class="mx-auto container flex justify-center mt-8">
+    <div>
+      <photo-picker
+        v-model="settings.background"
+        label="Background image"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
 import { nextTick, ref } from 'vue'
-import { useLocalStorage } from '@vueuse/core'
-
 import countries from '../assets/countries.json'
 import { TextButton, SelectField, ButtonLink } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
+import { usePodium } from '../hooks/podium'
+import PhotoPicker from '../components/PhotoPicker.vue'
 
 useHead({
   title: 'Podium'
@@ -65,14 +74,14 @@ useHead({
 const bc = new BroadcastChannel('rs-podium')
 
 const positions = ['2nd', '1st', '3rd'] as const
-const state = useLocalStorage<Record<'1st' | '2nd' | '3rd', string[]>>('rs-podium', { '1st': [], '2nd': [], '3rd': [] })
+const { podium: state, settings } = usePodium()
 
 const countriesList = countries.map(c => ({ text: c.name, value: c.code }))
 
 const addNew = {
-  '1st': ref<string | undefined>(undefined),
-  '2nd': ref<string | undefined>(undefined),
-  '3rd': ref<string | undefined>(undefined)
+  '1st': ref<string | undefined>(),
+  '2nd': ref<string | undefined>(),
+  '3rd': ref<string | undefined>()
 }
 
 function addNewFn (pos: typeof positions[number], code: string) {

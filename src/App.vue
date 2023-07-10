@@ -2,7 +2,7 @@
   <div
     class="grid grid-cols-1 min-h-[100vh] w-full"
     :class="{
-      'grid-rows-[3.5rem,auto,2rem,2rem]': !fullscreen,
+      'grid-rows-[3.5rem_auto_2rem_2rem]': !fullscreen,
       'grid-rows-1': fullscreen,
       'h-[100vh]': fullscreen,
       'overflow-y-hidden': fullscreen,

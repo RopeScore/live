@@ -14,7 +14,7 @@ const newName = ref('')
     class="grid bg-white border-t px-4 items-stretch gap-4"
     :class="{
       'grid-cols-1': !auth.isLoggedIn.value,
-      'grid-cols-[max-content,max-content,auto]': auth.isLoggedIn.value
+      'grid-cols-[max-content_max-content_auto]': auth.isLoggedIn.value
     }"
   >
     <div class="flex items-center gap-2">
@@ -32,7 +32,7 @@ const newName = ref('')
       System ID: <code class="bg-gray-100 px-2 rounded">{{ auth.loading.value ? 'Loading...' : auth.user.value?.id }}</code>
     </p>
 
-    <form v-if="auth.isLoggedIn.value" class="border-l pl-4 grid grid-cols-[max-content,auto,max-content] gap-2 items-center" @submit.prevent="auth.update({ name: newName })">
+    <form v-if="auth.isLoggedIn.value" class="border-l pl-4 grid grid-cols-[max-content_auto_max-content] gap-2 items-center" @submit.prevent="auth.update({ name: newName })">
       System name:
       <text-field
         :model-value="auth.user.value?.name ?? ''"

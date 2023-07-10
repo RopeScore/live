@@ -1,18 +1,18 @@
 import { useLocalStorage } from '@vueuse/core'
 
-interface StreamPool {
+export interface StreamPool {
   deviceId?: string
   label?: number
 }
 
-interface ServoPoolBackgroundsConfig {
+export interface ServoPoolBackgroundsConfig {
   system: 'servo'
   baseUrl: string
   competitionId?: number
 }
 
-interface DeviceStreamSettings {
-  poolBackgrounds?: ServoPoolBackgroundsConfig | null
+export interface DeviceStreamSettings {
+  poolBackgrounds?: ServoPoolBackgroundsConfig
 }
 
 const pools = useLocalStorage<StreamPool[]>('rs-device-stream-pools', [])

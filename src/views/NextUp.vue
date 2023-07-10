@@ -1,8 +1,8 @@
 <template>
-  <div class="grid grid-rows-[1fr,2fr] bg-white dark:bg-black">
+  <div class="grid grid-rows-[1fr_2fr] bg-white dark:bg-black">
     <div class="bg-green-100 dark:bg-green-500">
       <div class="container mx-auto flex items-center h-full p-y-8">
-        <div class="min-w-full overflow-x-auto grid grid-cols-[3rem,auto] gap-2">
+        <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-2">
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl">
             {{ currentHeat }}
           </div>
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="container mx-auto flex items-center h-full p-y-8">
-      <div class="min-w-full overflow-x-auto grid grid-cols-[3rem,auto] gap-8">
+      <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-8">
         <template v-for="heat of nextTwo" :key="heat">
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl dark:text-white">
             {{ heat }}

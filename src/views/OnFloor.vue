@@ -25,7 +25,7 @@
         <div class="text-dark-600 italic">
           Heat {{ currentHeat }}
         </div>
-        <div class="grid grid-cols-[3ch,auto,auto,auto] gap-2 items-baseline">
+        <div class="grid grid-cols-[3ch_auto_auto_auto] gap-2 items-baseline">
           <template v-for="entry of entries" :key="entry.id">
             <span>{{ entry.pool }}</span>
             <span
