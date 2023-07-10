@@ -6,7 +6,7 @@
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl">
             {{ currentHeat }}
           </div>
-          <div :style="`--cols: ${entries[currentHeat].length}`" class="grid grid-rows-1 grid-cols-var gap-2">
+          <div :style="`--cols: ${entries[currentHeat]?.length ?? '1'}`" class="grid grid-rows-1 grid-cols-var gap-2">
             <entry-info-card
               v-for="entry of entries[currentHeat]"
               :key="entry.id"
@@ -22,7 +22,7 @@
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl dark:text-white">
             {{ heat }}
           </div>
-          <div :style="`--cols: ${entries[heat].length}`" class="grid grid-rows-1 grid-cols-var gap-2">
+          <div :style="`--cols: ${entries[heat]?.length ?? '1'}`" class="grid grid-rows-1 grid-cols-var gap-2">
             <entry-info-card
               v-for="entry of entries[heat]"
               :key="entry.id"
