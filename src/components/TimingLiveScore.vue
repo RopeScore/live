@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border border-black bg-white dark:border-gray-600 dark:bg-black dark:text-white flex items-center justify-center relative overflow-hidden"
+    class="score-container border border-black bg-white dark:border-gray-600 dark:bg-black dark:text-white flex items-center justify-center relative overflow-hidden"
     :class="{
       'bg-green-100': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
       'dark:bg-green-900': scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
@@ -30,7 +30,7 @@
       {{ tally?.seconds ?? 0 }}
     </div>
 
-    <div class="absolute top-2 right-2 text-gray-500">
+    <div class="debug absolute top-2 right-2 text-gray-500">
       <div v-if="deviceId">
         {{ deviceId }}
       </div>
@@ -96,6 +96,13 @@ const fontSize = computed(() => {
   --val: v-bind(fontSize);
   font-size: var(--val, 20rem);
   line-height: 1;
+}
+
+.score-container .debug {
+  @apply hidden;
+}
+.score-container:hover .debug {
+  @apply block;
 }
 </style>
 
