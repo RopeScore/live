@@ -44,7 +44,7 @@ watch(auth.user, newUser => {
       >https://ropescore.com/privacy</a>
     </div>
 
-    <text-button type="submit">
+    <text-button class="mt-2" type="submit">
       Register
     </text-button>
   </form>
