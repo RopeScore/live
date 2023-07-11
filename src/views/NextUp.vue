@@ -47,7 +47,6 @@ useHead({
   title: '📺 Competition (Next Up)'
 })
 
-const auth = useAuth()
 const route = useRoute()
 
 const groupInfo = useGroupInfoQuery({

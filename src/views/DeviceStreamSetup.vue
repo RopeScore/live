@@ -221,7 +221,7 @@ function setPoolBackgroundsSystem (system: string | undefined) {
       baseUrl: 'https://scoring.ijru.sport'
     }
   } else {
-    settings.value.poolBackgrounds = null
+    settings.value.poolBackgrounds = undefined
   }
 }
 
