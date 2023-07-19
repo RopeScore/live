@@ -152,7 +152,7 @@ watch(servoCurrentHeatFetch.data, heatInfo => {
   }
   poolBackgrounds.value = heatInfo.map(hi => ({
     poolLabel: hi.Station,
-    bgUrl: hi.TeamCountryFlagUrl ?? (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode}.svg` : undefined)
+    bgUrl: hi.TeamCountryFlagUrl ?? (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined)
   }))
 })
 
