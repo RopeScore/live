@@ -11,16 +11,20 @@ export interface ServoPoolBackgroundsConfig {
   competitionId?: number
 }
 
-export interface DeviceStreamSettings {
-  poolBackgrounds?: ServoPoolBackgroundsConfig
+export interface ScreenConfig {
+  rows: number
+  cols: number
+  // row:col
+  pools?: Record<`${number}:${number}`, StreamPool>
 }
 
-const pools = useLocalStorage<StreamPool[]>('rs-device-stream-pools', [])
+export interface DeviceStreamSettings {
+  poolBackgrounds?: ServoPoolBackgroundsConfig
+  screens?: Record<string, ScreenConfig>
+}
+
 const settings = useLocalStorage<DeviceStreamSettings>('rs-device-stream-settings', {})
 
 export function useDeviceStreamPools () {
-  return {
-    pools,
-    settings
-  }
+  return settings
 }

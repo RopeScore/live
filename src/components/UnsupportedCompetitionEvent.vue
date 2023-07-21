@@ -5,7 +5,7 @@
     <div
       class="font-bold text-8xl absolute top-0 left-2 text-gray-600 dark:text-gray-400"
     >
-      {{ pool }}
+      {{ pool ?? '' }}
     </div>
 
     <p class="text-center">
@@ -29,7 +29,7 @@ import { type EntryFragment } from '../graphql/generated'
 defineProps({
   pool: {
     type: Number,
-    required: true
+    default: undefined
   },
   entry: {
     type: Object as PropType<EntryFragment>,

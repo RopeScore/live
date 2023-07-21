@@ -1,14 +1,11 @@
 <template>
-  <div class="container mx-auto">
-    <div class="flex justify-end">
-      <text-button :loading="sharesQuery.loading.value" @click="sharesQuery.refetch()">
-        Refresh
-      </text-button>
-      <button-link to="/device-stream/live">
-        Show Scores
-      </button-link>
-    </div>
+  <div class="container mx-auto flex justify-end">
+    <text-button :loading="sharesQuery.loading.value" @click="sharesQuery.refetch()">
+      Refresh
+    </text-button>
+  </div>
 
+  <section class="container mx-auto">
     <h2 class="text-xl">
       Device Shares
     </h2>
@@ -86,7 +83,9 @@
       </tfoot>
     </table>
     <form id="request-share" @submit.prevent="requestShare.mutate({ deviceId: newDeviceId })" />
+  </section>
 
+  <section class="container mx-auto">
     <h2 class="text-xl">
       Pool Backgrounds
     </h2>
@@ -95,7 +94,7 @@
         :model-value="settings.poolBackgrounds?.system"
         label="Pool Backgrounds System"
         :data-list="['servo']"
-        @update:model-value="setPoolBackgroundsSystem($event)"
+        @update:model-value="setPoolBackgroundsSystem($event as string)"
       />
       <text-field
         v-if="settings.poolBackgrounds?.system === 'servo'"
@@ -111,62 +110,84 @@
         :step="1"
       />
     </div>
+  </section>
 
-    <h2 class="mt-4 text-xl">
-      Pools
-    </h2>
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th>Pool</th>
-          <th class="max-w-30">
-            Label
-          </th>
-          <th>Device</th>
-          <th>
-            <text-button
-              dense
-              color="blue"
-              :disabled="pools.length >= acceptedDevices.length"
-              @click="pools.push({})"
+  <section>
+    <div class="container mx-auto flex justify-between items-baseline">
+      <h2 class="mt-4 text-xl">
+        Screens and Pools
+      </h2>
+      <text-button color="blue" @click="addScreen">
+        New Screen
+      </text-button>
+    </div>
+    <div v-for="screen, screenId of settings.screens ?? {}" :key="screenId">
+      <div class="container mx-auto flex justify-between items-baseline mt-6">
+        <h3 class="text-lg font-bold">
+          Screen {{ screenId }}
+        </h3>
+        <div>
+          <button-link :to="`/device-stream/live?screen-id=${screenId}`">
+            Show Scores
+          </button-link>
+          <text-button color="red" @click="removeScreen(screenId)">
+            Remove Screen
+          </text-button>
+        </div>
+      </div>
+
+      <fieldset class="container mx-auto grid grid-cols-2 gap-2">
+        <number-field :model-value="screen.rows" label="Rows" :min="0" :step="1" @update:model-value="changeRows(screenId, $event)" />
+        <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
+      </fieldset>
+
+      <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
+        <template v-for="row of screen.rows ?? 0" :key="row">
+          <template v-for="col of screen.cols ?? 0" :key="col">
+            <div
+              v-if="screen.pools?.[`${row}:${col}`]"
+              class="p-1"
+              :class="{
+                'border-b': row !== screen.rows,
+                'border-r': col !== screen.cols,
+              }"
             >
-              Add Pool
-            </text-button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(pool, idx) of pools" :key="idx">
-          <td>{{ idx + 1 }}</td>
-          <td>
-            <number-field
-              :model-value="pool.label"
-              dense
-              label="Pool Label"
-              type="number"
-              :step="1"
-              :min="1"
-              @update:model-value="pool.label = $event"
-            />
-          </td>
-          <td>
-            <select-field
-              :model-value="pool.deviceId"
-              dense
-              label="Device ID"
-              :data-list="acceptedDevices"
-              @update:model-value="pool.deviceId = $event"
-            />
-          </td>
-          <td>
-            <text-button dense color="red" @click="pools.splice(idx, 1)">
-              Remove Pool
-            </text-button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+              <number-field
+                :model-value="screen.pools[`${row}:${col}`].label"
+                label="Pool #"
+                type="number"
+                :step="1"
+                :min="1"
+                @update:model-value="screen.pools[`${row}:${col}`].label = $event"
+              />
+              <select-field
+                :model-value="screen.pools[`${row}:${col}`].deviceId"
+                label="Device ID"
+                :data-list="acceptedDevices"
+                @update:model-value="screen.pools[`${row}:${col}`].deviceId = ($event as string)"
+              />
+              <text-button color="red" class="mt-2" @click="removePool(screenId, row, col)">
+                Disable Pool
+              </text-button>
+            </div>
+            <div
+              v-else
+              class="p-1 flex flex-row justify-center items-center bg-gray-100"
+              :class="{
+                'border-b': row !== screen.rows,
+                'border-r': col !== screen.cols,
+              }"
+            >
+              <text-button color="blue" @click="addPool(screenId, row, col)">
+                <icon-plus class="inline-block -mt-1" />
+                Enable Pool
+              </text-button>
+            </div>
+          </template>
+        </template>
+      </div>
+    </div>
+  </section>
 
   <div
     v-if="sharesQuery.error.value"
@@ -185,6 +206,7 @@ import { useHead } from '@vueuse/head'
 
 import { TextButton, TextField, SelectField, ButtonLink, NumberField } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
+import IconPlus from 'virtual:icons/mdi/plus'
 
 useHead({
   title: 'Device Stream'
@@ -192,7 +214,6 @@ useHead({
 
 const auth = useAuth()
 
-const newName = ref('')
 const newDeviceId = ref('')
 
 const sharesQuery = useUserStreamSharesQuery({
@@ -212,7 +233,7 @@ requestShare.onDone(() => {
   newDeviceId.value = ''
 })
 
-const { pools, settings } = useDeviceStreamPools()
+const settings = useDeviceStreamPools()
 
 function setPoolBackgroundsSystem (system: string | undefined) {
   if (system === 'servo' && settings.value.poolBackgrounds?.system !== 'servo') {
@@ -231,10 +252,57 @@ sharesQuery.onResult(res => {
   const shares = res.data.me.streamShares.filter(s => s.status === DeviceStreamShareStatus.Accepted)
   const deviceIds = new Set(shares.map(v => v.device.id))
 
-  for (const pool of pools.value) {
-    if (pool.deviceId != null && !deviceIds.has(pool.deviceId)) pool.deviceId = undefined
+  for (const screen of Object.values(settings.value.screens ?? {})) {
+    for (const pool of Object.values(screen.pools ?? {})) {
+      if (pool.deviceId != null && !deviceIds.has(pool.deviceId)) pool.deviceId = undefined
+    }
   }
 })
+
+function addScreen () {
+  settings.value.screens ??= {}
+  settings.value.screens[crypto.randomUUID()] = { cols: 2, rows: 2, pools: {} }
+}
+function removeScreen (screenId: string) {
+  if (settings.value.screens?.[screenId] != null) delete settings.value.screens?.[screenId]
+}
+
+function changeCols (screenId: string, cols: number) {
+  const screen = settings.value.screens?.[screenId]
+  if (screen == null) return
+  screen.cols = cols
+  if (screen.pools == null) return
+  for (const poolId of (Object.keys(screen.pools) as Array<keyof typeof screen.pools>)) {
+    const [row, col] = poolId.split(':').map(n => parseInt(n, 10))
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    if (col > cols) delete screen.pools[poolId]
+  }
+}
+function changeRows (screenId: string, rows: number) {
+  const screen = settings.value.screens?.[screenId]
+  if (screen == null) return
+  screen.rows = rows
+  if (screen.pools == null) return
+  for (const poolId of (Object.keys(screen.pools ?? {}) as Array<keyof typeof screen.pools>)) {
+    const [row, col] = poolId.split(':').map(n => parseInt(n, 10))
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    if (row > rows) delete screen.pools[poolId]
+  }
+}
+
+function addPool (screenId: string, row: number, col: number) {
+  const screen = settings.value.screens?.[screenId]
+  if (screen == null) return
+  screen.pools ??= {}
+  screen.pools[`${row}:${col}`] = {}
+}
+function removePool (screenId: string, row: number, col: number) {
+  const screen = settings.value.screens?.[screenId]
+  if (screen == null || screen.pools == null) return
+  const poolId = `${row}:${col}` as const
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+  if (screen.pools[poolId]) delete screen.pools[poolId]
+}
 
 function toISO (ts: number | Date) {
   return new Date(ts).toISOString()
@@ -248,3 +316,10 @@ function expiresSoon (ts: number) {
   return ts < Date.now() + (1000 * 60 * 60) // 1h
 }
 </script>
+
+<style scoped>
+.custom-grid {
+  grid-template-rows: repeat(var(--rows, 0), minmax(10rem, 1fr));
+  grid-template-columns: repeat(var(--cols, 0), minmax(0, 1fr));
+}
+</style>

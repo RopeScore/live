@@ -17,7 +17,7 @@
     <div
       class="font-bold text-8xl absolute top-0 left-2 text-gray-600 dark:text-gray-400"
     >
-      {{ pool }}
+      {{ pool ?? '' }}
     </div>
     <div
       v-if="entry"
@@ -51,8 +51,8 @@ import { type ScoreTally, getAbbr } from '../helpers'
 
 const props = defineProps({
   pool: {
-    type: Number,
-    required: true
+    type: [Number],
+    default: undefined
   },
   entry: {
     type: Object as PropType<EntryFragment>,

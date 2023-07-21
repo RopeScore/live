@@ -4,7 +4,7 @@ import transformerDirectives from '@unocss/transformer-directives'
 
 export default defineConfig({
   presets: [
-    presetWind(),
+    presetWind()
   ],
   transformers: [
     transformerDirectives()

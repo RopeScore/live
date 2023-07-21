@@ -1,37 +1,45 @@
 <template>
   <div class="grid grid-rows-1 bg-white dark:bg-black">
     <main class="grid custom-grid">
-      <template
-        v-for="(pool, idx) of pools"
-        :key="pool.idx"
-      >
-        <device-not-set v-if="!pool.deviceId" :pool="pool.label || idx + 1" />
-        <speed-live-score
-          v-else-if="tallies[pool.deviceId]?.info == null || tallies[pool.deviceId]?.info?.judgeType === 'S' || tallies[pool.deviceId]?.info?.judgeType === 'Shj'"
-          :pool="pool.label || idx + 1"
-          :tally="tallies[pool.deviceId]?.tally"
-          :device-id="pool.deviceId"
-          :cols="cols"
-          :bg-url="poolBgUrl(pool.label || idx + 1)"
-        />
-        <timing-live-score
-          v-else-if="tallies[pool.deviceId]?.info?.judgeType === 'T'"
-          :pool="pool.label || idx + 1"
-          :tally="tallies[pool.deviceId]?.tally"
-          :device-id="pool.deviceId"
-          :cols="cols"
-          :bg-url="poolBgUrl(pool.label || idx + 1)"
-        />
-        <unsupported-competition-event
-          v-else
-          :pool="pool.label || idx + 1"
-          :competition-event-id="pool.deviceId ? tallies[pool.deviceId]?.info?.judgeType ?? '---' : '---'"
-        />
+      <template v-for="row of screen?.rows ?? 0" :key="row">
+        <template v-for="col of screen?.cols ?? 0" :key="col">
+          <div v-if="pools[`${row}:${col}`] == null" />
+          <template v-else>
+            <device-not-set v-if="!pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" />
+            <speed-live-score
+              v-else-if="tallies[pools[`${row}:${col}`].deviceId!]?.info == null || tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'S' || tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'Shj'"
+              :pool="pools[`${row}:${col}`].label"
+              :tally="tallies[pools[`${row}:${col}`].deviceId!]?.tally"
+              :device-id="pools[`${row}:${col}`].deviceId"
+              :cols="cols"
+              :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
+            />
+            <timing-live-score
+              v-else-if="tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'T'"
+              :pool="pools[`${row}:${col}`].label"
+              :tally="tallies[pools[`${row}:${col}`].deviceId!]?.tally"
+              :device-id="pools[`${row}:${col}`].deviceId"
+              :cols="cols"
+              :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
+            />
+            <unsupported-competition-event
+              v-else
+              :pool="pools[`${row}:${col}`].label"
+              :competition-event-id="pools[`${row}:${col}`].deviceId ? tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType ?? '---' : '---'"
+            />
+          </template>
+        </template>
       </template>
 
-      <div v-show="pools.length === 0" class="bg-gray-300 flex items-center justify-center relative">
+      <div v-if="screen != null && ((screen?.cols ?? 0) === 0 || (screen?.rows ?? 0) === 0)" class="bg-gray-300 dark:bg-gray-800 dark:text-white flex items-center justify-center relative">
         <p class="text-center">
           No pools configured
+        </p>
+      </div>
+
+      <div v-if="screen == null" class="bg-gray-300 dark:bg-gray-800 dark:text-white flex items-center justify-center relative">
+        <p class="text-center">
+          Screen does not exist, close this display
         </p>
       </div>
     </main>
@@ -44,6 +52,7 @@ import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, use
 import { type ScoreTally, type Mark } from '../helpers'
 import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'
+import { useRouteQuery } from '@vueuse/router'
 import { useFetch, useTimeoutPoll } from '@vueuse/core'
 
 import DeviceNotSet from '../components/DeviceNotSet.vue'
@@ -55,23 +64,17 @@ useHead({
   title: '📺 Device Stream (Live)'
 })
 
-const { pools, settings } = useDeviceStreamPools()
+const settings = useDeviceStreamPools()
+const screenId = useRouteQuery<string>('screen-id')
 
-const cols = computed(() => {
-  const len = pools.value.length
-  if (len === 0) return 1
-  else if (len === 1) return 1
-  else if (len <= 4) return 2
-  else if (len <= 6) return 3
-  else if (len <= 8) return 4
-  else if (len <= 9) return 3
-  else if (len <= 12) return 6
-  else return 5
-})
+const screen = computed(() => screenId.value == null ? null : settings.value.screens?.[screenId.value])
+const cols = computed(() => screen.value?.rows === 0 ? 1 : screen.value?.cols ?? 1)
+const rows = computed(() => screen.value?.cols === 0 ? 1 : screen.value?.rows ?? 1)
+const pools = computed(() => screen.value?.pools ?? {})
 
 const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean, info?: DeviceStreamJudgeInfo }>>({})
 
-const deviceIds = computed(() => pools.value.map(p => p.deviceId).filter(id => typeof id === 'string'))
+const deviceIds = computed(() => Object.values(pools.value).map(p => p.deviceId).filter(id => typeof id === 'string'))
 
 const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
@@ -98,11 +101,12 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | unde
     tallyInfo = {
       tally: reactive<ScoreTally>({}),
       lastSequence: 0,
-      completed: false,
-      ...(info != null ? { info } : {})
+      completed: false
     }
     tallies[deviceId] = tallyInfo
   }
+
+  if (info != null) tallyInfo.info = info
 
   if (sequence >= tallyInfo.lastSequence) {
     tallyInfo.tally = reactive(tally)
@@ -118,7 +122,8 @@ watch(markStreamSubscriptionAlt.result, markStreamWatcher)
 
 const poolBackgrounds = ref<Array<{ poolLabel: number, bgUrl?: string }>>([])
 
-function poolBgUrl (poolLabel: number) {
+function poolBgUrl (poolLabel: number | undefined) {
+  if (poolLabel == null) return undefined
   return poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.bgUrl
 }
 
@@ -180,5 +185,6 @@ watch(() => settings.value.poolBackgrounds, poolBackgrounds => {
 <style scoped>
 .custom-grid {
   grid-template-columns: repeat(v-bind(cols), minmax(0, 1fr));
+  grid-template-rows: repeat(v-bind(rows), minmax(0, 1fr));
 }
 </style>
