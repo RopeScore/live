@@ -46,6 +46,7 @@ export function getAbbr (cEvtDef: CompetitionEvent) {
 export function filterLatestScoresheets (scoresheets: ScoresheetBaseFragment[]) {
   return [...scoresheets]
     .sort((a, b) => b.createdAt - a.createdAt)
+    .filter(scsh => scsh.excludedAt == null)
     .filter((scsh, idx, arr) =>
       idx === arr.findIndex(s => s.judge.id === scsh.judge.id && s.judgeType === scsh.judgeType)
     )
