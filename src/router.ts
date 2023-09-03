@@ -11,6 +11,7 @@ const router = createRouter({
     { path: '/groups/:groupId/live', component: async () => import('./views/Live.vue'), meta: { fullscreen: true, authRequired: true } },
     { path: '/groups/:groupId/on-floor', component: async () => import('./views/OnFloor.vue'), meta: { fullscreen: true, authRequired: true } },
     { path: '/groups/:groupId/next-up', component: async () => import('./views/NextUp.vue'), meta: { fullscreen: true, authRequired: true } },
+    { path: '/groups/:groupId/leaderboard', component: async () => import('./views/Leaderboard.vue'), meta: { fullscreen: true, authRequired: true } },
 
     { path: '/device-stream', component: async () => import('./views/DeviceStreamSetup.vue'), meta: { authRequired: true } },
     { path: '/device-stream/live', component: async () => import('./views/DeviceStreamLive.vue'), meta: { fullscreen: true, authRequired: true } },

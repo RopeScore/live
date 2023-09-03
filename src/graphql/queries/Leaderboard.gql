@@ -1,0 +1,21 @@
+query Leaderboard ($groupId: ID!, $limit: Int, $maxVisibility: ResultVersionType) {
+  group (groupId: $groupId) {
+    id
+    name
+
+    categories {
+      id
+      name
+      type
+
+      participants {
+        ...AthleteFragment
+        ...TeamFragment
+      }
+
+      rankedResults (limit: $limit, maxVisibility: $maxVisibility) {
+        ...RankedResultBaseFragment
+      }
+    }
+  }
+}

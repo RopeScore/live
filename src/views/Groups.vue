@@ -36,6 +36,9 @@
             <button-link :to="`/groups/${group.id}/next-up`">
               Next Up
             </button-link>
+            <button-link :to="`/groups/${group.id}/leaderboard`">
+              Leaderboard
+            </button-link>
           </menu>
         </div>
       </div>
