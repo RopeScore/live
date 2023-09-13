@@ -4,7 +4,9 @@
       <h1>{{ competitionEvent?.name ?? '' }}</h1>
       <h2>{{ currentCategory?.name ?? '' }}</h2>
 
-      <span class="absolute top-2 right-4 dark:text-gray-600 text-gray-400">{{ currentResultIdx + 1 }} / {{ resultsToCycle.length }}</span>
+      <span class="absolute top-2 right-4 dark:text-gray-600 text-gray-400">
+        {{ currentCycleIdx + 1 }} / {{ resultsToCycle.length }}
+      </span>
     </header>
     <div v-if="resultsToCycle.length === 0" class="flex justify-center items-center text-center text-black dark:text-white">
       <h1>No results available yet</h1>
@@ -91,6 +93,9 @@ const heatChangeSubscription = useHeatChangedSubscription({
 watch(heatChangeSubscription.result, result => {
   leaderboardQuery.refetch()
 })
+useTimeoutFn(() => {
+  if (typeof leaderboardQuery.result.value?.group?.currentHeat !== 'number') leaderboardQuery.refetch()
+}, 60_000)
 
 const categories = computed(() => leaderboardQuery.result.value?.group?.categories ?? [])
 const rankedResults = computed(() =>
@@ -110,14 +115,14 @@ const rankedResults = computed(() =>
 )
 
 const selectedResult = ref<string>()
-const currentResultIdx = computed(() => rankedResults.value.findIndex(rr => rr.rankedResult.id === selectedResult.value))
-const currentResult = computed(() => rankedResults.value[currentResultIdx.value])
+const currentResult = computed(() => rankedResults.value.find(rr => rr.rankedResult.id === selectedResult.value))
 const currentCompetitionEvent = computed(() => currentResult.value?.rankedResult.competitionEventId)
 const currentCategory = computed(() => categories.value.find(c => c.id === currentResult.value?.categoryId))
 
 const competitionEvent = useCompetitionEvent(currentCompetitionEvent)
 
 const resultsToCycle = ref<string[]>([])
+const currentCycleIdx = computed(() => resultsToCycle.value.indexOf(selectedResult.value))
 const seenResults = ref(new Set<string>())
 watch(rankedResults, newRankedResults => {
   const diff = []

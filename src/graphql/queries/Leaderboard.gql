@@ -2,6 +2,7 @@ query Leaderboard ($groupId: ID!, $limit: Int, $maxVisibility: ResultVersionType
   group (groupId: $groupId) {
     id
     name
+    currentHeat
 
     categories {
       id
