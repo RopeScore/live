@@ -3,55 +3,53 @@
     <header class="dark:text-black text-white bg-gray-900 dark:bg-gray-100 px-4 py-2 flex flex-col justify-center">
       <h1>{{ competitionEvent?.name ?? '' }}</h1>
       <h2>{{ currentCategory?.name ?? '' }}</h2>
+
+      <span class="absolute top-2 right-4 dark:text-gray-400 text-gray-400">{{ currentCategoryIdx + 1 }} / {{ categories.length }}</span>
     </header>
     <div
-      class="grid items-center px-4 grid-rows-10 text-black dark:text-white gap-2"
-      :class="{
-        'grid-cols-[1fr_1fr_1fr_15ch_10ch]': currentCategory?.type === CategoryType.Team,
-        'grid-cols-[1fr_1fr_15ch_10ch]': currentCategory?.type !== CategoryType.Team
-      }"
+      class="grid grid-cols-result items-center grid-rows-11 text-black dark:text-white"
     >
       <template v-if="currentCategory?.type === CategoryType.Team">
-        <div class="font-bold text-2xl">
+        <div class="font-bold px-4 text-2xl">
           Team Name
         </div>
-        <div class="font-bold text-2xl">
+        <div class="font-bold px-4 text-2xl">
           Team Members
         </div>
       </template>
-      <div v-else class="font-bold text-2xl">
+      <div v-else class="font-bold px-4 text-2xl">
         Name
       </div>
-      <div class="font-bold text-2xl">
+      <div class="font-bold px-4 text-2xl">
         Club
       </div>
 
       <div
-        v-for="header in resultTable.headers.slice(resultTable.headers.length - 2)"
+        v-for="header in primaryTableHeaders"
         :key="header.key"
-        class="text-right font-bold text-2xl"
+        class="text-right px-4 font-bold text-2xl"
         :class="`text-${header.color}-500`"
       >
         {{ header.text }}
       </div>
 
       <!-- Main: Top N: name, club, (members?), and "main" score(s) + rank -->
-      <template v-for="entryRes of currentResult?.rankedResult.results.slice(0, 9)" :key="`${currentCategory.id}:${entryRes.meta.participantId}`">
-        <div class="text-2xl">
+      <template v-for="entryRes, idx of currentResult?.rankedResult.results.slice(0, 10)" :key="`${currentCategory.id}:${entryRes.meta.participantId}`">
+        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }">
           {{ getParticipant(entryRes.meta.participantId)?.name }}
         </div>
-        <div v-if="currentCategory?.type === CategoryType.Team" class="text-lg">
+        <div v-if="currentCategory?.type === CategoryType.Team" class="text-lg px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }">
           {{ formatList((getParticipant(entryRes.meta.participantId) as TeamFragment).members) }}
         </div>
-        <div class="text-2xl">
+        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }">
           {{ getParticipant(entryRes.meta.participantId)?.club }}
         </div>
 
         <div
-          v-for="header in resultTable.headers.slice(resultTable.headers.length - 2)"
+          v-for="header in primaryTableHeaders"
           :key="header.key"
-          class="text-right text-4xl"
-          :class="`text-${header.color}-500`"
+          class="text-right text-4xl h-full flex items-center justify-end px-4"
+          :class="[`text-${header.color}-500`, { 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }]"
         >
           {{ getScore(header, entryRes as EntryResult) }}
         </div>
@@ -111,6 +109,7 @@ const currentResult = computed(() => {
 })
 const currentCompetitionEvent = computed(() => currentResult.value?.rankedResult.competitionEventId)
 const currentCategory = computed(() => categories.value.find(c => c.id === currentResult.value?.categoryId))
+const currentCategoryIdx = computed(() => categories.value.findIndex(c => c.id === currentResult.value?.categoryId))
 
 const competitionEvent = useCompetitionEvent(currentCompetitionEvent)
 
@@ -141,6 +140,9 @@ useTimeoutFn(() => {
 
 // TODO: apply config
 const resultTable = computed(() => competitionEvent.value?.resultTable({}) ?? { headers: [], groups: [] })
+const primaryTableHeaders = computed(() => resultTable.value.headers.filter(c => !!c.primary))
+const scoreCols = computed(() => primaryTableHeaders.value.length || 1)
+const infoCols = computed(() => currentCategory.value?.type === CategoryType.Team ? 3 : 2)
 
 function getParticipant (participantId: string | number) {
   return (currentCategory.value?.participants ?? []).find(p => p.id === participantId)
@@ -153,3 +155,9 @@ function getScore (header: TableHeader, result: EntryResult | OverallResult) {
   return header.formatter?.(score) ?? score ?? ''
 }
 </script>
+
+<style scoped>
+.grid-cols-result {
+  grid-template-columns: repeat(v-bind(infoCols), 1fr) repeat(v-bind(scoreCols), 15ch);
+}
+</style>
