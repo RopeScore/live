@@ -9,7 +9,7 @@
       </span>
     </header>
     <div v-if="resultsToCycle.length === 0" class="flex justify-center items-center text-center text-black dark:text-white">
-      <h1>No results available yet</h1>
+      <h1>No results to display right now</h1>
     </div>
     <div
       v-else
@@ -68,7 +68,7 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
 import { useRouteParams, useRouteQuery } from '@vueuse/router'
-import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, ResultVersionType } from '../graphql/generated'
+import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, type ResultVersionType } from '../graphql/generated'
 import { computed, ref, watch } from 'vue'
 import { parseCompetitionEventDefinition, type EntryResult, type TableHeader, type OverallResult } from '@ropescore/rulesets'
 import { useIntervalFn } from '@vueuse/core'
@@ -122,7 +122,7 @@ const currentCategory = computed(() => categories.value.find(c => c.id === curre
 const competitionEvent = useCompetitionEvent(currentCompetitionEvent)
 
 const resultsToCycle = ref<string[]>([])
-const currentCycleIdx = computed(() => resultsToCycle.value.indexOf(selectedResult.value))
+const currentCycleIdx = computed(() => resultsToCycle.value.indexOf(selectedResult.value!))
 const seenResults = ref(new Set<string>())
 watch(rankedResults, newRankedResults => {
   const diff = []

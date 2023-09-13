@@ -35,7 +35,7 @@ function pickFile () {
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   input.addEventListener('change', async _ => {
-    if (loading.value || !input.files || !input.files.length) return
+    if (loading.value || !input.files?.length) return
 
     loading.value = true
     try {

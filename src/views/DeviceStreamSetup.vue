@@ -298,7 +298,7 @@ function addPool (screenId: string, row: number, col: number) {
 }
 function removePool (screenId: string, row: number, col: number) {
   const screen = settings.value.screens?.[screenId]
-  if (screen == null || screen.pools == null) return
+  if (screen?.pools == null) return
   const poolId = `${row}:${col}` as const
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   if (screen.pools[poolId]) delete screen.pools[poolId]

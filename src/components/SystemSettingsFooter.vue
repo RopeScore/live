@@ -39,7 +39,7 @@ const newName = ref('')
         label="System Name"
         dense
         :disabled="auth.loadingUpdate.value"
-        @update:model-value="newName = $event ?? ''"
+        @update:model-value="newName = ($event as string ?? '')"
       />
       <text-button color="blue" dense :loading="auth.loadingUpdate.value">
         Update

@@ -43,7 +43,7 @@
           class="col-span-3"
           label="Country"
           :data-list="countriesList"
-          @update:model-value="addNewFn(pos, $event)"
+          @update:model-value="addNewFn(pos, $event as string)"
         />
       </div>
     </div>
