@@ -1,12 +1,16 @@
 <template>
-  <div class="grid grid-rows-[6rem_auto] bg-white dark:bg-black">
-    <header class="dark:text-black text-white bg-gray-900 dark:bg-gray-100 px-4 py-2 flex flex-col justify-center">
+  <div class="grid grid-rows-[6rem_auto] bg-white dark:bg-gray-900">
+    <header class="dark:text-black text-white bg-gray-900 dark:bg-gray-300 px-4 py-2 flex flex-col justify-center">
       <h1>{{ competitionEvent?.name ?? '' }}</h1>
       <h2>{{ currentCategory?.name ?? '' }}</h2>
 
-      <span class="absolute top-2 right-4 dark:text-gray-400 text-gray-400">{{ currentCategoryIdx + 1 }} / {{ categories.length }}</span>
+      <span class="absolute top-2 right-4 dark:text-gray-600 text-gray-400">{{ currentResultIdx + 1 }} / {{ resultsToCycle.length }}</span>
     </header>
+    <div v-if="resultsToCycle.length === 0" class="flex justify-center items-center text-center text-black dark:text-white">
+      <h1>No results available yet</h1>
+    </div>
     <div
+      v-else
       class="grid grid-cols-result items-center grid-rows-11 text-black dark:text-white"
     >
       <template v-if="currentCategory?.type === CategoryType.Team">
@@ -35,13 +39,13 @@
 
       <!-- Main: Top N: name, club, (members?), and "main" score(s) + rank -->
       <template v-for="entryRes, idx of currentResult?.rankedResult.results.slice(0, 10)" :key="`${currentCategory.id}:${entryRes.meta.participantId}`">
-        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }">
+        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
           {{ getParticipant(entryRes.meta.participantId)?.name }}
         </div>
-        <div v-if="currentCategory?.type === CategoryType.Team" class="text-lg px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }">
+        <div v-if="currentCategory?.type === CategoryType.Team" class="text-lg px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
           {{ formatList((getParticipant(entryRes.meta.participantId) as TeamFragment).members) }}
         </div>
-        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }">
+        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
           {{ getParticipant(entryRes.meta.participantId)?.club }}
         </div>
 
@@ -49,7 +53,7 @@
           v-for="header in primaryTableHeaders"
           :key="header.key"
           class="text-right text-4xl h-full flex items-center justify-end px-4"
-          :class="[`text-${header.color}-500`, { 'bg-light-600': idx % 2 === 1, 'dark:bg-dark-300': idx % 2 === 1 }]"
+          :class="[`text-${header.color}-500`, { 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }]"
         >
           {{ getScore(header, entryRes as EntryResult) }}
         </div>
@@ -61,8 +65,8 @@
 
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
-import { useRouteParams } from '@vueuse/router'
-import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment } from '../graphql/generated'
+import { useRouteParams, useRouteQuery } from '@vueuse/router'
+import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, ResultVersionType } from '../graphql/generated'
 import { computed, ref, watch } from 'vue'
 import { parseCompetitionEventDefinition, type EntryResult, type TableHeader, type OverallResult } from '@ropescore/rulesets'
 import { useTimeoutFn } from '@vueuse/core'
@@ -74,9 +78,11 @@ useHead({
 })
 
 const groupId = useRouteParams<string>('groupId')
+const maxVisibility = useRouteQuery<ResultVersionType | undefined>('max-visibility')
 
 const leaderboardQuery = useLeaderboardQuery({
-  groupId: groupId as unknown as string
+  groupId: groupId as unknown as string,
+  maxVisibility: maxVisibility as unknown as ResultVersionType | undefined
 })
 const heatChangeSubscription = useHeatChangedSubscription({
   groupId: groupId as unknown as string
@@ -104,12 +110,10 @@ const rankedResults = computed(() =>
 )
 
 const selectedResult = ref<string>()
-const currentResult = computed(() => {
-  return rankedResults.value.find(rr => rr.rankedResult.id === selectedResult.value)
-})
+const currentResultIdx = computed(() => rankedResults.value.findIndex(rr => rr.rankedResult.id === selectedResult.value))
+const currentResult = computed(() => rankedResults.value[currentResultIdx.value])
 const currentCompetitionEvent = computed(() => currentResult.value?.rankedResult.competitionEventId)
 const currentCategory = computed(() => categories.value.find(c => c.id === currentResult.value?.categoryId))
-const currentCategoryIdx = computed(() => categories.value.findIndex(c => c.id === currentResult.value?.categoryId))
 
 const competitionEvent = useCompetitionEvent(currentCompetitionEvent)
 

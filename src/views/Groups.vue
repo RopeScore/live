@@ -19,6 +19,7 @@
             <button-link :to="`/groups/${group.id}/live`">
               Live
             </button-link>
+
             <div>
               <button-link :to="`/groups/${group.id}/on-floor`">
                 On Floor
@@ -33,12 +34,22 @@
                 (Blue)
               </button-link>
             </div>
+
             <button-link :to="`/groups/${group.id}/next-up`">
               Next Up
             </button-link>
-            <button-link :to="`/groups/${group.id}/leaderboard`">
-              Leaderboard
-            </button-link>
+
+            <div>
+              <button-link :to="`/groups/${group.id}/leaderboard`">
+                Leaderboard (Live)
+              </button-link>
+              <button-link :to="`/groups/${group.id}/leaderboard?max-visibility=${ResultVersionType.Private}`">
+                (Private)
+              </button-link>
+              <button-link :to="`/groups/${group.id}/leaderboard?max-visibility=${ResultVersionType.Public}`">
+                (Public)
+              </button-link>
+            </div>
           </menu>
         </div>
       </div>
@@ -63,7 +74,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useAuth } from '../hooks/auth'
-import { useGroupsQuery } from '../graphql/generated'
+import { ResultVersionType, useGroupsQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
 
 import { ButtonLink } from '@ropescore/components'
