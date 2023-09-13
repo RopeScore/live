@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/vue'
-import { Integrations } from '@sentry/tracing'
 import { createApp } from 'vue'
 import '@unocss/reset/tailwind.css'
 import '@github/time-elements'
@@ -30,7 +29,7 @@ if (import.meta.env.PROD) {
     release: import.meta.env.VITE_COMMIT_REF?.toString(),
     environment: import.meta.env.VITE_CONTEXT?.toString(),
     logErrors: true,
-    integrations: [new Integrations.BrowserTracing({
+    integrations: [new Sentry.BrowserTracing({
       tracingOrigins: ['ropescore.live'],
       routingInstrumentation: Sentry.vueRouterInstrumentation(router)
     })],

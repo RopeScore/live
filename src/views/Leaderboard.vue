@@ -1,6 +1,6 @@
 <template>
-  <div class="grid grid-rows-[max-content_auto] bg-white dark:bg-black">
-    <header class="dark:text-black text-white bg-gray-900 dark:bg-gray-100 px-4 py-2 ">
+  <div class="grid grid-rows-[6rem_auto] bg-white dark:bg-black">
+    <header class="dark:text-black text-white bg-gray-900 dark:bg-gray-100 px-4 py-2 flex flex-col justify-center">
       <h1>{{ competitionEvent?.name ?? '' }}</h1>
       <h2>{{ currentCategory?.name ?? '' }}</h2>
     </header>
@@ -12,20 +12,28 @@
       }"
     >
       <template v-if="currentCategory?.type === CategoryType.Team">
-        <div class="font-bold text-2xl" >Team Name</div>
-        <div class="font-bold text-2xl" >Team Members</div>
+        <div class="font-bold text-2xl">
+          Team Name
+        </div>
+        <div class="font-bold text-2xl">
+          Team Members
+        </div>
       </template>
-      <div class="font-bold text-2xl"  v-else>Name</div>
-      <div class="font-bold text-2xl" >Club</div>
+      <div v-else class="font-bold text-2xl">
+        Name
+      </div>
+      <div class="font-bold text-2xl">
+        Club
+      </div>
 
       <div
-          v-for="header in resultTable.headers.slice(resultTable.headers.length - 2)"
-          :key="header.key"
-          class="text-right font-bold text-2xl"
-          :class="`text-${header.color}-500`"
-        >
-          {{ header.text }}
-        </div>
+        v-for="header in resultTable.headers.slice(resultTable.headers.length - 2)"
+        :key="header.key"
+        class="text-right font-bold text-2xl"
+        :class="`text-${header.color}-500`"
+      >
+        {{ header.text }}
+      </div>
 
       <!-- Main: Top N: name, club, (members?), and "main" score(s) + rank -->
       <template v-for="entryRes of currentResult?.rankedResult.results.slice(0, 9)" :key="`${currentCategory.id}:${entryRes.meta.participantId}`">
