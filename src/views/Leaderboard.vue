@@ -71,7 +71,7 @@ import { useRouteParams, useRouteQuery } from '@vueuse/router'
 import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, ResultVersionType } from '../graphql/generated'
 import { computed, ref, watch } from 'vue'
 import { parseCompetitionEventDefinition, type EntryResult, type TableHeader, type OverallResult } from '@ropescore/rulesets'
-import { useTimeoutFn } from '@vueuse/core'
+import { useIntervalFn } from '@vueuse/core'
 import { useCompetitionEvent } from '../hooks/ruleset'
 import { formatList } from '../helpers'
 
@@ -93,7 +93,7 @@ const heatChangeSubscription = useHeatChangedSubscription({
 watch(heatChangeSubscription.result, result => {
   leaderboardQuery.refetch()
 })
-useTimeoutFn(() => {
+useIntervalFn(() => {
   if (typeof leaderboardQuery.result.value?.group?.currentHeat !== 'number') leaderboardQuery.refetch()
 }, 60_000)
 
@@ -141,7 +141,7 @@ watch(rankedResults, newRankedResults => {
   }
 })
 
-useTimeoutFn(() => {
+useIntervalFn(() => {
   const idx = selectedResult.value == null ? -1 : resultsToCycle.value.indexOf(selectedResult.value)
   if (resultsToCycle.value[idx + 1] == null) selectedResult.value = resultsToCycle.value[0]
   else selectedResult.value = resultsToCycle.value[idx + 1]
