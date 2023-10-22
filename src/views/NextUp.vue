@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-rows-[1fr_2fr] bg-white dark:bg-black">
+  <div class="grid grid-rows-[1fr_3fr] bg-white dark:bg-black">
     <div class="bg-green-100 dark:bg-green-500">
       <div class="container mx-auto flex items-center h-full p-y-8">
         <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-2">
@@ -18,7 +18,7 @@
     </div>
     <div class="container mx-auto flex items-center h-full p-y-8">
       <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-8">
-        <template v-for="heat of nextTwo" :key="heat">
+        <template v-for="heat of nextThree" :key="heat">
           <div class="sticky right-2 flex items-center justify-end font-bold text-2xl dark:text-white">
             {{ heat }}
           </div>
@@ -92,8 +92,8 @@ const heats = computed(() => {
   return existing
 })
 
-const nextTwo = computed(() => {
-  return [heatPlusN(1), heatPlusN(2)].filter(n => typeof n === 'number') as number[]
+const nextThree = computed(() => {
+  return [heatPlusN(1), heatPlusN(2), heatPlusN(3)].filter(n => typeof n === 'number') as number[]
 })
 
 function heatPlusN (n: number) {
