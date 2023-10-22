@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-rows-[1fr_3fr] bg-white dark:bg-black">
+  <div class="grid grid-rows-[2fr_5fr] bg-white dark:bg-black">
     <div class="bg-green-100 dark:bg-green-500">
       <div class="container mx-auto flex items-center h-full p-y-8">
         <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-2">
