@@ -40,7 +40,7 @@
 
     <system-settings-footer v-if="!fullscreen" />
     <footer v-if="!fullscreen" class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 dark:text-white px-4">
-      <span>&copy; Swantzter 2018-2023</span>
+      <span>&copy; Swantzter 2018-2024</span>
       <span>{{ version }}</span>
     </footer>
   </div>
