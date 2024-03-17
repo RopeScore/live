@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/vue'
 import { createApp } from 'vue'
 import '@unocss/reset/tailwind.css'
-import '@github/time-elements'
+import '@github/relative-time-element'
 import '@ropescore/components/style.css'
 import 'uno.css'
 import App from './App.vue'
@@ -9,6 +9,15 @@ import router from './router'
 import { ApolloClients } from '@vue/apollo-composable'
 import { apolloClient, apolloClientAlternate } from './apollo'
 import { createHead } from '@vueuse/head'
+import { initializeApp } from 'firebase/app'
+
+initializeApp({
+  apiKey: 'AIzaSyCbOo3XqKZfQWkfudXQ-_5OKvNaWnSeRsA',
+  authDomain: 'ropescore-app.firebaseapp.com',
+  projectId: 'ropescore-app',
+  messagingSenderId: '224455118938',
+  appId: '1:224455118938:web:f922c0fb34bc3bb2398863'
+})
 
 const app = createApp(App)
 const head = createHead()

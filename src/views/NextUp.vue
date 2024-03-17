@@ -39,7 +39,6 @@
 import { computed, watch } from 'vue'
 import { useGroupEntriesQuery, useGroupInfoQuery, useHeatChangedSubscription } from '../graphql/generated'
 import { useRoute } from 'vue-router'
-import { useAuth } from '../hooks/auth'
 import EntryInfoCard from '../components/EntryInfoCard.vue'
 import { useHead } from '@vueuse/head'
 

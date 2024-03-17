@@ -1,5 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router'
-import { useAuth } from './hooks/auth'
+import { getAuth } from 'firebase/auth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -22,17 +22,23 @@ const router = createRouter({
 })
 export default router
 
-router.beforeEach((to) => {
-  if (!to.meta.authRequired) return
+router.beforeEach(async (to) => {
+  if (!to.meta.authRequired) return true
+  const auth = getAuth()
 
-  const auth = useAuth()
-  if (auth.token.value == null) {
-    return {
-      path: '/auth',
-      query: {
-        'return-to': encodeURIComponent(to.fullPath)
-      },
-      replace: true
-    }
-  }
+  return new Promise(resolve => {
+    const off = auth.onAuthStateChanged(user => {
+      off()
+      if (user) resolve(true)
+      else {
+        resolve({
+          path: '/auth',
+          query: {
+            'return-to': encodeURIComponent(to.fullPath)
+          },
+          replace: true
+        })
+      }
+    })
+  })
 })

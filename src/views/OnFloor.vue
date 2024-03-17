@@ -54,7 +54,6 @@
 import { computed, watch } from 'vue'
 import { useGroupInfoQuery, useHeatChangedSubscription, useHeatEntriesQuery } from '../graphql/generated'
 import { useRoute } from 'vue-router'
-import { useAuth } from '../hooks/auth'
 import { useHead } from '@vueuse/head'
 import { formatList } from '../helpers'
 
@@ -62,7 +61,6 @@ useHead({
   title: '📺 Competition (On Floor)'
 })
 
-const auth = useAuth()
 const route = useRoute()
 
 const groupInfo = useGroupInfoQuery({

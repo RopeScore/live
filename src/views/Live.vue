@@ -34,7 +34,6 @@ import { computed, reactive, watch, ref } from 'vue'
 import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, type MarkScoresheetFragment, type ScoresheetBaseFragment, type StreamMarkAddedSubscription } from '../graphql/generated'
 import { useRoute } from 'vue-router'
 import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, type Mark, processMark, type ScoreTally } from '../helpers'
-import { useAuth } from '../hooks/auth'
 
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'

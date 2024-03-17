@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { useAuth } from '../hooks/auth'
+import useFirebaseAuth from '../hooks/firebase-auth'
 import { ResultVersionType, useGroupsQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
 
@@ -83,9 +83,9 @@ useHead({
   title: 'Groups'
 })
 
-const auth = useAuth()
+const auth = useFirebaseAuth()
 
-const { result, loading, error } = useGroupsQuery(() => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isLoggedIn.value }))
+const { result, loading, error } = useGroupsQuery(() => ({ fetchPolicy: 'cache-and-network', pollInterval: 30_000, enabled: auth.isAuthenticated.value }))
 
 const groups = computed(() => result.value?.groups.filter(group => !group.completedAt))
 const completedGroups = computed(() => result.value?.groups.filter(group => !!group.completedAt))

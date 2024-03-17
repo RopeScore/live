@@ -5,6 +5,7 @@ import { useAuth } from './hooks/auth'
 import { WebSocketLink } from './graphql-ws'
 import { watch, computed } from 'vue'
 import { useFetch, useIntervalFn, useLocalStorage } from '@vueuse/core'
+import { getAuth } from 'firebase/auth'
 
 const localDiscover = useFetch('http://ropescore.local').get().text()
 const resolvedReachable = useFetch(
@@ -52,14 +53,32 @@ function createLink () {
   const wsLink = new WebSocketLink({
     url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${apiDomain.value}/graphql` },
     lazy: true,
-    connectionParams: () => {
-      const auth = useAuth()
-      watch(auth.token, () => {
+    connectionParams: async () => {
+      const oldAuth = useAuth()
+      watch(oldAuth.token, () => {
         wsLink.client.restart()
       })
 
+      const auth = getAuth()
+      auth.onIdTokenChanged(() => {
+        wsLink.client.restart()
+      })
+
+      const token = oldAuth.token.value
+      const firebaseToken = await new Promise<string | undefined>((resolve, reject) => {
+        const off = auth.onAuthStateChanged(user => {
+          off()
+          if (user) {
+            user.getIdToken()
+              .then(token => { resolve(token) })
+              .catch(err => { reject(err) })
+          } else resolve(undefined)
+        })
+      })
+
       return {
-        Authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+        Authorization: token ? `Bearer ${token}` : '',
+        'Firebase-Authorization': firebaseToken ? `Bearer ${firebaseToken}` : ''
       }
     }
   })
@@ -69,11 +88,25 @@ function createLink () {
   })
 
   const authLink = setContext(async (_, { headers }) => {
-    const auth = useAuth()
+    const oldAuth = useAuth()
+    const auth = getAuth()
+    const token = oldAuth.token.value
+    const firebaseToken = await new Promise<string | undefined>((resolve, reject) => {
+      const off = auth.onAuthStateChanged(user => {
+        off()
+        if (user) {
+          user.getIdToken()
+            .then(token => { resolve(token) })
+            .catch(err => { reject(err) })
+        } else resolve(undefined)
+      })
+    })
+
     return {
       headers: {
         ...headers,
-        authorization: auth.token.value ? `Bearer ${auth.token.value}` : ''
+        authorization: token ? `Bearer ${token}` : '',
+        'firebase-authorization': firebaseToken ? `Bearer ${firebaseToken}` : ''
       }
     }
   })

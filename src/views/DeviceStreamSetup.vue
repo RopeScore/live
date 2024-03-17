@@ -199,7 +199,6 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useAuth } from '../hooks/auth'
 import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
@@ -207,19 +206,20 @@ import { useHead } from '@vueuse/head'
 import { TextButton, TextField, SelectField, ButtonLink, NumberField } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
 import IconPlus from 'virtual:icons/mdi/plus'
+import useFirebaseAuth from '../hooks/firebase-auth'
 
 useHead({
   title: 'Device Stream'
 })
 
-const auth = useAuth()
+const auth = useFirebaseAuth()
 
 const newDeviceId = ref('')
 
 const sharesQuery = useUserStreamSharesQuery({
   fetchPolicy: 'cache-and-network',
   pollInterval: 30_000,
-  enabled: auth.isLoggedIn as unknown as boolean
+  enabled: auth.isAuthenticated as unknown as boolean
 })
 const shares = computed(() => sharesQuery.result.value?.me?.__typename === 'User' ? sharesQuery.result.value.me.streamShares : [])
 
