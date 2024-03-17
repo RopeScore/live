@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/vue'
-import { createApp } from 'vue'
+import { type Component, createApp } from 'vue'
 import '@unocss/reset/tailwind.css'
 import '@github/relative-time-element'
 import '@ropescore/components/style.css'
@@ -19,7 +19,7 @@ initializeApp({
   appId: '1:224455118938:web:f922c0fb34bc3bb2398863'
 })
 
-const app = createApp(App)
+const app = createApp(App as Component)
 const head = createHead()
 
 app

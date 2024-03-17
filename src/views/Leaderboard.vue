@@ -107,7 +107,7 @@ const rankedResults = computed(() =>
       })
     )
   )
-    .filter(rr => parseCompetitionEventDefinition(rr.rankedResult.competitionEventId).type !== 'oa')
+    .filter(rr => parseCompetitionEventDefinition(rr.rankedResult.competitionEventId as string).type !== 'oa')
     .filter((el, idx, arr) => arr.findIndex(rr => rr.categoryId === el.categoryId && rr.rankedResult.competitionEventId === el.rankedResult.competitionEventId) === idx)
     .sort((a, b) => {
       return b.rankedResult.maxEntryLockedAt - a.rankedResult.maxEntryLockedAt

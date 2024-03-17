@@ -128,7 +128,7 @@ watch(primaryScoresheets, scshs => {
       }
       tallies[scsh.id] = tallyInfo
 
-      const marks = new Map()
+      const marks = new Map<number, Mark>()
       for (const mark of scsh.marks ?? []) {
         processMark(mark as Mark, tallyInfo.tally, marks)
       }
