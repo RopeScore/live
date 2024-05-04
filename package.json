@@ -6,6 +6,7 @@
   "license": "MIT",
   "homepage": "https://ropescore.live",
   "repository": "https://github.com/RopeScore/live",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "npm run codegen && vite build",
@@ -17,21 +18,21 @@
     "codegen:watch": "npm run codegen -- --watch"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.7",
-    "@github/relative-time-element": "^4.3.1",
+    "@apollo/client": "^3.10.2",
+    "@github/relative-time-element": "^4.4.0",
     "@ropescore/components": "^1.9.1",
     "@ropescore/rulesets": "^0.8.0",
-    "@sentry/vue": "^7.107.0",
+    "@sentry/vue": "^7.113.0",
     "@vue/apollo-composable": "^4.0.2",
     "@vueuse/core": "^10.9.0",
     "@vueuse/head": "^2.0.0",
     "@vueuse/router": "^10.9.0",
-    "eslint-config-love": "^43.1.0",
-    "firebase": "^10.9.0",
+    "eslint-config-love": "^47.0.0",
+    "firebase": "^10.11.1",
     "graphql": "^16.8.1",
-    "graphql-ws": "^5.15.0",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "graphql-ws": "^5.16.0",
+    "vue": "^3.4.26",
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",
@@ -39,19 +40,19 @@
     "@graphql-codegen/typescript": "^4.0.6",
     "@graphql-codegen/typescript-operations": "^4.2.0",
     "@graphql-codegen/typescript-vue-apollo": "^4.1.1",
-    "@iconify-json/mdi": "^1.1.64",
-    "@unocss/preset-wind": "^0.58.6",
-    "@unocss/transformer-directives": "^0.58.6",
+    "@iconify-json/mdi": "^1.1.66",
+    "@unocss/preset-wind": "^0.59.4",
+    "@unocss/transformer-directives": "^0.59.4",
     "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/compiler-sfc": "^3.4.21",
+    "@vue/compiler-sfc": "^3.4.26",
     "@vue/tsconfig": "^0.5.1",
     "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.23.0",
-    "typescript": "5.2",
-    "unocss": "^0.58.6",
-    "unplugin-icons": "^0.18.5",
-    "vite": "^5.1.6",
-    "vite-plugin-pwa": "^0.19.4",
-    "vue-tsc": "^2.0.6"
+    "eslint-plugin-vue": "^9.25.0",
+    "typescript": "5.4",
+    "unocss": "^0.59.4",
+    "unplugin-icons": "^0.19.0",
+    "vite": "^5.2.11",
+    "vite-plugin-pwa": "^0.20.0",
+    "vue-tsc": "^2.0.16"
   }
 }

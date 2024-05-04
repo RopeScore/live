@@ -127,7 +127,7 @@
           Screen {{ screenId }}
         </h3>
         <div>
-          <button-link :to="`/device-stream/live?screen-id=${screenId}`">
+          <button-link :to="`/device-stream/live?screen-id=${screenId}`" target="_blank">
             Show Scores
           </button-link>
           <text-button color="red" @click="removeScreen(screenId)">

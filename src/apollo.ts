@@ -55,13 +55,22 @@ function createLink () {
     lazy: true,
     connectionParams: async () => {
       const oldAuth = useAuth()
-      watch(oldAuth.token, () => {
+      const offOld = watch(oldAuth.token, () => {
+        console.log('restarting due to old auth')
         wsLink.client.restart()
+        offOld()
       })
 
       const auth = getAuth()
-      auth.onIdTokenChanged(() => {
+      let firstChange = false
+      const offNew = auth.onIdTokenChanged(() => {
+        if (!firstChange) {
+          firstChange = true
+          return
+        }
+        console.log('restarting due to new auth')
         wsLink.client.restart()
+        offNew()
       })
 
       const token = oldAuth.token.value
