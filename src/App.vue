@@ -5,7 +5,9 @@
       'grid-rows-[3.5rem_auto_2rem_2rem]': !fullscreen,
       'grid-rows-1': fullscreen,
       'h-[100vh]': fullscreen,
-      'overflow-y-hidden': fullscreen
+      'overflow-y-hidden': fullscreen,
+
+      'font-svgf': fullscreen && theme === 'swedish-gymnastics'
     }"
   >
     <header v-if="!fullscreen" class="bg-gray-100 flex justify-between items-center px-4 sticky top-0 z-1000">
@@ -44,7 +46,7 @@
       :class="{
         'bg-gray-100 text-black': theme === 'light',
         'bg-gray-700 text-white': theme === 'dark',
-        'bg-swe-blue text-white': theme === 'swedish-gymnastics',
+        'bg-svgf-blue text-white': theme === 'swedish-gymnastics',
       }"
     >
       <span>&copy; Swantzter 2018-2024</span>

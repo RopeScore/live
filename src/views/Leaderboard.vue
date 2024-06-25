@@ -7,13 +7,22 @@
     }"
   >
     <header
-      class="px-4 py-2 flex flex-col justify-center"
+      class="px-4 py-2 grid grid-rows-[2fr_1fr] justify-center"
       :class="{
         'bg-gray-800 text-white': theme === 'light',
         'bg-gray-300 text-black': theme === 'dark',
-        'bg-swe-blue text-swe-yellow': theme === 'swedish-gymnastics',
+        'bg-svgf-blue text-svgf-yellow': theme === 'swedish-gymnastics',
+
+        'grid-cols-1': theme !== 'swedish-gymnastics',
+        'grid-cols-[6rem_1fr]': theme === 'swedish-gymnastics',
       }"
     >
+      <img
+        v-if="theme === 'swedish-gymnastics'"
+        alt=""
+        :src="SvGFLogo"
+        class="row-span-2 p-4"
+      >
       <h1>{{ competitionEvent?.name ?? '' }}</h1>
       <h2>{{ currentCategory?.name ?? '' }}</h2>
 
@@ -119,6 +128,8 @@ import { useIntervalFn } from '@vueuse/core'
 import { useCompetitionEvent } from '../hooks/ruleset'
 import { formatList } from '../helpers'
 import { useTheme } from '../hooks/theme'
+
+import SvGFLogo from '../assets/svgf-icon-svenskgymnastik-white.svg'
 
 useHead({
   title: '📺 Competition (Leaderboard)'

@@ -10,7 +10,7 @@
       :class="{
         'bg-green-100': theme === 'light',
         'bg-green-500': theme === 'dark',
-        'bg-swe-blue': theme === 'swedish-gymnastics',
+        'bg-svgf-blue': theme === 'swedish-gymnastics',
       }"
     >
       <div class="container mx-auto flex items-center h-full p-y-8">
@@ -18,7 +18,7 @@
           <div
             class="sticky right-2 flex items-center justify-end font-bold text-2xl"
             :class="{
-              'text-swe-yellow': theme === 'swedish-gymnastics'
+              'text-svgf-yellow': theme === 'swedish-gymnastics'
             }"
           >
             {{ currentHeat }}

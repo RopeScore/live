@@ -5,8 +5,11 @@ import transformerDirectives from '@unocss/transformer-directives'
 export default defineConfig({
   theme: {
     colors: {
-      'swe-blue': '#006aa7',
-      'swe-yellow': '#fecc00'
+      'svgf-blue': '#006aa7',
+      'svgf-yellow': '#fecc00'
+    },
+    fontFamily: {
+      svgf: 'Tahoma,Verdana,Segoe,sans-serif'
     }
   },
   presets: [
