@@ -38,10 +38,10 @@ if (import.meta.env.PROD) {
     release: import.meta.env.VITE_COMMIT_REF?.toString(),
     environment: import.meta.env.VITE_CONTEXT?.toString(),
     logErrors: true,
-    integrations: [new Sentry.BrowserTracing({
-      tracingOrigins: ['ropescore.live'],
-      routingInstrumentation: Sentry.vueRouterInstrumentation(router)
+    integrations: [Sentry.browserTracingIntegration({
+      router,
     })],
+    tracePropagationTargets: ['ropescore.com', 'ropescore.app', 'api.ropescore.com', 'ropescore.live', 'core.ropescore.com'],
     tracesSampleRate: 1.0
   })
 }

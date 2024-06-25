@@ -40,7 +40,7 @@
       </div>
 
       <!-- Main: Top N: name, club, (members?), and "main" score(s) + rank -->
-      <template v-for="entryRes, idx of currentResult?.rankedResult.results.slice(0, 10)" :key="`${currentCategory.id}:${entryRes.meta.participantId}`">
+      <template v-for="entryRes, idx of currentResult?.rankedResult.results.slice(0, 10)" :key="`${currentCategory?.id ?? ''}:${entryRes.meta.participantId}`">
         <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
           {{ getParticipant(entryRes.meta.participantId)?.name }}
         </div>
