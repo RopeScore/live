@@ -1,9 +1,26 @@
 <template>
-  <div class="grid grid-rows-[2fr_5fr] bg-white dark:bg-black">
-    <div class="bg-green-100 dark:bg-green-500">
+  <div
+    class="grid grid-rows-[2fr_5fr]"
+    :class="{
+      'bg-white': theme !== 'dark',
+      'bg-black': theme === 'dark',
+    }"
+  >
+    <div
+      :class="{
+        'bg-green-100': theme === 'light',
+        'bg-green-500': theme === 'dark',
+        'bg-swe-blue': theme === 'swedish-gymnastics',
+      }"
+    >
       <div class="container mx-auto flex items-center h-full p-y-8">
         <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-2">
-          <div class="sticky right-2 flex items-center justify-end font-bold text-2xl">
+          <div
+            class="sticky right-2 flex items-center justify-end font-bold text-2xl"
+            :class="{
+              'text-swe-yellow': theme === 'swedish-gymnastics'
+            }"
+          >
             {{ currentHeat }}
           </div>
           <div :style="`--cols: ${entries[currentHeat]?.length ?? '1'}`" class="grid grid-rows-1 grid-cols-var gap-2">
@@ -19,7 +36,10 @@
     <div class="container mx-auto flex items-center h-full p-y-8">
       <div class="min-w-full overflow-x-auto grid grid-cols-[3rem_auto] gap-8">
         <template v-for="heat of nextThree" :key="heat">
-          <div class="sticky right-2 flex items-center justify-end font-bold text-2xl dark:text-white">
+          <div
+            class="sticky right-2 flex items-center justify-end font-bold text-2xl"
+            :class="{ 'text-white': theme === 'dark' }"
+          >
             {{ heat }}
           </div>
           <div :style="`--cols: ${entries[heat]?.length ?? '1'}`" class="grid grid-rows-1 grid-cols-var gap-2">
@@ -41,6 +61,7 @@ import { useGroupEntriesQuery, useGroupInfoQuery, useHeatChangedSubscription } f
 import { useRoute } from 'vue-router'
 import EntryInfoCard from '../components/EntryInfoCard.vue'
 import { useHead } from '@vueuse/head'
+import { useTheme } from '../hooks/theme'
 
 useHead({
   title: '📺 Competition (Next Up)'
@@ -58,6 +79,7 @@ const heatChangeSubscription = useHeatChangedSubscription({
 watch(heatChangeSubscription.result, () => { groupInfo.refetch() })
 
 const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
+const theme = useTheme()
 
 const entriesQuery = useGroupEntriesQuery({
   groupId: route.params.groupId as string
@@ -92,7 +114,7 @@ const heats = computed(() => {
 })
 
 const nextThree = computed(() => {
-  return [heatPlusN(1), heatPlusN(2), heatPlusN(3)].filter(n => typeof n === 'number') as number[]
+  return [heatPlusN(1), heatPlusN(2), heatPlusN(3)].filter(n => typeof n === 'number')
 })
 
 function heatPlusN (n: number) {

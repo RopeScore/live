@@ -1,19 +1,41 @@
 <template>
-  <div class="grid grid-rows-[6rem_auto] bg-white dark:bg-gray-900">
-    <header class="dark:text-black text-white bg-gray-900 dark:bg-gray-300 px-4 py-2 flex flex-col justify-center">
+  <div
+    class="grid grid-rows-[6rem_auto]"
+    :class="{
+      'bg-white text-black': theme !== 'dark',
+      'bg-gray-800 text-white': theme === 'dark'
+    }"
+  >
+    <header
+      class="px-4 py-2 flex flex-col justify-center"
+      :class="{
+        'bg-gray-800 text-white': theme === 'light',
+        'bg-gray-300 text-black': theme === 'dark',
+        'bg-swe-blue text-swe-yellow': theme === 'swedish-gymnastics',
+      }"
+    >
       <h1>{{ competitionEvent?.name ?? '' }}</h1>
       <h2>{{ currentCategory?.name ?? '' }}</h2>
 
-      <span class="absolute top-2 right-4 dark:text-gray-600 text-gray-400">
+      <span
+        class="absolute top-2 right-4"
+        :class="{
+          'text-gray-600': theme !== 'dark',
+          'text-gray-400': theme === 'dark',
+        }"
+      >
         {{ currentCycleIdx + 1 }} / {{ resultsToCycle.length }}
       </span>
     </header>
-    <div v-if="resultsToCycle.length === 0" class="flex justify-center items-center text-center text-black dark:text-white">
+    <div
+      v-if="resultsToCycle.length === 0"
+      class="flex justify-center items-center text-center"
+    >
       <h1>No results to display right now</h1>
     </div>
     <div
       v-else
-      class="grid grid-cols-result items-center grid-rows-11 text-black dark:text-white"
+      class="grid grid-cols-result items-center grid-rows-11"
     >
       <template v-if="currentCategory?.type === CategoryType.Team">
         <div class="font-bold px-4 text-2xl">
@@ -41,13 +63,32 @@
 
       <!-- Main: Top N: name, club, (members?), and "main" score(s) + rank -->
       <template v-for="entryRes, idx of currentResult?.rankedResult.results.slice(0, 10)" :key="`${currentCategory?.id ?? ''}:${entryRes.meta.participantId}`">
-        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
+        <div
+          class="text-2xl px-4 h-full flex items-center"
+          :class="{
+            'bg-light-600': theme !== 'dark' && idx % 2 === 1,
+            'bg-gray-700': theme === 'dark' && idx % 2 === 1
+          }"
+        >
           {{ getParticipant(entryRes.meta.participantId)?.name }}
         </div>
-        <div v-if="currentCategory?.type === CategoryType.Team" class="text-lg px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
+        <div
+          v-if="currentCategory?.type === CategoryType.Team"
+          class="text-lg px-4 h-full flex items-center"
+          :class="{
+            'bg-light-600': theme !== 'dark' && idx % 2 === 1,
+            'bg-gray-700': theme === 'dark' && idx % 2 === 1
+          }"
+        >
           {{ formatList((getParticipant(entryRes.meta.participantId) as TeamFragment).members) }}
         </div>
-        <div class="text-2xl px-4 h-full flex items-center" :class="{ 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }">
+        <div
+          class="text-2xl px-4 h-full flex items-center"
+          :class="{
+            'bg-light-600': theme !== 'dark' && idx % 2 === 1,
+            'bg-gray-700': theme === 'dark' && idx % 2 === 1
+          }"
+        >
           {{ getParticipant(entryRes.meta.participantId)?.club }}
         </div>
 
@@ -55,7 +96,10 @@
           v-for="header in primaryTableHeaders"
           :key="header.key"
           class="text-right text-4xl h-full flex items-center justify-end px-4"
-          :class="[`text-${header.color}-500`, { 'bg-light-600': idx % 2 === 1, 'dark:bg-gray-700': idx % 2 === 1 }]"
+          :class="[`text-${header.color}-500`, {
+            'bg-light-600': theme !== 'dark' && idx % 2 === 1,
+            'bg-gray-700': theme === 'dark' && idx % 2 === 1
+          }]"
         >
           {{ getScore(header, entryRes as EntryResult) }}
         </div>
@@ -74,6 +118,7 @@ import { parseCompetitionEventDefinition, type EntryResult, type TableHeader, ty
 import { useIntervalFn } from '@vueuse/core'
 import { useCompetitionEvent } from '../hooks/ruleset'
 import { formatList } from '../helpers'
+import { useTheme } from '../hooks/theme'
 
 useHead({
   title: '📺 Competition (Leaderboard)'
@@ -81,6 +126,7 @@ useHead({
 
 const groupId = useRouteParams<string>('groupId')
 const maxVisibility = useRouteQuery<ResultVersionType | undefined>('max-visibility')
+const theme = useTheme()
 
 const leaderboardQuery = useLeaderboardQuery({
   groupId: groupId as unknown as string,

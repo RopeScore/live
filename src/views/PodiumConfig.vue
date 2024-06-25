@@ -8,7 +8,7 @@
         Lower
       </text-button>
     </div>
-    <button-link to="/podium/live">
+    <button-link :to="`/podium/live?theme=${theme}`">
       Display
     </button-link>
   </div>
@@ -66,6 +66,7 @@ import { TextButton, SelectField, ButtonLink } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
 import { usePodium } from '../hooks/podium'
 import PhotoPicker from '../components/PhotoPicker.vue'
+import { useTheme } from '../hooks/theme'
 
 useHead({
   title: 'Podium'
@@ -75,6 +76,7 @@ const bc = new BroadcastChannel('rs-podium')
 
 const positions = ['2nd', '1st', '3rd'] as const
 const { podium: state, settings } = usePodium()
+const theme = useTheme()
 
 const countriesList = countries.map(c => ({ text: c.name, value: c.code }))
 

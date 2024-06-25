@@ -127,7 +127,7 @@
           Screen {{ screenId }}
         </h3>
         <div>
-          <button-link :to="`/device-stream/live?screen-id=${screenId}`" target="_blank">
+          <button-link :to="`/device-stream/live?screen-id=${screenId}&theme=${theme}`" target="_blank">
             Show Scores
           </button-link>
           <text-button color="red" @click="removeScreen(screenId)">
@@ -207,6 +207,7 @@ import { TextButton, TextField, SelectField, ButtonLink, NumberField } from '@ro
 import IconLoading from 'virtual:icons/mdi/loading'
 import IconPlus from 'virtual:icons/mdi/plus'
 import useFirebaseAuth from '../hooks/firebase-auth'
+import { useTheme } from '../hooks/theme'
 
 useHead({
   title: 'Device Stream'
@@ -215,6 +216,7 @@ useHead({
 const auth = useFirebaseAuth()
 
 const newDeviceId = ref('')
+const theme = useTheme()
 
 const sharesQuery = useUserStreamSharesQuery({
   fetchPolicy: 'cache-and-network',

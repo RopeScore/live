@@ -1,9 +1,17 @@
 <template>
   <div
-    class="border border-black bg-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white flex items-center justify-center relative"
+    class="border flex items-center justify-center relative"
+    :class="{
+      'border-black bg-gray-300 text-black': theme !== 'dark',
+      'border-gray-600 bg-gray-800 text-white': theme === 'dark',
+    }"
   >
     <div
-      class="font-bold text-8xl absolute top-0 left-2 text-gray-600 dark:text-gray-400"
+      class="font-bold text-8xl absolute top-0 left-2"
+      :class="{
+        'text-gray-600': theme !== 'dark',
+        'text-gray-400': theme === 'dark',
+      }"
     >
       {{ pool ?? '' }}
     </div>
@@ -25,6 +33,7 @@
 <script lang="ts" setup>
 import { type PropType } from 'vue'
 import { type EntryFragment } from '../graphql/generated'
+import type { Theme } from '../hooks/theme'
 
 defineProps({
   pool: {
@@ -40,6 +49,10 @@ defineProps({
     type: String,
     required: false,
     default: null
+  },
+  theme: {
+    type: String as PropType<Theme>,
+    required: true
   }
 })
 </script>

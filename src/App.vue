@@ -5,8 +5,7 @@
       'grid-rows-[3.5rem_auto_2rem_2rem]': !fullscreen,
       'grid-rows-1': fullscreen,
       'h-[100vh]': fullscreen,
-      'overflow-y-hidden': fullscreen,
-      dark: darkMode === 'dark'
+      'overflow-y-hidden': fullscreen
     }"
   >
     <header v-if="!fullscreen" class="bg-gray-100 flex justify-between items-center px-4 sticky top-0 z-1000">
@@ -15,8 +14,8 @@
       </router-link>
 
       <nav>
-        <text-button @click="darkMode = darkMode === 'light' ? 'dark' : 'light'">
-          Theme ({{ darkMode === 'light' ? 'L' : 'D' }})
+        <text-button @click="_theme = _theme === 'light' ? 'dark' : 'light'">
+          Theme ({{ _theme === 'light' ? 'L' : (_theme === 'dark' ? 'D' : '?') }})
         </text-button>
         <button-link to="/podium">
           Podium
@@ -39,7 +38,15 @@
     <router-view v-else />
 
     <system-settings-footer v-if="!fullscreen" />
-    <footer v-if="!fullscreen" class="flex justify-between items-center bg-gray-100 dark:bg-gray-700 dark:text-white px-4">
+    <footer
+      v-if="!fullscreen"
+      class="flex justify-between items-center px-4"
+      :class="{
+        'bg-gray-100 text-black': theme === 'light',
+        'bg-gray-700 text-white': theme === 'dark',
+        'bg-swe-blue text-white': theme === 'swedish-gymnastics',
+      }"
+    >
       <span>&copy; Swantzter 2018-2024</span>
       <span>{{ version }}</span>
     </footer>
@@ -49,8 +56,8 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useLocalStorage } from '@vueuse/core'
 import { useHead } from '@vueuse/head'
+import { useRawTheme, useTheme } from './hooks/theme'
 
 import { ButtonLink, TextButton } from '@ropescore/components'
 import SystemSettingsFooter from './components/SystemSettingsFooter.vue'
@@ -65,7 +72,8 @@ const fullscreen = computed(() => {
   return !!route.meta.fullscreen
 })
 
-const darkMode = useLocalStorage<'light' | 'dark'>('rs-theme', 'light')
+const _theme = useRawTheme()
+const theme = useTheme()
 
 const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
 </script>

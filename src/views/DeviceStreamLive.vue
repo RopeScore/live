@@ -1,11 +1,17 @@
 <template>
-  <div class="grid grid-rows-1 bg-white dark:bg-black">
+  <div
+    class="grid grid-rows-1"
+    :class="{
+      'bg-white': theme !== 'dark',
+      'bg-black': theme === 'dark',
+    }"
+  >
     <main class="grid custom-grid">
       <template v-for="row of screen?.rows ?? 0" :key="row">
         <template v-for="col of screen?.cols ?? 0" :key="col">
           <div v-if="pools[`${row}:${col}`] == null" />
           <template v-else>
-            <device-not-set v-if="!pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" />
+            <device-not-set v-if="!pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" :theme="theme" />
             <speed-live-score
               v-else-if="tallies[pools[`${row}:${col}`].deviceId!]?.info == null || tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'S' || tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'Shj'"
               :pool="pools[`${row}:${col}`].label"
@@ -13,6 +19,7 @@
               :device-id="pools[`${row}:${col}`].deviceId"
               :cols="cols"
               :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
+              :theme="theme"
             />
             <timing-live-score
               v-else-if="tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'T'"
@@ -21,23 +28,39 @@
               :device-id="pools[`${row}:${col}`].deviceId"
               :cols="cols"
               :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
+              :theme="theme"
             />
             <unsupported-competition-event
               v-else
               :pool="pools[`${row}:${col}`].label"
               :competition-event-id="pools[`${row}:${col}`].deviceId ? tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType ?? '---' : '---'"
+              :theme="theme"
             />
           </template>
         </template>
       </template>
 
-      <div v-if="screen != null && ((screen?.cols ?? 0) === 0 || (screen?.rows ?? 0) === 0)" class="bg-gray-300 dark:bg-gray-800 dark:text-white flex items-center justify-center relative">
+      <div
+        v-if="screen != null && ((screen?.cols ?? 0) === 0 || (screen?.rows ?? 0) === 0)"
+        class="flex items-center justify-center relative"
+        :class="{
+          'bg-gray-300 text-black': theme !== 'dark',
+          'bg-gray-800 text-white': theme === 'dark'
+        }"
+      >
         <p class="text-center">
           No pools configured
         </p>
       </div>
 
-      <div v-if="screen == null" class="bg-gray-300 dark:bg-gray-800 dark:text-white flex items-center justify-center relative">
+      <div
+        v-if="screen == null"
+        class="flex items-center justify-center relative"
+        :class="{
+          'bg-gray-300 text-black': theme !== 'dark',
+          'bg-gray-800 text-white': theme === 'dark'
+        }"
+      >
         <p class="text-center">
           Screen does not exist, close this display
         </p>
@@ -54,6 +77,7 @@ import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
 import { useFetch, useTimeoutPoll } from '@vueuse/core'
+import { useTheme, type Theme } from '../hooks/theme'
 
 import DeviceNotSet from '../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
@@ -66,6 +90,7 @@ useHead({
 
 const settings = useDeviceStreamPools()
 const screenId = useRouteQuery<string>('screen-id')
+const theme = useTheme()
 
 const screen = computed(() => screenId.value == null ? null : settings.value.screens?.[screenId.value])
 const cols = computed(() => screen.value?.rows === 0 ? 1 : screen.value?.cols ?? 1)

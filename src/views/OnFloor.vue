@@ -4,13 +4,21 @@
     :class="{
       'bg-green-500': keyColor === 'green',
       'bg-blue-500': keyColor === 'blue',
-      'bg-white': !keyColor,
-      'dark:bg-black': !keyColor
+      'bg-white': keyColor === 'theme' && theme !== 'dark',
+      'bg-black': keyColor === 'theme' && theme === 'dark'
     }"
   >
     <div class="fixed bottom-0 right-0 left-0">
-      <div v-if="entries.length === 1" class="bg-white flex flex-col w-max min-w-125 p-4 pr-8 mb-6 bg-gray-200 custom--clip">
-        <div class="text-dark-600 italic">
+      <div
+        v-if="entries.length === 1"
+        class="flex flex-col w-max min-w-125 p-4 pr-8 mb-6 custom--clip"
+        :class="{
+          'bg-gray-200 text-dark-600': theme === 'light',
+          'bg-gray-700 text-light-600': theme === 'dark',
+          'bg-swe-blue text-white': theme === 'swedish-gymnastics'
+        }"
+      >
+        <div class="italic" :class="{ 'text-swe-yellow': theme === 'swedish-gymnastics' }">
           Heat {{ currentHeat }}&ndash;{{ entries[0].category.name }}
         </div>
         <div class="text-2xl">
@@ -21,8 +29,16 @@
           {{ formatList(entries[0].participant.members) }}
         </div>
       </div>
-      <div v-else-if="entries.length > 1" class="bg-white flex flex-col w-max p-4 pr-12 mb-6 bg-gray-200 custom--clip">
-        <div class="text-dark-600 italic">
+      <div
+        v-else-if="entries.length > 1"
+        class="flex flex-col w-max p-4 pr-12 mb-6 custom--clip"
+        :class="{
+          'bg-gray-200 text-dark-600': theme === 'light',
+          'bg-gray-700 text-light-600': theme === 'dark',
+          'bg-swe-blue text-white': theme === 'swedish-gymnastics'
+        }"
+      >
+        <div class="italic" :class="{ 'text-swe-yellow': theme === 'swedish-gymnastics' }">
           Heat {{ currentHeat }}
         </div>
         <div class="grid grid-cols-[3ch_auto_auto_auto] gap-2 items-baseline">
@@ -56,6 +72,7 @@ import { useGroupInfoQuery, useHeatChangedSubscription, useHeatEntriesQuery } fr
 import { useRoute } from 'vue-router'
 import { useHead } from '@vueuse/head'
 import { formatList } from '../helpers'
+import { useKeyColor, useTheme } from '../hooks/theme'
 
 useHead({
   title: '📺 Competition (On Floor)'
@@ -70,7 +87,8 @@ const heatChangeSubscription = useHeatChangedSubscription({
   groupId: route.params.groupId as string
 })
 
-const keyColor = computed(() => route.query['key-color'] as string)
+const keyColor = useKeyColor()
+const theme = useTheme()
 
 watch(heatChangeSubscription.result, () => { groupInfo.refetch() })
 

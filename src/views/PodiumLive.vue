@@ -9,7 +9,11 @@
       }"
     >
       <h2
-        class="text-black dark:text-white text-8xl font-bold text-center mb-4"
+        class="text-8xl font-bold text-center mb-4"
+        :class="{
+          'text-black': theme !== 'dark',
+          'text-white': theme === 'dark'
+        }"
       >
         {{ pos }}
       </h2>
@@ -24,7 +28,11 @@
         <img
           v-for="(flag, idx) of state?.[pos] ?? []"
           :key="idx + flag"
-          class="w-full border-2 border-gray-800 dark:border-gray-400"
+          class="w-full border-2"
+          :class="{
+            'border-gray-800': theme !== 'dark',
+            'border-gray-400': theme === 'dark'
+          }"
           :alt="flag"
           :src="`/flags/${flag}.svg`"
         >
@@ -38,6 +46,7 @@ import { ref, watch } from 'vue'
 import { useHead } from '@vueuse/head'
 import { usePodium } from '../hooks/podium'
 import { getOpfsImgUrl } from '../helpers'
+import { useTheme } from '../hooks/theme'
 
 useHead({
   title: '📺 Podium (Live)'
@@ -46,6 +55,8 @@ useHead({
 const bc = new BroadcastChannel('rs-podium')
 
 const positions = ['2nd', '1st', '3rd'] as const
+
+const theme = useTheme()
 
 const state = ref<Record<'1st' | '2nd' | '3rd', string[]>>()
 const raised = ref(false)

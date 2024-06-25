@@ -1,5 +1,11 @@
 <template>
-  <div class="grid grid-rows-1 bg-white dark:bg-black">
+  <div
+    class="grid grid-rows-1"
+    :class="{
+      'bg-white': theme !== 'dark',
+      'bg-black': theme === 'dark'
+    }"
+  >
     <main class="grid custom-grid">
       <template
         v-for="entry of entries"
@@ -12,11 +18,19 @@
           :scoresheet="(primaryScoresheets[entry.id] as MarkScoresheetFragment & ScoresheetBaseFragment)"
           :tally="tallies[primaryScoresheets[entry.id]?.id]?.tally"
           :cols="cols"
+          :theme="theme"
         />
-        <unsupported-competition-event v-else :entry="entry" :pool="entry.pool!" />
+        <unsupported-competition-event v-else :entry="entry" :pool="entry.pool!" :theme="theme" />
       </template>
 
-      <div v-show="entries.length === 0 && !entriesQuery.loading.value" class="bg-gray-300 flex items-center justify-center relative">
+      <div
+        v-show="entries.length === 0 && !entriesQuery.loading.value"
+        class="bg-gray-300 flex items-center justify-center relative"
+        :class="{
+          'bg-gray-300': theme !== 'dark',
+          'bg-dark-500': theme === 'dark'
+        }"
+      >
         <p class="text-center">
           Empty heat loaded
         </p>
@@ -38,12 +52,14 @@ import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType,
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
 import { useHead } from '@vueuse/head'
+import { useTheme } from '../hooks/theme'
 
 useHead({
   title: '📺 Competition (Live)'
 })
 
 const route = useRoute()
+const theme = useTheme()
 
 const groupInfo = useGroupInfoQuery({
   groupId: route.params.groupId as string
