@@ -71,6 +71,9 @@ const route = useRoute()
 
 const groupInfo = useGroupInfoQuery({
   groupId: route.params.groupId as string
+}, {
+  pollInterval: 30_000,
+  fetchPolicy: 'cache-and-network'
 })
 const heatChangeSubscription = useHeatChangedSubscription({
   groupId: route.params.groupId as string

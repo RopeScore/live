@@ -51,7 +51,7 @@ export const apiDomain = computed(() => {
 
 function createLink () {
   const wsLink = new WebSocketLink({
-    url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `wss://${apiDomain.value}/graphql` },
+    url: () => { return import.meta.env.VITE_GRAPHQL_WS_ENDPOINT ?? `${apiDomain.value.includes('localhost') ? 'ws' : 'wss'}://${apiDomain.value}/graphql` },
     lazy: true,
     connectionParams: async () => {
       const oldAuth = useAuth()
@@ -93,7 +93,7 @@ function createLink () {
   })
 
   const httpLink = createHttpLink({
-    uri: () => { return import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `https://${apiDomain.value}/graphql` }
+    uri: () => { return import.meta.env.VITE_GRAPHQL_ENDPOINT ?? `${apiDomain.value.includes('localhost') ? 'http' : 'https'}://${apiDomain.value}/graphql` }
   })
 
   const authLink = setContext(async (_, { headers }) => {
