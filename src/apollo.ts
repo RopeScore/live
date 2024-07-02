@@ -12,7 +12,8 @@ const resolvedReachable = useFetch(
   computed(() => `https://${localDiscover.data.value}/.well-known/apollo/server-health`),
   {
     refetch: computed(() => typeof localDiscover.data.value === 'string' && /\.local\.ropescore\.com(:\d+)?$/.test(localDiscover.data.value)),
-    immediate: false
+    immediate: false,
+    timeout: 5_000
   }
 ).get().json()
 useIntervalFn(() => {
@@ -30,7 +31,8 @@ const manualReachable = useFetch(
     : `https://${localManual.value}.local.ropescore.com/.well-known/apollo/server-health`),
   {
     refetch: computed(() => !!localManual.value && localManual.value !== 'null'),
-    immediate: !!localManual.value
+    immediate: !!localManual.value,
+    timeout: 5_000
   }
 ).get().json()
 useIntervalFn(() => {
