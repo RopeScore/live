@@ -270,6 +270,7 @@ function removeScreen (screenId: string) {
 }
 
 function changeCols (screenId: string, cols: number) {
+  if (cols == null || Number.isNaN(cols)) return
   const screen = settings.value.screens?.[screenId]
   if (screen == null) return
   screen.cols = cols
@@ -281,6 +282,7 @@ function changeCols (screenId: string, cols: number) {
   }
 }
 function changeRows (screenId: string, rows: number) {
+  if (rows == null || Number.isNaN(rows)) return
   const screen = settings.value.screens?.[screenId]
   if (screen == null) return
   screen.rows = rows

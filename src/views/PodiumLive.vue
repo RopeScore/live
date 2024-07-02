@@ -1,5 +1,8 @@
 <template>
-  <main class="grid grid-cols-3 gap-6 px-8 py-6">
+  <main
+    class="grid grid-cols-3 gap-6 px-8 py-6"
+    :class="{ 'dark bg-black': theme === 'dark' }"
+  >
     <div
       v-for="pos in positions"
       :key="pos"
@@ -95,7 +98,7 @@ main {
   background-size: cover;
 }
 
-.dark main {
+main.dark {
   background: linear-gradient(0deg, rgba(0,0,0,.3) 0%, rgba(0,0,0,.8) 50%, rgba(0,0,0,1) 100%), var(--bgUrl, black);
 }
 </style>
