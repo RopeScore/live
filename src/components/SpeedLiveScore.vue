@@ -3,7 +3,7 @@
     class="score-container border flex items-center justify-center relative overflow-hidden"
     :class="{
       'border-black bg-white text-black': theme !== 'dark',
-      'border-gray-600 bg-black text-white': theme === 'dark',
+      'border-gray-600 bg-black text-white dark': theme === 'dark',
 
       'bg-green-100': theme !== 'dark' && scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
       'bg-green-900': theme === 'dark' && scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
