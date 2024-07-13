@@ -16,7 +16,7 @@
       </div>
     </div>
     <template v-if="heatInfos?.length === 1">
-      <div class="grid w-full grid-cols-[2fr_3fr] gap-6 mb-10 items-center justify-around">
+      <div class="grid w-full grid-cols-[2fr_3fr] gap-6 items-center justify-around">
         <img
           class="w-full max-w-100 border-2 justify-self-end"
           :class="{
@@ -42,7 +42,7 @@
           <div
             class="font-bold"
             :class="{
-              'text-8xl': !(heatInfos[0].Part2?.trim()?.length > 0 || heatInfos[0].Part3?.trim()?.length > 0 || heatInfos[0].Part4?.trim()?.length > 0)
+              'text-8xl': !((heatInfos[0].Part2?.trim()?.length ?? 0) > 0 || (heatInfos[0].Part3?.trim()?.length ?? 0) > 0 || (heatInfos[0].Part4?.trim()?.length ?? 0) > 0 || (heatInfos[0].Part5?.trim()?.length ?? 0) > 0)
             }"
           >
             <p class="pb-4">
@@ -56,6 +56,9 @@
             </p>
             <p v-if="heatInfos[0].Part4?.trim()?.length > 0" class="pb-4">
               {{ heatInfos[0].Part4 }}
+            </p>
+            <p v-if="heatInfos[0].Part5?.trim()?.length > 0" class="pb-4">
+              {{ heatInfos[0].Part5 }}
             </p>
           </div>
           <p class="">
