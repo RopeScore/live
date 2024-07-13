@@ -2,10 +2,28 @@
   <div
     class="grid grid-rows-1"
     :class="{
-      'bg-white': theme !== 'dark',
-      'bg-black': theme === 'dark',
+      'bg-white text-black': theme !== 'dark',
+      'bg-black text-white': theme === 'dark',
     }"
   >
+    <div
+      class="absolute flex flex-col"
+      :class="{
+        'top-4 right-4 items-end': freeCorner === 'top-right',
+        'bottom-4 right-4 items-end': freeCorner === 'bottom-right',
+        'top-4 left-4 items-start': freeCorner === 'top-left',
+        'bottom-4 left-4 items-start': freeCorner === 'bottom-left'
+      }"
+    >
+      <div class="font-bold text-8xl">
+        {{ clock }}
+      </div>
+      <div>
+        <span class="text-5xl">heat&nbsp;</span>
+        <span v-if="heatInfo.data.value" class="text-8xl font-bold">{{ heatInfo.data.value[0].HeatNumber }}</span>
+      </div>
+    </div>
+
     <main class="grid custom-grid">
       <template v-for="row of screen?.rows ?? 0" :key="row">
         <template v-for="col of screen?.cols ?? 0" :key="col">
@@ -84,6 +102,7 @@ import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import TimingLiveScore from '../components/TimingLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
 import { useHeatInfo } from '../hooks/heat-info'
+import { useDateFormat, useTimestamp } from '@vueuse/core'
 
 useHead({
   title: '📺 Device Stream (Live)'
@@ -92,6 +111,7 @@ useHead({
 const settings = useDeviceStreamPools()
 const screenId = useRouteQuery<string>('screen-id')
 const theme = useTheme()
+const clock = useDateFormat(useTimestamp({ interval: 300 }), 'HH:mm')
 
 const screen = computed(() => screenId.value == null ? null : settings.value.screens?.[screenId.value])
 const cols = computed(() => screen.value?.rows === 0 ? 1 : screen.value?.cols ?? 1)
@@ -99,8 +119,15 @@ const rows = computed(() => screen.value?.cols === 0 ? 1 : screen.value?.rows ??
 const pools = computed(() => screen.value?.pools ?? {})
 
 const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean, info?: DeviceStreamJudgeInfo }>>({})
-
 const deviceIds = computed(() => Object.values(pools.value).map(p => p.deviceId).filter(id => typeof id === 'string'))
+
+const freeCorner = computed(() => {
+  if (pools.value[`${1}:${cols.value}`] == null) return 'top-right'
+  if (pools.value[`${rows.value}:${cols.value}`] == null) return 'bottom-right'
+  if (pools.value[`${1}:${1}`] == null) return 'top-left'
+  if (pools.value[`${rows.value}:${1}`] == null) return 'bottom-left'
+  else return 'top-right'
+})
 
 const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
