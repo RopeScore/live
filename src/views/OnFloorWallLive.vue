@@ -1,7 +1,10 @@
 <template>
   <main
-    class="flex items-center justify-center  gap-6 px-8 py-6"
-    :class="{ 'dark bg-black': theme === 'dark' }"
+    class="flex items-center justify-center gap-6 px-8 py-6"
+    :class="{
+      'dark bg-black text-white': theme === 'dark',
+      'bg-white text-black': theme !== 'dark'
+    }"
   >
     <template v-if="heatInfos?.length === 1">
       <div class="absolute top-4 right-4 flex flex-col items-end">
@@ -14,9 +17,9 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-[25rem_max-content] gap-6 mb-10 items-center">
+      <div class="grid w-full grid-cols-[2fr_3fr] gap-6 mb-10 items-center justify-around">
         <img
-          class="w-full border-2"
+          class="w-full max-w-100 border-2 justify-self-end"
           :class="{
             'border-gray-800': theme !== 'dark',
             'border-gray-400': theme === 'dark'
@@ -25,15 +28,37 @@
           :src="flagUrl(heatInfos[0])"
         >
         <div class="text-6xl">
-          <p class="pb-4 color-gray-500">
-            Station {{ heatInfos[0].Station }}
+          <p
+            class="pb-4"
+            :class="{
+              'text-gray-500': theme !== 'dark',
+              'text-gray-400': theme === 'dark'
+            }"
+          >
+            Station {{ heatInfos[0].Station }} &mdash; {{ heatInfos[0].DivisionName }} {{ heatInfos[0].AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heatInfos[0].GenderName }}
           </p>
           <p class="pb-4">
             {{ heatInfos[0].Event }}
           </p>
-          <p class="font-bold text-8xl pb-4">
-            {{ heatInfos[0].Part1 }}
-          </p>
+          <div
+            class="font-bold"
+            :class="{
+              'text-8xl': !(heatInfos[0].Part2?.trim()?.length > 0 || heatInfos[0].Part3?.trim()?.length > 0 || heatInfos[0].Part4?.trim()?.length > 0)
+            }"
+          >
+            <p class="pb-4">
+              {{ heatInfos[0].Part1 }}
+            </p>
+            <p v-if="heatInfos[0].Part2?.trim()?.length > 0" class="pb-4">
+              {{ heatInfos[0].Part2 }}
+            </p>
+            <p v-if="heatInfos[0].Part3?.trim()?.length > 0" class="pb-4">
+              {{ heatInfos[0].Part3 }}
+            </p>
+            <p v-if="heatInfos[0].Part4?.trim()?.length > 0" class="pb-4">
+              {{ heatInfos[0].Part4 }}
+            </p>
+          </div>
           <p class="">
             {{ heatInfos[0].TeamCountryName }}
           </p>
@@ -55,7 +80,6 @@ import { useDateFormat, useTimestamp } from '@vueuse/core'
 useHead({
   title: '📺 On Floor Wall (Live)'
 })
-
 
 const theme = useTheme()
 const settings = useOnFloorWallSettings()
@@ -86,5 +110,9 @@ main {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+main.dark {
+  background: var(--bgUrl, black);
 }
 </style>

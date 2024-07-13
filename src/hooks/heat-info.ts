@@ -7,6 +7,9 @@ export interface ServoHeatPoolInfo {
   Station: number
   HeatNumber: string
   Event: string
+  DivisionName: string
+  AgeGroupName: string
+  GenderName: string
   Team: string
   TeamCountryCode: string
   TeamCountryName: string
