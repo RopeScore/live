@@ -113,5 +113,8 @@ main {
 
 main.dark {
   background: var(--bgUrl, black);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 </style>

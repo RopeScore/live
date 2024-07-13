@@ -215,4 +215,4 @@ watch(heatInfo.data, heatInfo => {
   grid-template-columns: repeat(v-bind(cols), minmax(0, 1fr));
   grid-template-rows: repeat(v-bind(rows), minmax(0, 1fr));
 }
-</style>../hooks/heat-info
+</style>
