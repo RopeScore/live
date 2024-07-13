@@ -5,7 +5,7 @@ export interface StreamPool {
   label?: number
 }
 
-export interface ServoPoolBackgroundsConfig {
+export interface ServoCurrentHeatInfoConfig {
   system: 'servo'
   baseUrl: string
   competitionId?: number
@@ -19,7 +19,7 @@ export interface ScreenConfig {
 }
 
 export interface DeviceStreamSettings {
-  poolBackgrounds?: ServoPoolBackgroundsConfig
+  heatInfo?: ServoCurrentHeatInfoConfig
   screens?: Record<string, ScreenConfig>
 }
 

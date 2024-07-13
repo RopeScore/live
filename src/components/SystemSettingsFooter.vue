@@ -32,7 +32,7 @@ const newName = ref('')
       User ID: <code class="bg-gray-100 px-2 rounded">{{ auth.userLoading.value ? 'Loading...' : auth.user.value?.id }}</code>
     </p>
 
-    <form v-if="auth.isAuthenticated.value" class="border-l pl-4 grid grid-cols-[max-content_auto_max-content_max-content] gap-2 items-center" @submit.prevent="auth.update({ name: newName })">
+    <!-- <form v-if="auth.isAuthenticated.value" class="border-l pl-4 grid grid-cols-[max-content_auto_max-content_max-content] gap-2 items-center" @submit.prevent="auth.update({ name: newName })">
       System name:
       <text-field
         :model-value="auth.user.value?.name ?? ''"
@@ -47,6 +47,6 @@ const newName = ref('')
       <text-button color="orange" dense :loading="auth.userLoading.value" type="button" @click="auth.logout()">
         Log out
       </text-button>
-    </form>
+    </form> -->
   </div>
 </template>

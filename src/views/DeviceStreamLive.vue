@@ -76,13 +76,13 @@ import { type ScoreTally, type Mark } from '../helpers'
 import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
-import { useFetch, useTimeoutPoll } from '@vueuse/core'
-import { useTheme, type Theme } from '../hooks/theme'
+import { useTheme } from '../hooks/theme'
 
 import DeviceNotSet from '../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import TimingLiveScore from '../components/TimingLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
+import { useHeatInfo } from '../hooks/heat-info'
 
 useHead({
   title: '📺 Device Stream (Live)'
@@ -152,30 +152,12 @@ function poolBgUrl (poolLabel: number | undefined) {
   return poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.bgUrl
 }
 
-const servoPollUrl = ref<string>('')
+const hic = ref(settings.value.heatInfo)
+watch(() => settings.value.heatInfo, newHeatInfo => { hic.value = newHeatInfo })
 
-interface ServoHeatPoolInfo {
-  PROGRAM: 'ON' | ''
-  Station: number
-  HeatNumber: string
-  Event: string
-  Team: string
-  TeamCountryCode: string
-  TeamCountryName: string
-  TeamCountryFlagUrl: string
-  [nameKey: `Part${number}`]: string
-  [lastNameKey: `Part${number}_Last`]: string
-}
+const heatInfo = useHeatInfo(hic)
 
-const servoCurrentHeatFetch = useFetch(servoPollUrl, {
-  headers: {
-    accept: 'application/json'
-  }
-}, {
-  immediate: false
-}).get().json<ServoHeatPoolInfo[]>()
-
-watch(servoCurrentHeatFetch.data, heatInfo => {
+watch(heatInfo.data, heatInfo => {
   if (heatInfo == null) {
     poolBackgrounds.value = []
     return
@@ -185,26 +167,6 @@ watch(servoCurrentHeatFetch.data, heatInfo => {
     bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined)
   }))
 })
-
-const servoPoll = useTimeoutPoll(() => {
-  servoCurrentHeatFetch.execute()
-}, 10_000, { immediate: false })
-
-watch(() => settings.value.poolBackgrounds, poolBackgrounds => {
-  // start by just disabling all polling
-  servoPoll.pause()
-
-  if (poolBackgrounds?.system === 'servo' && poolBackgrounds.competitionId != null) {
-    let url
-    try {
-      url = new URL(`/api/v1/competitions/${poolBackgrounds.competitionId}/info/current`, poolBackgrounds.baseUrl)
-    } catch {
-      return
-    }
-    servoPollUrl.value = url.href
-    servoPoll.resume()
-  }
-}, { immediate: true })
 </script>
 
 <style scoped>
@@ -212,4 +174,4 @@ watch(() => settings.value.poolBackgrounds, poolBackgrounds => {
   grid-template-columns: repeat(v-bind(cols), minmax(0, 1fr));
   grid-template-rows: repeat(v-bind(rows), minmax(0, 1fr));
 }
-</style>
+</style>../hooks/heat-info

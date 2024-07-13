@@ -91,20 +91,20 @@
     </h2>
     <div>
       <select-field
-        :model-value="settings.poolBackgrounds?.system"
+        :model-value="settings.heatInfo?.system"
         label="Pool Backgrounds System"
         :data-list="['servo']"
-        @update:model-value="setPoolBackgroundsSystem($event as string)"
+        @update:model-value="setCurrentHeatInfoSystem($event as string)"
       />
       <text-field
-        v-if="settings.poolBackgrounds?.system === 'servo'"
-        v-model="settings.poolBackgrounds.baseUrl"
+        v-if="settings.heatInfo?.system === 'servo'"
+        v-model="settings.heatInfo.baseUrl"
         label="Servo Scoring Base URL"
         type="url"
       />
       <number-field
-        v-if="settings.poolBackgrounds?.system === 'servo'"
-        v-model="settings.poolBackgrounds.competitionId"
+        v-if="settings.heatInfo?.system === 'servo'"
+        v-model="settings.heatInfo.competitionId"
         label="Servo Scoring Competition ID"
         :min="0"
         :step="1"
@@ -237,14 +237,14 @@ requestShare.onDone(() => {
 
 const settings = useDeviceStreamPools()
 
-function setPoolBackgroundsSystem (system: string | undefined) {
-  if (system === 'servo' && settings.value.poolBackgrounds?.system !== 'servo') {
-    settings.value.poolBackgrounds = {
+function setCurrentHeatInfoSystem (system: string | undefined) {
+  if (system === 'servo' && settings.value.heatInfo?.system !== 'servo') {
+    settings.value.heatInfo = {
       system: 'servo',
       baseUrl: 'https://scoring.ijru.sport'
     }
   } else {
-    settings.value.poolBackgrounds = undefined
+    settings.value.heatInfo = undefined
   }
 }
 

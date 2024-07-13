@@ -13,11 +13,14 @@ const router = createRouter({
     { path: '/groups/:groupId/next-up', component: async () => import('./views/NextUp.vue'), meta: { fullscreen: true, authRequired: true } },
     { path: '/groups/:groupId/leaderboard', component: async () => import('./views/Leaderboard.vue'), meta: { fullscreen: true, authRequired: true } },
 
-    { path: '/device-stream', component: async () => import('./views/DeviceStreamSetup.vue'), meta: { authRequired: true } },
+    { path: '/device-stream', component: async () => import('./views/DeviceStreamConfig.vue'), meta: { authRequired: true } },
     { path: '/device-stream/live', component: async () => import('./views/DeviceStreamLive.vue'), meta: { fullscreen: true, authRequired: true } },
 
     { path: '/podium', component: async () => import('./views/PodiumConfig.vue') },
-    { path: '/podium/live', component: async () => import('./views/PodiumLive.vue'), meta: { fullscreen: true } }
+    { path: '/podium/live', component: async () => import('./views/PodiumLive.vue'), meta: { fullscreen: true } },
+
+    { path: '/on-floor-wall/', component: async () => import('./views/OnFloorWallConfig.vue') },
+    { path: '/on-floor-wall/:vendor/:id', component: async () => import('./views/OnFloorWallLive.vue'), meta: { fullscreen: true } }
   ]
 })
 export default router

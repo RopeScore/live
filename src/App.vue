@@ -25,6 +25,9 @@
         <button-link to="/device-stream">
           Device Stream
         </button-link>
+        <button-link to="/on-floor-wall">
+          On Floor Wall
+        </button-link>
         <button-link to="/groups">
           Groups
         </button-link>
