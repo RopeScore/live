@@ -27,10 +27,10 @@
       {{ pool ?? '' }}
     </div>
     <div
-      v-if="entry"
-      class="font-bold text-4xl absolute top-2 right-2 max-w-[66%] overflow-hidden custom-wrap"
+      v-if="entry || names"
+      class="font-bold text-4xl absolute top-2 right-2 max-w-[66%] overflow-hidden custom-wrap text-balance text-right"
     >
-      {{ entry.participant.name }}
+      {{ entry?.participant?.name ?? names }}
     </div>
 
     <div v-if="!entry?.didNotSkipAt" class="z-1 font-semibold tabular-nums w-full text-center font-mono custom-size">
@@ -64,6 +64,10 @@ const props = defineProps({
   },
   entry: {
     type: Object as PropType<EntryFragment>,
+    default: () => null
+  },
+  names: {
+    type: String,
     default: () => null
   },
   scoresheet: {

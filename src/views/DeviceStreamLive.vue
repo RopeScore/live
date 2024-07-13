@@ -19,6 +19,7 @@
               :device-id="pools[`${row}:${col}`].deviceId"
               :cols="cols"
               :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
+              :names="poolNames(pools[`${row}:${col}`].label)"
               :theme="theme"
             />
             <timing-live-score
@@ -72,7 +73,7 @@
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from 'vue'
 import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
-import { type ScoreTally, type Mark } from '../helpers'
+import { type ScoreTally, type Mark, formatList } from '../helpers'
 import { useDeviceStreamPools } from '../hooks/stream-pools'
 import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
@@ -145,11 +146,16 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | unde
 watch(markStreamSubscription.result, markStreamWatcher)
 watch(markStreamSubscriptionAlt.result, markStreamWatcher)
 
-const poolBackgrounds = ref<Array<{ poolLabel: number, bgUrl?: string }>>([])
+const poolBackgrounds = ref<Array<{ poolLabel: number, bgUrl?: string, names: string[] }>>([])
 
 function poolBgUrl (poolLabel: number | undefined) {
   if (poolLabel == null) return undefined
   return poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.bgUrl
+}
+
+function poolNames (poolLabel: number | undefined) {
+  if (poolLabel == null) return undefined
+  return formatList(poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.names ?? [])
 }
 
 const hic = ref(settings.value.heatInfo)
@@ -162,10 +168,18 @@ watch(heatInfo.data, heatInfo => {
     poolBackgrounds.value = []
     return
   }
-  poolBackgrounds.value = heatInfo.map(hi => ({
-    poolLabel: hi.Station,
-    bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined)
-  }))
+  poolBackgrounds.value = heatInfo.map(hi => {
+    const names = []
+    for (const p of [1, 2, 3, 4]) {
+      let name = hi[`Part${p}`]
+      name = name.substring(0, name.length - (hi[`Part${p}_Last`] ?? '').length).trim()
+      if (name.length > 0) names.push(name)
+    }
+    return {
+      poolLabel: hi.Station,
+      bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined),
+      names
+    }})
 })
 </script>
 
