@@ -6,17 +6,16 @@
       'bg-white text-black': theme !== 'dark'
     }"
   >
-    <template v-if="heatInfos?.length === 1">
-      <div class="absolute top-4 right-4 flex flex-col items-end">
-        <div class="font-bold text-8xl">
-          {{ clock }}
-        </div>
-        <div>
-          <span class="text-5xl">heat&nbsp;</span>
-          <span class="text-8xl font-bold">{{ heatInfos[0].HeatNumber }}</span>
-        </div>
+    <div class="absolute top-4 right-4 flex flex-col items-end">
+      <div class="font-bold text-8xl">
+        {{ clock }}
       </div>
-
+      <div>
+        <span class="text-5xl">heat&nbsp;</span>
+        <span v-if="heatInfos" class="text-8xl font-bold">{{ heatInfos[0].HeatNumber }}</span>
+      </div>
+    </div>
+    <template v-if="heatInfos?.length === 1">
       <div class="grid w-full grid-cols-[2fr_3fr] gap-6 mb-10 items-center justify-around">
         <img
           class="w-full max-w-100 border-2 justify-self-end"
