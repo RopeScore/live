@@ -20,17 +20,19 @@
           {{ menuItem.title }}
         </button-link>
       </nav>
-      <dialog-button ref="menuDialog" label="Menu">
-        <div class="flex flex-col gap-6">
-          <button-link
-            v-for="menuItem of menuItems"
-            :key="menuItem.title"
-            :to="menuItem.path"
-          >
-            {{ menuItem.title }}
-          </button-link>
-        </div>
-      </dialog-button>
+      <nav class="block lg:hidden">
+        <dialog-button ref="menuDialog" label="Menu">
+          <div class="flex flex-col gap-6">
+            <button-link
+              v-for="menuItem of menuItems"
+              :key="menuItem.title"
+              :to="menuItem.path"
+            >
+              {{ menuItem.title }}
+            </button-link>
+          </div>
+        </dialog-button>
+      </nav>
     </header>
 
     <main v-if="!fullscreen" class="px-2 py-4">
