@@ -12,7 +12,10 @@ const keyColor = useKeyColor()
 
 <template>
   <div
-    class="grid bg-white border-t items-stretch grid-cols-[max-content_auto] grid-rows-2 xl:grid-cols-[max-content_max-content_max-content_auto] xl:grid-rows-1"
+    class="
+      grid bg-white border-t items-stretch
+      grid-rows-4 sm:grid-rows-2 xl:grid-rows-1
+      grid-cols-1 sm:grid-cols-[max-content_auto] xl:grid-cols-[max-content_max-content_max-content_auto]"
   >
     <div class="flex items-center px-4 gap-2 lt-xl:border-b">
       <span>Server: {{ apiDomain }}</span>
@@ -29,7 +32,7 @@ const keyColor = useKeyColor()
     </p>
     <p v-else />
 
-    <div class="xl:border-l px-4 flex items-center gap-2">
+    <div class="xl:border-l lt-sm:border-b px-4 flex items-center gap-2">
       <span>Theme:</span>
       <select-field
         v-model="theme"
