@@ -14,7 +14,18 @@
         <span class="text-5xl">heat&nbsp;</span>
         <span v-if="heatInfos" class="text-8xl font-bold">{{ heatInfos[0].HeatNumber }}</span>
       </div>
+      <div
+        v-if="heatInfos"
+        class="text-5xl"
+        :class="{
+          'text-gray-500': theme !== 'dark',
+          'text-gray-400': theme === 'dark'
+        }"
+      >
+        #{{ heatInfos[0].EntryNumber ?? '3030' }}
+      </div>
     </div>
+
     <template v-if="heatInfos?.length === 1">
       <div class="grid w-full grid-cols-[2fr_3fr] gap-6 items-center justify-around">
         <img
@@ -37,7 +48,7 @@
             Station {{ heatInfos[0].Station }} &mdash; {{ heatInfos[0].DivisionName }} {{ heatInfos[0].AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heatInfos[0].GenderName }}
           </p>
           <p class="pb-4">
-            #{{ heatInfos[0].EntryNumber }}: {{ heatInfos[0].Event }}
+            {{ heatInfos[0].Event }}
           </p>
           <div
             class="font-bold"
@@ -61,9 +72,7 @@
               {{ heatInfos[0].Part5 }}
             </p>
           </div>
-          <p class="">
-            {{ heatInfos[0].TeamCountryName }}
-          </p>
+          <p>{{ heatInfos[0].TeamCountryName }}</p>
         </div>
       </div>
     </template>
