@@ -14,6 +14,8 @@ export interface ServoHeatPoolInfo {
   TeamCountryCode: string
   TeamCountryName: string
   TeamCountryFlagUrl: string
+  EntryNumber: number
+  CompEventEntryID: string
   [nameKey: `Part${number}`]: string
   [lastNameKey: `Part${number}_Last`]: string
 }

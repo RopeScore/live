@@ -37,7 +37,7 @@
             Station {{ heatInfos[0].Station }} &mdash; {{ heatInfos[0].DivisionName }} {{ heatInfos[0].AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heatInfos[0].GenderName }}
           </p>
           <p class="pb-4">
-            {{ heatInfos[0].Event }}
+            #{{ heatInfos[0].EntryNumber }}: {{ heatInfos[0].Event }}
           </p>
           <div
             class="font-bold"
