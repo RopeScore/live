@@ -7,6 +7,9 @@
       <text-button color="orange" @click="bc.postMessage('lower')">
         Lower
       </text-button>
+      <text-button @click="bc.postMessage('update-title')">
+        Title
+      </text-button>
     </div>
     <button-link :to="`/podium/live?theme=${theme}`">
       Display
@@ -49,8 +52,23 @@
     </div>
   </div>
 
-  <div class="mx-auto container flex justify-center mt-8">
+  <div class="mx-auto container grid grid-cols-[max-content] items-center justify-center mt-8">
     <div>
+      <p class="font-semibold pt-4">
+        Title
+      </p>
+      <checkbox-field
+        :model-value="settings.withTitle"
+        label="Add title"
+        @update:model-value="setWithTitle($event)"
+      />
+      <text-field
+        v-if="settings.withTitle"
+        v-model="settings.title"
+        label="Title"
+      />
+    </div>
+    <div class="self-center">
       <photo-picker
         v-model="settings.background"
         label="Background image"
@@ -62,7 +80,7 @@
 <script lang="ts" setup>
 import { nextTick, ref } from 'vue'
 import countries from '../assets/countries.json'
-import { TextButton, SelectField, ButtonLink } from '@ropescore/components'
+import { TextButton, SelectField, ButtonLink, CheckboxField, TextField } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
 import { usePodium } from '../hooks/podium'
 import PhotoPicker from '../components/PhotoPicker.vue'
@@ -94,5 +112,10 @@ function addNewFn (pos: typeof positions[number], code: string) {
   nextTick(() => {
     addNew[pos].value = undefined
   })
+}
+
+function setWithTitle (withTitle: boolean) {
+  settings.value.withTitle = withTitle
+  if (!withTitle) settings.value.title = undefined
 }
 </script>

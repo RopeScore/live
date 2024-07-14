@@ -2,6 +2,8 @@ import { useLocalStorage } from '@vueuse/core'
 
 export interface PodiumSettings {
   background?: string
+  withTitle?: boolean
+  title?: string
 }
 
 const settings = useLocalStorage<PodiumSettings>('rs-podium-settings', {})
