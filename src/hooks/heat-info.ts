@@ -31,7 +31,7 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
 
   const servoPoll = useTimeoutPoll(() => {
     servoCurrentHeatFetch.execute()
-  }, 10_000, { immediate: false })
+  }, 5_000, { immediate: false })
 
   watch(() => settings.value, heatInfoConfig => {
     // start by just disabling all polling
