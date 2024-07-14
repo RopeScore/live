@@ -2,7 +2,7 @@
   <div
     class="grid grid-cols-1 min-h-[100vh] w-full"
     :class="{
-      'grid-rows-[3.5rem_auto_2rem_2rem]': !fullscreen,
+      'grid-rows-[3.5rem_auto_4rem_2rem] xl:grid-rows-[3.5rem_auto_2rem_2rem]': !fullscreen,
       'grid-rows-1': fullscreen,
       'h-[100vh]': fullscreen,
       'overflow-y-hidden': fullscreen,
@@ -15,26 +15,22 @@
         <span class="text-2xl font-semibold">RopeScore Live</span>
       </router-link>
 
-      <nav>
-        <text-button @click="_theme = _theme === 'light' ? 'dark' : 'light'">
-          Theme ({{ _theme === 'light' ? 'L' : (_theme === 'dark' ? 'D' : '?') }})
-        </text-button>
-        <button-link to="/podium">
-          Podium
-        </button-link>
-        <button-link to="/device-stream">
-          Device Stream
-        </button-link>
-        <button-link to="/on-floor-wall">
-          On Floor Wall
-        </button-link>
-        <button-link to="/groups">
-          Groups
-        </button-link>
-        <button-link to="/">
-          Dashboard
+      <nav class="flex-row-reverse hidden lg:flex">
+        <button-link v-for="menuItem of menuItems" :key="menuItem.title" :to="menuItem.path">
+          {{ menuItem.title }}
         </button-link>
       </nav>
+      <dialog-button ref="menuDialog" label="Menu">
+        <div class="flex flex-col gap-6">
+          <button-link
+            v-for="menuItem of menuItems"
+            :key="menuItem.title"
+            :to="menuItem.path"
+          >
+            {{ menuItem.title }}
+          </button-link>
+        </div>
+      </dialog-button>
     </header>
 
     <main v-if="!fullscreen" class="px-2 py-4">
@@ -59,12 +55,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useHead } from '@vueuse/head'
-import { useRawTheme, useTheme } from './hooks/theme'
+import { useTheme } from './hooks/theme'
 
-import { ButtonLink, TextButton } from '@ropescore/components'
+import { ButtonLink, DialogButton } from '@ropescore/components'
 import SystemSettingsFooter from './components/SystemSettingsFooter.vue'
 
 useHead({
@@ -72,13 +68,20 @@ useHead({
 })
 
 const route = useRoute()
+const router = useRouter()
+
+const menuItems = computed(() => router.getRoutes().filter(route => route.meta?.menu != null).map(route => ({ title: route.meta.menu, path: route.path, order: (route.meta.menuOrder ?? Infinity) as number })).sort((a, b) => a.order - b.order))
+const menuDialog = ref<typeof DialogButton>()
 
 const fullscreen = computed(() => {
   return !!route.meta.fullscreen
 })
 
-const _theme = useRawTheme()
 const theme = useTheme()
 
 const version = (import.meta.env.VITE_COMMIT_REF ?? 'dev').toString().substring(0, 7)
+
+router.afterEach(() => {
+  menuDialog.value?.close()
+})
 </script>

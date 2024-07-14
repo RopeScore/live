@@ -1,17 +1,4 @@
 <template>
-  <div>
-    <select-field
-      v-model="theme"
-      label="Theme"
-      :data-list="themes"
-    />
-    <select-field
-      v-model="keyColor"
-      label="Key color"
-      :data-list="keyColors"
-    />
-  </div>
-
   <template v-for="groupType in ['uncompleted', 'completed']" :key="groupType">
     <component :is="groupType === 'completed' ? 'details' : 'div'" class="mt-4">
       <summary v-if="groupType === 'completed'">
@@ -74,13 +61,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import useFirebaseAuth from '../hooks/firebase-auth'
 import { ResultVersionType, useGroupsQuery } from '../graphql/generated'
 import { useHead } from '@vueuse/head'
-import { keyColors, themes, useKeyColor, useTheme } from '../hooks/theme'
+import { useKeyColor, useTheme } from '../hooks/theme'
 
-import { ButtonLink, SelectField } from '@ropescore/components'
+import { ButtonLink } from '@ropescore/components'
 
 useHead({
   title: 'Groups'

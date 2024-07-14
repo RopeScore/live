@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import { TextField, TextButton, SelectField } from '@ropescore/components'
+import { SelectField } from '@ropescore/components'
 import { apiDomain, localManual, localApis } from '../apollo'
-import { ref } from 'vue'
 import useFirebaseAuth from '../hooks/firebase-auth'
+import { keyColors, themes, useKeyColor, useTheme } from '../hooks/theme'
 
 const auth = useFirebaseAuth()
 
-const newName = ref('')
+const theme = useTheme()
+const keyColor = useKeyColor()
 </script>
 
 <template>
   <div
-    class="grid bg-white border-t px-4 items-stretch gap-4"
-    :class="{
-      'grid-cols-1': !auth.isAuthenticated.value,
-      'grid-cols-[max-content_max-content_auto]': auth.isAuthenticated.value
-    }"
+    class="grid bg-white border-t items-stretch grid-cols-[max-content_auto] grid-rows-2 xl:grid-cols-[max-content_max-content_max-content_auto] xl:grid-rows-1"
   >
-    <div class="flex items-center gap-2">
+    <div class="flex items-center px-4 gap-2 lt-xl:border-b">
       <span>Server: {{ apiDomain }}</span>
       <select-field
         v-model="localManual"
@@ -27,26 +24,28 @@ const newName = ref('')
         class="!min-w-[12ch]"
       />
     </div>
-
-    <p v-if="auth.isAuthenticated.value" class="border-l pl-4 flex items-center">
+    <p v-if="auth.isAuthenticated.value" class="border-l lt-xl:border-b px-4 flex items-center">
       User ID: <code class="bg-gray-100 px-2 rounded">{{ auth.userLoading.value ? 'Loading...' : auth.user.value?.id }}</code>
     </p>
+    <p v-else />
 
-    <!-- <form v-if="auth.isAuthenticated.value" class="border-l pl-4 grid grid-cols-[max-content_auto_max-content_max-content] gap-2 items-center" @submit.prevent="auth.update({ name: newName })">
-      System name:
-      <text-field
-        :model-value="auth.user.value?.name ?? ''"
-        label="System Name"
+    <div class="xl:border-l px-4 flex items-center gap-2">
+      <span>Theme:</span>
+      <select-field
+        v-model="theme"
         dense
-        :disabled="auth.userLoading.value"
-        @update:model-value="newName = ($event as string ?? '')"
+        label="Theme"
+        :data-list="themes"
       />
-      <text-button color="blue" dense :loading="auth.userLoading.value">
-        Update
-      </text-button>
-      <text-button color="orange" dense :loading="auth.userLoading.value" type="button" @click="auth.logout()">
-        Log out
-      </text-button>
-    </form> -->
+    </div>
+    <div class="border-l no-wrap px-4 flex items-center gap-2">
+      <span>Key Color:</span>
+      <select-field
+        v-model="keyColor"
+        dense
+        label="Key color"
+        :data-list="keyColors"
+      />
+    </div>
   </div>
 </template>
