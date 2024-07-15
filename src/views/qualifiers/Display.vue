@@ -8,7 +8,7 @@
   >
     <div
       :style="`--cols: ${grid.cols}; --rows: ${grid.rows};`"
-      class="grid max-w-full overflow-hidden w-full grid-cols-[repeat(var(--cols),10rem_1fr)] grid-rows-[repeat(calc(var(--rows)+1),1fr)] items-center justify-around gap-y-4"
+      class="grid max-w-full overflow-hidden w-full grid-cols-[repeat(var(--cols),10rem_1fr)] grid-rows-[repeat(calc(var(--rows)+1),minmax(5rem,1fr))] items-center justify-around gap-y-4"
     >
       <div class="col-span-[calc(var(--cols)*2)] text-center font-bold text-6xl">
         <h1 class="text-center font-bold text-6xl">
