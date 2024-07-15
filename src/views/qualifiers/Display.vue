@@ -22,7 +22,11 @@
       <template v-for="qualifier, idx of qualifiers" :key="qualifier.id">
         <div
           :style="`--station-col: ${idxToPos(idx).col}; --station-row: ${idxToPos(idx).row}`"
-          class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] bg-white p-2"
+          class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] p-2"
+          :class="{
+            'bg-white': theme !== 'dark',
+            'bg-black': theme === 'dark'
+          }"
         >
           <img
             v-if="qualifier.countryCode != null"
@@ -37,7 +41,11 @@
         </div>
         <div
           :style="`--station-col: ${idxToPos(idx).col}; --station-row: ${idxToPos(idx).row}`"
-          class="col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1)+1)] text-4xl bg-white p-6"
+          class="h-full col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1)+1)] text-4xl p-6"
+          :class="{
+            'bg-white': theme !== 'dark',
+            'bg-black': theme === 'dark'
+          }"
         >
           <p class="font-bold">
             {{ formatList(qualifier.names) }}
