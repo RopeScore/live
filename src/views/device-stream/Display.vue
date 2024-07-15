@@ -90,18 +90,18 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from 'vue'
-import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../graphql/generated'
-import { type ScoreTally, type Mark, formatList } from '../helpers'
-import { useDeviceStreamPools } from '../hooks/stream-pools'
+import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../../graphql/generated'
+import { type ScoreTally, type Mark, formatList } from '../../helpers'
+import { useDeviceStreamPools } from './use-device-stream-pools'
 import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
-import { useTheme } from '../hooks/theme'
+import { useTheme } from '../../hooks/theme'
 
-import DeviceNotSet from '../components/DeviceNotSet.vue'
-import SpeedLiveScore from '../components/SpeedLiveScore.vue'
-import TimingLiveScore from '../components/TimingLiveScore.vue'
-import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
-import { getHeatNameList, useHeatInfo } from '../hooks/heat-info'
+import DeviceNotSet from '../../components/DeviceNotSet.vue'
+import SpeedLiveScore from '../../components/SpeedLiveScore.vue'
+import TimingLiveScore from '../../components/TimingLiveScore.vue'
+import UnsupportedCompetitionEvent from '../../components/UnsupportedCompetitionEvent.vue'
+import { getHeatNameList, useHeatInfo } from '../../hooks/heat-info'
 import { useDateFormat, useTimestamp } from '@vueuse/core'
 
 useHead({

@@ -11,7 +11,7 @@
         Title
       </text-button>
     </div>
-    <button-link :to="`/podium/live?theme=${theme}`">
+    <button-link :to="`/podium/display?theme=${theme}`">
       Display
     </button-link>
   </div>
@@ -79,12 +79,12 @@
 
 <script lang="ts" setup>
 import { nextTick, ref } from 'vue'
-import countries from '../assets/countries.json'
+import countries from '../../assets/countries.json'
 import { TextButton, SelectField, ButtonLink, CheckboxField, TextField } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
-import { usePodium } from '../hooks/podium'
-import PhotoPicker from '../components/PhotoPicker.vue'
-import { useTheme } from '../hooks/theme'
+import { usePodium } from './use-podium'
+import PhotoPicker from '../../components/PhotoPicker.vue'
+import { useTheme } from '../../hooks/theme'
 
 useHead({
   title: 'Podium'

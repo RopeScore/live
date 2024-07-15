@@ -121,13 +121,13 @@
 <script setup lang="ts">
 import { useHead } from '@vueuse/head'
 import { useRouteParams, useRouteQuery } from '@vueuse/router'
-import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, type ResultVersionType } from '../graphql/generated'
+import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, type ResultVersionType } from '../../graphql/generated'
 import { computed, ref, watch } from 'vue'
 import { parseCompetitionEventDefinition, type EntryResult, type TableHeader, type OverallResult } from '@ropescore/rulesets'
 import { useIntervalFn } from '@vueuse/core'
-import { useCompetitionEvent } from '../hooks/ruleset'
-import { formatList } from '../helpers'
-import { useTheme } from '../hooks/theme'
+import { useCompetitionEvent } from '../../hooks/ruleset'
+import { formatList } from '../../helpers'
+import { useTheme } from '../../hooks/theme'
 
 import SvGFLogo from '../assets/svgf-icon-svenskgymnastik-white.svg'
 

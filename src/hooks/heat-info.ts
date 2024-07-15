@@ -1,6 +1,10 @@
 import { type Ref, ref, watch } from 'vue'
 import { useFetch, useTimeoutPoll } from '@vueuse/core'
-import type { ServoCurrentHeatInfoConfig } from './stream-pools'
+export interface ServoCurrentHeatInfoConfig {
+  system: 'servo'
+  baseUrl: string
+  competitionId?: number
+}
 
 export interface ServoHeatInfo {
   PROGRAM: 'ON' | ''

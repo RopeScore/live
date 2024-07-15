@@ -1,14 +1,9 @@
 import { useLocalStorage } from '@vueuse/core'
+import type { ServoCurrentHeatInfoConfig } from '../../hooks/heat-info'
 
 export interface StreamPool {
   deviceId?: string
   label?: number
-}
-
-export interface ServoCurrentHeatInfoConfig {
-  system: 'servo'
-  baseUrl: string
-  competitionId?: number
 }
 
 export interface ScreenConfig {

@@ -75,11 +75,11 @@
 
 <script lang="ts" setup>
 import { computed, watch } from 'vue'
-import { useGroupInfoQuery, useHeatChangedSubscription, useHeatEntriesQuery } from '../graphql/generated'
+import { useGroupInfoQuery, useHeatChangedSubscription, useHeatEntriesQuery } from '../../graphql/generated'
 import { useRoute } from 'vue-router'
 import { useHead } from '@vueuse/head'
-import { formatList } from '../helpers'
-import { useKeyColor, useTheme } from '../hooks/theme'
+import { formatList } from '../../helpers'
+import { useKeyColor, useTheme } from '../../hooks/theme'
 
 import SvGFLogo from '../assets/svgf-icon-svenskgymnastik-white.svg'
 

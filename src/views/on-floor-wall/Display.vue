@@ -79,7 +79,6 @@
           class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] bg-white p-2"
         >
           <img
-            :style="`--station :${heat.Station}`"
             class="border-2"
             :class="{
               'border-gray-800': theme !== 'dark',
@@ -116,10 +115,10 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { useHead } from '@vueuse/head'
-import { formatList, getOpfsImgUrl } from '../helpers'
-import { useTheme } from '../hooks/theme'
-import { useOnFloorWallSettings } from '../hooks/on-floor-wall'
-import { getHeatNameList, useHeatInfo, type ServoHeatInfo } from '../hooks/heat-info'
+import { formatList, getOpfsImgUrl } from '../../helpers'
+import { useTheme } from '../../hooks/theme'
+import { useOnFloorWallSettings } from './use-on-floor-wall'
+import { getHeatNameList, useHeatInfo, type ServoHeatInfo } from '../../hooks/heat-info'
 import { useDateFormat, useTimestamp } from '@vueuse/core'
 
 useHead({
@@ -143,15 +142,7 @@ function flagUrl (hi: ServoHeatInfo) {
   return hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined)
 }
 
-// const heatInfos = heatInfo.data
-const heatInfos = ref<ServoHeatInfo[] | null>([
-  {"PROGRAM":"ON","Station":1,"HeatNumber":"10","Event":"Single Rope Double Unders Relay","Team":"Denmark","TeamCountryCode":"DK","TeamCountryName":"Denmark","TeamCountryFlagUrl":"https://scoring.ijru.sport/Content/flags/svg/dk.svg","Part1":"Liva Bondesen","Part2":"Mathilde Vig Jeppesen","Part3":"","Part4":"","Part5":"","Part1_Last":"Bondesen","Part2_Last":"Vig Jeppesen","Part3_Last":"","Part4_Last":"","Part5_Last":"","DivisionName":"EOT","AgeGroupName":"12-15","GenderName":"Female","EntryNumber":76,"CompEventEntryID":"a0652070-037d-4227-99bb-fab54772bc18"},
-  {"PROGRAM":"","Station":2,"HeatNumber":"10","Event":"Single Rope Double Unders Relay","Team":"Denmark","TeamCountryCode":"DK","TeamCountryName":"Denmark","TeamCountryFlagUrl":"https://scoring.ijru.sport/Content/flags/svg/dk.svg","Part1":"Ida Stampe Bornø","Part2":"Kassandra Lu-Nielsen","Part3":"","Part4":"","Part5":"","Part1_Last":"Stampe Bornø","Part2_Last":"Lu-Nielsen","Part3_Last":"","Part4_Last":"","Part5_Last":"","DivisionName":"EOT","AgeGroupName":"12-15","GenderName":"Female","EntryNumber":77,"CompEventEntryID":"c3cfc6ee-46ea-4e29-8dca-1f5da1fb5089"},
-  {"PROGRAM":"","Station":3,"HeatNumber":"10","Event":"Single Rope Double Unders Relay","Team":"Belgium","TeamCountryCode":"BE","TeamCountryName":"Belgium","TeamCountryFlagUrl":"https://scoring.ijru.sport/Content/flags/svg/be.svg","Part1":"Klara De Baets","Part2":"Emma Vander Gheynst","Part3":"","Part4":"","Part5":"","Part1_Last":"De Baets","Part2_Last":"Vander Gheynst","Part3_Last":"","Part4_Last":"","Part5_Last":"","DivisionName":"EOT","AgeGroupName":"12-15","GenderName":"Female","EntryNumber":73,"CompEventEntryID":"54624b11-195f-4340-a7a9-2bfd65fc377c"},
-  {"PROGRAM":"","Station":4,"HeatNumber":"10","Event":"Single Rope Double Unders Relay","Team":"Sweden","TeamCountryCode":"SE","TeamCountryName":"Sweden","TeamCountryFlagUrl":"https://scoring.ijru.sport/Content/flags/svg/se.svg","Part1":"Alva Karlsson","Part2":"Majken Olsson","Part3":"","Part4":"","Part5":"","Part1_Last":"Karlsson","Part2_Last":"Olsson","Part3_Last":"","Part4_Last":"","Part5_Last":"","DivisionName":"EOT","AgeGroupName":"12-15","GenderName":"Female","EntryNumber":81,"CompEventEntryID":"946ac1dc-5cdc-4283-a254-3fb460622a70"},
-  {"PROGRAM":"","Station":5,"HeatNumber":"10","Event":"Single Rope Double Unders Relay","Team":"Germany","TeamCountryCode":"DE","TeamCountryName":"Germany","TeamCountryFlagUrl":"https://scoring.ijru.sport/Content/flags/svg/de.svg","Part1":"Theresa Pätzmann","Part2":"Frieda Rauscher","Part3":"","Part4":"","Part5":"","Part1_Last":"Pätzmann","Part2_Last":"Rauscher","Part3_Last":"","Part4_Last":"","Part5_Last":"","DivisionName":"EOT","AgeGroupName":"12-15","GenderName":"Female","EntryNumber":79,"CompEventEntryID":"5d81c54f-9489-4fa6-a858-5da1e3667663"},
-  {"PROGRAM":"","Station":6,"HeatNumber":"10","Event":"Single Rope Double Unders Relay","Team":"Sweden","TeamCountryCode":"SE","TeamCountryName":"Sweden","TeamCountryFlagUrl":"https://scoring.ijru.sport/Content/flags/svg/se.svg","Part1":"Isabella Danfelter","Part2":"Molly Löfberg","Part3":"","Part4":"","Part5":"","Part1_Last":"Danfelter","Part2_Last":"Löfberg","Part3_Last":"","Part4_Last":"","Part5_Last":"","DivisionName":"EOT","AgeGroupName":"12-15","GenderName":"Female","EntryNumber":82,"CompEventEntryID":"03b3a376-90d8-41ab-8515-20366848d056"},
-])
+const heatInfos = heatInfo.data
 
 const grid = computed(() => {
   const maxStation = Math.max(...((heatInfos.value ?? [] as ServoHeatInfo[]).map(hi => hi.Station)))
@@ -205,9 +196,5 @@ main.dark {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-}
-
-.overflow-ellipsis {
-  text-overflow: ellipsis;
 }
 </style>

@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@vueuse/core'
-import type { ServoCurrentHeatInfoConfig } from './stream-pools'
+import type { ServoCurrentHeatInfoConfig } from '../../hooks/heat-info'
 
 export interface OnFloorWallSettings {
   heatInfo?: ServoCurrentHeatInfoConfig

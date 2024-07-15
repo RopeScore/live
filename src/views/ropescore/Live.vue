@@ -45,14 +45,14 @@
 
 <script lang="ts" setup>
 import { computed, reactive, watch, ref } from 'vue'
-import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, type MarkScoresheetFragment, type ScoresheetBaseFragment, type StreamMarkAddedSubscription } from '../graphql/generated'
+import { useHeatEntriesScoresheetsQuery, useStreamMarkAddedSubscription, useGroupInfoQuery, useHeatChangedSubscription, useScoresheetChangedSubscription, type MarkScoresheetFragment, type ScoresheetBaseFragment, type StreamMarkAddedSubscription } from '../../graphql/generated'
 import { useRoute } from 'vue-router'
-import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, type Mark, processMark, type ScoreTally } from '../helpers'
+import { CompetitionEventType, filterLatestScoresheets, getCompetitionEventType, type Mark, processMark, type ScoreTally } from '../../helpers'
 
-import SpeedLiveScore from '../components/SpeedLiveScore.vue'
-import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
+import SpeedLiveScore from '../../components/SpeedLiveScore.vue'
+import UnsupportedCompetitionEvent from '../../components/UnsupportedCompetitionEvent.vue'
 import { useHead } from '@vueuse/head'
-import { useTheme } from '../hooks/theme'
+import { useTheme } from '../../hooks/theme'
 
 useHead({
   title: '📺 Competition (Live)'

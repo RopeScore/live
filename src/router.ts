@@ -8,19 +8,22 @@ const router = createRouter({
     { path: '/auth', component: async () => import('./views/Auth.vue') },
 
     { path: '/groups', component: async () => import('./views/Groups.vue'), meta: { authRequired: true, menu: 'Groups', menuOrder: 2 } },
-    { path: '/groups/:groupId/live', component: async () => import('./views/Live.vue'), meta: { fullscreen: true, authRequired: true } },
-    { path: '/groups/:groupId/on-floor', component: async () => import('./views/OnFloor.vue'), meta: { fullscreen: true, authRequired: true } },
-    { path: '/groups/:groupId/next-up', component: async () => import('./views/NextUp.vue'), meta: { fullscreen: true, authRequired: true } },
-    { path: '/groups/:groupId/leaderboard', component: async () => import('./views/Leaderboard.vue'), meta: { fullscreen: true, authRequired: true } },
+    { path: '/groups/:groupId/live', component: async () => import('./views/ropescore/Live.vue'), meta: { fullscreen: true, authRequired: true } },
+    { path: '/groups/:groupId/on-floor', component: async () => import('./views/ropescore/OnFloor.vue'), meta: { fullscreen: true, authRequired: true } },
+    { path: '/groups/:groupId/next-up', component: async () => import('./views/ropescore/NextUp.vue'), meta: { fullscreen: true, authRequired: true } },
+    { path: '/groups/:groupId/leaderboard', component: async () => import('./views/ropescore/Leaderboard.vue'), meta: { fullscreen: true, authRequired: true } },
 
-    { path: '/device-stream', component: async () => import('./views/DeviceStreamConfig.vue'), meta: { authRequired: true, menu: 'Device Stream', menuOrder: 3 } },
-    { path: '/device-stream/live', component: async () => import('./views/DeviceStreamLive.vue'), meta: { fullscreen: true, authRequired: true } },
+    { path: '/device-stream', component: async () => import('./views/device-stream/Config.vue'), meta: { authRequired: true, menu: 'Device Stream', menuOrder: 3 } },
+    { path: '/device-stream/display', component: async () => import('./views/device-stream/Display.vue'), meta: { fullscreen: true, authRequired: true } },
 
-    { path: '/podium', component: async () => import('./views/PodiumConfig.vue'), meta: { menu: 'Podium', menuOrder: 4 } },
-    { path: '/podium/live', component: async () => import('./views/PodiumLive.vue'), meta: { fullscreen: true } },
+    { path: '/podium', component: async () => import('./views/podium/Config.vue'), meta: { menu: 'Podium', menuOrder: 4 } },
+    { path: '/podium/display', component: async () => import('./views/podium/Display.vue'), meta: { fullscreen: true } },
 
-    { path: '/on-floor-wall/', component: async () => import('./views/OnFloorWallConfig.vue'), meta: { menu: 'On Floor Wall', menuOrder: 5 } },
-    { path: '/on-floor-wall/:vendor/:id', component: async () => import('./views/OnFloorWallLive.vue'), meta: { fullscreen: true } }
+    { path: '/on-floor-wall/', component: async () => import('./views/on-floor-wall/Config.vue'), meta: { menu: 'On Floor Wall', menuOrder: 5 } },
+    { path: '/on-floor-wall/display', component: async () => import('./views/on-floor-wall/Display.vue'), meta: { fullscreen: true } },
+
+    { path: '/qualifiers/', component: async () => import('./views/qualifiers/Config.vue'), meta: { menu: 'Qualifiers', menuOrder: 6 } },
+    { path: '/qualifiers/display', component: async () => import('./views/qualifiers/Display.vue'), meta: { fullscreen: true } }
   ]
 })
 export default router

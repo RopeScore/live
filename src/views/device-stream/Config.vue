@@ -127,7 +127,7 @@
           Screen {{ screenId }}
         </h3>
         <div>
-          <button-link :to="`/device-stream/live?screen-id=${screenId}&theme=${theme}`" target="_blank">
+          <button-link :to="`/device-stream/display?screen-id=${screenId}&theme=${theme}`" target="_blank">
             Show Scores
           </button-link>
           <text-button color="red" @click="removeScreen(screenId)">
@@ -199,15 +199,15 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useDeviceStreamPools } from '../hooks/stream-pools'
-import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../graphql/generated'
+import { useDeviceStreamPools } from './use-device-stream-pools'
+import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../../graphql/generated'
 import { useHead } from '@vueuse/head'
 
 import { TextButton, TextField, SelectField, ButtonLink, NumberField } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
 import IconPlus from 'virtual:icons/mdi/plus'
-import useFirebaseAuth from '../hooks/firebase-auth'
-import { useTheme } from '../hooks/theme'
+import useFirebaseAuth from '../../hooks/firebase-auth'
+import { useTheme } from '../../hooks/theme'
 
 useHead({
   title: 'Device Stream'

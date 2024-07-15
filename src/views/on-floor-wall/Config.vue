@@ -2,7 +2,7 @@
   <div class="mb-4 mx-auto container flex justify-between">
     <div />
     <button-link
-      :to="`/on-floor-wall/${settings.heatInfo?.system}/${settings.heatInfo?.competitionId}?theme=${theme}`"
+      :to="`/on-floor-wall/display?theme=${theme}`"
       :disabled="settings.heatInfo?.system == null || settings.heatInfo?.competitionId == null"
     >
       Display
@@ -47,12 +47,12 @@
 </template>
 
 <script lang="ts" setup>
-import countries from '../assets/countries.json'
+import countries from '../../assets/countries.json'
 import { SelectField, NumberField, TextField, ButtonLink } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
-import PhotoPicker from '../components/PhotoPicker.vue'
-import { useTheme } from '../hooks/theme'
-import { useOnFloorWallSettings } from '../hooks/on-floor-wall'
+import PhotoPicker from '../../components/PhotoPicker.vue'
+import { useTheme } from '../../hooks/theme'
+import { useOnFloorWallSettings } from './use-on-floor-wall'
 
 useHead({
   title: 'On Floor Wall'

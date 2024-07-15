@@ -57,11 +57,11 @@
 
 <script lang="ts" setup>
 import { computed, watch } from 'vue'
-import { useGroupEntriesQuery, useGroupInfoQuery, useHeatChangedSubscription } from '../graphql/generated'
+import { useGroupEntriesQuery, useGroupInfoQuery, useHeatChangedSubscription } from '../../graphql/generated'
 import { useRoute } from 'vue-router'
-import EntryInfoCard from '../components/EntryInfoCard.vue'
+import EntryInfoCard from '../../components/EntryInfoCard.vue'
 import { useHead } from '@vueuse/head'
-import { useTheme } from '../hooks/theme'
+import { useTheme } from '../../hooks/theme'
 
 useHead({
   title: '📺 Competition (Next Up)'

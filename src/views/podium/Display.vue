@@ -49,9 +49,9 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { useHead } from '@vueuse/head'
-import { usePodium, type PodiumSettings } from '../hooks/podium'
-import { getOpfsImgUrl } from '../helpers'
-import { useTheme } from '../hooks/theme'
+import { usePodium, type PodiumSettings } from './use-podium'
+import { getOpfsImgUrl } from '../../helpers'
+import { useTheme } from '../../hooks/theme'
 
 useHead({
   title: '📺 Podium (Live)'
