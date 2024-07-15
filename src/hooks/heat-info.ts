@@ -2,7 +2,7 @@ import { type Ref, ref, watch } from 'vue'
 import { useFetch, useTimeoutPoll } from '@vueuse/core'
 import type { ServoCurrentHeatInfoConfig } from './stream-pools'
 
-export interface ServoHeatPoolInfo {
+export interface ServoHeatInfo {
   PROGRAM: 'ON' | ''
   Station: number
   HeatNumber: string
@@ -29,7 +29,7 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
     }
   }, {
     immediate: false
-  }).get().json<ServoHeatPoolInfo[]>()
+  }).get().json<ServoHeatInfo[]>()
 
   const servoPoll = useTimeoutPoll(() => {
     servoCurrentHeatFetch.execute()
@@ -52,4 +52,31 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
   }, { immediate: true })
 
   return servoCurrentHeatFetch
+}
+
+interface GetHeatNameListOptions {
+  /** @default 'full' */
+  mode?: 'full' | 'last' | 'first'
+}
+export function getHeatNameList (heat: ServoHeatInfo, { mode = 'full' }: GetHeatNameListOptions = {}) {
+  const names: string[] = []
+  for (let idx = 1; idx <= 5; idx++) {
+    switch (mode) {
+      case 'first': {
+        let name = heat[`Part${idx}`] ?? ''
+        name = name.substring(0, name.length - (heat[`Part${idx}_Last`] ?? '').length).trim()
+        if (name.length > 0) names.push(name)
+        break
+      }
+      case 'last': {
+        const name = heat[`Part${idx}_Last`]?.trim() ?? ''
+        if (name.length > 0) names.push(name)
+      }
+      default: {
+        const name = heat[`Part${idx}`]?.trim() ?? ''
+        if (name.length > 0) names.push(name)
+      }
+    }
+  }
+  return names
 }

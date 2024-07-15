@@ -101,7 +101,7 @@ import DeviceNotSet from '../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../components/SpeedLiveScore.vue'
 import TimingLiveScore from '../components/TimingLiveScore.vue'
 import UnsupportedCompetitionEvent from '../components/UnsupportedCompetitionEvent.vue'
-import { useHeatInfo } from '../hooks/heat-info'
+import { getHeatNameList, useHeatInfo } from '../hooks/heat-info'
 import { useDateFormat, useTimestamp } from '@vueuse/core'
 
 useHead({
@@ -196,16 +196,10 @@ watch(heatInfo.data, heatInfo => {
     return
   }
   poolBackgrounds.value = heatInfo.map(hi => {
-    const names = []
-    for (const p of [1, 2, 3, 4]) {
-      let name = hi[`Part${p}`]
-      name = name.substring(0, name.length - (hi[`Part${p}_Last`] ?? '').length).trim()
-      if (name.length > 0) names.push(name)
-    }
     return {
       poolLabel: hi.Station,
       bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined),
-      names
+      names: getHeatNameList(hi, { mode: 'first' })
     }})
 })
 </script>
