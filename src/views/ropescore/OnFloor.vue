@@ -81,7 +81,7 @@ import { useHead } from '@vueuse/head'
 import { formatList } from '../../helpers'
 import { useKeyColor, useTheme } from '../../hooks/theme'
 
-import SvGFLogo from '../assets/svgf-icon-svenskgymnastik-white.svg'
+import SvGFLogo from '../../assets/svgf-icon-svenskgymnastik-white.svg'
 
 useHead({
   title: '📺 Competition (On Floor)'

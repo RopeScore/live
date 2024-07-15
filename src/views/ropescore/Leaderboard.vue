@@ -129,7 +129,7 @@ import { useCompetitionEvent } from '../../hooks/ruleset'
 import { formatList } from '../../helpers'
 import { useTheme } from '../../hooks/theme'
 
-import SvGFLogo from '../assets/svgf-icon-svenskgymnastik-white.svg'
+import SvGFLogo from '../../assets/svgf-icon-svenskgymnastik-white.svg'
 
 useHead({
   title: '📺 Competition (Leaderboard)'
