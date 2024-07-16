@@ -125,6 +125,7 @@
             v-model="newName"
             label="New Name"
             @update:model-value="addName(qualifier, $event)"
+            @paste.prevent="addFromPaste(qualifier, $event)"
           />
         </div>
       </div>
@@ -190,6 +191,12 @@ function updateName (qualifier: Qualifier, nameIdx: number, name: string | numbe
   } else {
     qualifier.names.splice(nameIdx, 1, name)
   }
+}
+function addFromPaste (qualifier: Qualifier, event: ClipboardEvent) {
+  const content = (event.clipboardData ?? (window as any).clipboardData as DataTransfer).getData("text").trim()
+  if (content === '' || content == null) return
+  const nameCandidates = content.split(/[;,\n\t]/).map(nc => nc.trim()).filter(nc => nc !== '')
+  qualifier.names.push(...nameCandidates)
 }
 
 function focusNextName (qualifier: Qualifier, currentIdx: number) {
