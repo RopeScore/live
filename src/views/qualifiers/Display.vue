@@ -12,16 +12,16 @@
     >
       <div class="col-span-[calc(var(--cols)*2)] text-center font-bold text-6xl">
         <h1 class="text-center font-bold text-6xl">
-          {{ titles.title }}
+          {{ session?.title }}
         </h1>
         <h2 class="text-center font-bold text-4xl">
-          {{ titles.subTitle }}
+          {{ session?.subTitle }}
         </h2>
       </div>
 
-      <template v-for="qualifier, idx of qualifiers" :key="qualifier.id">
+      <template v-for="idx of (session?.numQualifiers ?? 0)" :key="session?.qualifiers[idx - 1]?.id ?? idx">
         <div
-          :style="`--station-col: ${idxToPos(idx).col}; --station-row: ${idxToPos(idx).row}`"
+          :style="`--station-col: ${idxToPos(idx - 1).col}; --station-row: ${idxToPos(idx - 1).row}`"
           class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] p-2"
           :class="{
             'bg-white': theme !== 'dark',
@@ -29,18 +29,18 @@
           }"
         >
           <img
-            v-if="qualifier.countryCode != null"
+            v-if="session?.qualifiers[idx - 1]?.countryCode != null"
             class="border-2"
             :class="{
               'border-gray-800': theme !== 'dark',
               'border-gray-400': theme === 'dark'
             }"
             alt=""
-            :src="`/flags/${qualifier.countryCode}.svg`"
+            :src="`/flags/${session?.qualifiers[idx - 1]?.countryCode}.svg`"
           >
         </div>
         <div
-          :style="`--station-col: ${idxToPos(idx).col}; --station-row: ${idxToPos(idx).row}`"
+          :style="`--station-col: ${idxToPos(idx - 1).col}; --station-row: ${idxToPos(idx - 1).row}`"
           class="h-full col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1)+1)] text-4xl p-6"
           :class="{
             'bg-white': theme !== 'dark',
@@ -48,10 +48,10 @@
           }"
         >
           <p class="font-bold">
-            {{ formatList(qualifier.names) }}
+            {{ formatList(session?.qualifiers[idx - 1]?.names?? []) }}&nbsp;
           </p>
-          <p v-if="qualifier.countryCode != null">
-            {{ countryNames[qualifier.countryCode] }}
+          <p v-if="session?.qualifiers[idx - 1]?.countryCode != null">
+            {{ countryNames[session?.qualifiers[idx - 1]?.countryCode!] }}
           </p>
         </div>
       </template>
@@ -63,10 +63,9 @@
 import { useHead } from '@vueuse/head'
 import countries from '../../assets/countries.json'
 import { useTheme } from '../../hooks/theme'
-import { useQualifiers, type Qualifier, type QualifiersSettings } from './use-qualifiers'
+import { useQualifiers, type QualifierSession } from './use-qualifiers'
 import { computed, ref, watch } from 'vue'
 import { formatList, getOpfsImgUrl } from '../../helpers'
-
 
 useHead({
   title: '📺 Qualifiers (Live)'
@@ -76,8 +75,7 @@ const bc = new BroadcastChannel('rs-qualifiers')
 
 const theme = useTheme()
 const { settings } = useQualifiers()
-const qualifiers = ref<Qualifier[]>([])
-const titles = ref<Pick<QualifiersSettings, 'title' | 'subTitle'>>({})
+const session = ref<QualifierSession & { numQualifiers: number }>()
 
 const countryNames = Object.fromEntries(countries.map(c => [c.code, c.name]))
 
@@ -87,14 +85,38 @@ watch(() => settings.value.background, async newBg => {
 }, { immediate: true })
 
 bc.addEventListener('message', evt => {
-  if (evt.data === 'show') {
-    const qs = localStorage.getItem('rs-qualifiers')
-    const st = localStorage.getItem('rs-qualifiers-settings')
-    qualifiers.value = qs ? JSON.parse(qs) : null
-    titles.value = st ? JSON.parse(st) : null
+  if (
+    typeof evt.data === 'string' &&
+    (evt.data.startsWith('show:') || evt.data.startsWith('show-title:'))
+  ) {
+    const rawSession = localStorage.getItem('rs-qualifier-sessions')
+    const sessions = rawSession ? JSON.parse(rawSession) as QualifierSession[] : null
+    console.log(sessions)
+    if (sessions == null) {
+      session.value = undefined
+    } else {
+      const sessionId = evt.data.split(':')[1]
+      const newSession = sessions.find(s => s.id === sessionId)
+
+      if (newSession == null) {
+        session.value = undefined
+      } else {
+        if (evt.data.startsWith('show-title:')) {
+          session.value = {
+            ...newSession,
+            numQualifiers: newSession.qualifiers.length,
+            qualifiers: []
+          }
+        } else {
+          session.value = {
+            ...newSession,
+            numQualifiers: newSession.qualifiers.length
+          }
+        }
+      }
+    }
   } else if (evt.data === 'hide') {
-    qualifiers.value = []
-    titles.value = {}
+    session.value = undefined
   }
 })
 
@@ -102,19 +124,19 @@ const grid = computed(() => {
   let cols = 1
   let rows = 1
 
-  if (qualifiers.value.length === 2) {
+  if (session.value?.numQualifiers === 2) {
     cols = 2
-  } else if (qualifiers.value.length === 3) {
+  } else if (session.value?.numQualifiers === 3) {
     rows = 3
-  } else if (qualifiers.value.length === 4) {
+  } else if (session.value?.numQualifiers === 4) {
     cols = 2
     rows = 2
-  } else if (qualifiers.value.length <= 8) {
+  } else if (session.value != null && session.value?.numQualifiers <= 8) {
     cols = 2
-    rows = Math.ceil(qualifiers.value.length / 2)
+    rows = Math.ceil(session.value?.numQualifiers / 2)
   } else {
     cols = 3
-    rows = Math.ceil(qualifiers.value.length / 3)
+    rows = Math.ceil((session.value?.numQualifiers ?? 0) / 3)
   }
 
   return { cols, rows }

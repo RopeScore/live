@@ -2,8 +2,13 @@ import { useLocalStorage } from '@vueuse/core'
 
 export interface QualifiersSettings {
   background?: string
+}
+
+export interface QualifierSession {
+  id: string
   title?: string
   subTitle?: string
+  qualifiers: Qualifier[]
 }
 
 export interface Qualifier {
@@ -13,11 +18,11 @@ export interface Qualifier {
 }
 
 const settings = useLocalStorage<QualifiersSettings>('rs-qualifiers-settings', {})
-const qualifiers = useLocalStorage<Qualifier[]>('rs-qualifiers', [])
+const sessions = useLocalStorage<QualifierSession[]>('rs-qualifier-sessions', [])
 
 export function useQualifiers () {
   return {
     settings,
-    qualifiers
+    sessions
   }
 }
