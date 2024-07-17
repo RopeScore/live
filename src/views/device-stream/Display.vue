@@ -96,13 +96,14 @@ import { useDeviceStreamPools } from './use-device-stream-pools'
 import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
 import { useTheme } from '../../hooks/theme'
+import { useDateFormat, useTimestamp } from '@vueuse/core'
+import { metrics } from '@sentry/vue'
 
 import DeviceNotSet from '../../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../../components/SpeedLiveScore.vue'
 import TimingLiveScore from '../../components/TimingLiveScore.vue'
 import UnsupportedCompetitionEvent from '../../components/UnsupportedCompetitionEvent.vue'
 import { getHeatNameList, useHeatInfo } from '../../hooks/heat-info'
-import { useDateFormat, useTimestamp } from '@vueuse/core'
 
 useHead({
   title: '📺 Device Stream (Live)'
@@ -148,6 +149,10 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | unde
   const tally = res.deviceStreamMarkAdded.tally as ScoreTally
   const mark = res.deviceStreamMarkAdded.mark as Mark
   const info = res.deviceStreamMarkAdded.info
+
+  metrics.distribution('stream_mark_delay', Date.now() - mark.timestamp, {
+    unit: 'millisecond'
+  })
 
   let tallyInfo = tallies[deviceId]
   if (!tallyInfo) {
