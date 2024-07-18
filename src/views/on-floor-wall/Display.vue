@@ -85,7 +85,7 @@
               'border-gray-400': theme === 'dark'
             }"
             alt=""
-            :src="flagUrl(heatInfos[0])"
+            :src="flagUrl(heat)"
           >
         </div>
         <div
@@ -104,7 +104,7 @@
             {{ formatList(getHeatNameList(heat, { mode: 'first' })) }}
           </p>
           <p class="">
-            {{ heatInfos[0].TeamCountryName }}
+            {{ heat.TeamCountryName }}
           </p>
         </div>
       </template>
