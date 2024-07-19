@@ -18,9 +18,9 @@
       <div class="font-bold text-8xl">
         {{ clock }}
       </div>
-      <div>
+      <div v-if="heatInfo.data.value?.[0]?.HeatNumber">
         <span class="text-5xl">heat&nbsp;</span>
-        <span v-if="heatInfo.data.value" class="text-8xl font-bold">{{ heatInfo.data.value[0].HeatNumber }}</span>
+        <span class="text-8xl font-bold">{{ heatInfo.data.value[0].HeatNumber }}</span>
       </div>
     </div>
 
