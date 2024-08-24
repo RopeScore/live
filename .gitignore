@@ -6,3 +6,4 @@ dist-ssr
 .vscode
 src/graphql/generated.ts
 graphql.schema.json
+.firebaserc
