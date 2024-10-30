@@ -57,6 +57,7 @@ export class WebSocketLink extends ApolloLink {
     return new Observable((sink) => {
       return this.client.subscribe<FetchResult>(
         { ...operation, query: print(operation.query) },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         {
           next: sink.next.bind(sink),
           complete: sink.complete.bind(sink),
