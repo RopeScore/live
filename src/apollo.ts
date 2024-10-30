@@ -6,6 +6,7 @@ import { WebSocketLink } from './graphql-ws'
 import { watch, computed } from 'vue'
 import { useFetch, useIntervalFn, useLocalStorage } from '@vueuse/core'
 import { getAuth } from 'firebase/auth'
+import { Kind, OperationTypeNode } from 'graphql'
 
 const localDiscover = useFetch('http://ropescore.local').get().text()
 const resolvedReachable = useFetch(
@@ -17,10 +18,11 @@ const resolvedReachable = useFetch(
   }
 ).get().json()
 useIntervalFn(() => {
-  localDiscover.execute()
-  if (typeof localDiscover.data.value === 'string' && /\.local\.ropescore\.com(:\d+)?$/.test(localDiscover.data.value)) {
-    resolvedReachable.execute()
-  }
+  void localDiscover.execute().then(async () => {
+    if (typeof localDiscover.data.value === 'string' && /\.local\.ropescore\.com(:\d+)?$/.test(localDiscover.data.value)) {
+      await resolvedReachable.execute()
+    }
+  })
 }, 60_000)
 
 export const localApis = ['', 'local-001', 'local-002', 'local-003', 'local-004', 'dev']
@@ -30,13 +32,13 @@ const manualReachable = useFetch(
     ? 'http://localhost:5000/.well-known/apollo/server-health'
     : `https://${localManual.value}.local.ropescore.com/.well-known/apollo/server-health`),
   {
-    refetch: computed(() => !!localManual.value && localManual.value !== 'null'),
+    refetch: computed(() => !!localManual.value && localManual.value !== 'null' && localManual.value !== 'undefined'),
     immediate: !!localManual.value,
     timeout: 5_000
   }
 ).get().json()
 useIntervalFn(() => {
-  manualReachable.execute()
+  void manualReachable.execute()
 }, 60_000)
 
 export const apiDomain = computed(() => {
@@ -82,7 +84,7 @@ function createLink () {
           if (user) {
             user.getIdToken()
               .then(token => { resolve(token) })
-              .catch(err => { reject(err) })
+              .catch((err: Error) => { reject(err) })
           } else resolve(undefined)
         })
       })
@@ -108,7 +110,7 @@ function createLink () {
         if (user) {
           user.getIdToken()
             .then(token => { resolve(token) })
-            .catch(err => { reject(err) })
+            .catch((err: Error) => { reject(err) })
         } else resolve(undefined)
       })
     })
@@ -126,8 +128,8 @@ function createLink () {
     ({ query }) => {
       const definition = getMainDefinition(query)
       return (
-        definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+        definition.kind === Kind.OPERATION_DEFINITION &&
+        definition.operation === OperationTypeNode.SUBSCRIPTION
       )
     },
     wsLink,

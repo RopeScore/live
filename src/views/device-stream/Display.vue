@@ -123,10 +123,10 @@ const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: numbe
 const deviceIds = computed(() => Object.values(pools.value).map(p => p.deviceId).filter(id => typeof id === 'string'))
 
 const freeCorner = computed(() => {
-  if (pools.value[`${1}:${cols.value}`] == null) return 'top-right'
+  if (pools.value[`1:${cols.value}`] == null) return 'top-right'
   if (pools.value[`${rows.value}:${cols.value}`] == null) return 'bottom-right'
-  if (pools.value[`${1}:${1}`] == null) return 'top-left'
-  if (pools.value[`${rows.value}:${1}`] == null) return 'bottom-left'
+  if (pools.value['1:1'] == null) return 'top-left'
+  if (pools.value[`${rows.value}:1`] == null) return 'bottom-left'
   else return 'top-right'
 })
 
@@ -205,7 +205,8 @@ watch(heatInfo.data, heatInfo => {
       poolLabel: hi.Station,
       bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined),
       names: getHeatNameList(hi, { mode: 'first' })
-    }})
+    }
+  })
 })
 </script>
 

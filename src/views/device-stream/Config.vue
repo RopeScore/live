@@ -276,7 +276,7 @@ function changeCols (screenId: string, cols: number) {
   screen.cols = cols
   if (screen.pools == null) return
   for (const poolId of (Object.keys(screen.pools) as Array<keyof typeof screen.pools>)) {
-    const [row, col] = poolId.split(':').map(n => parseInt(n, 10))
+    const [, col] = poolId.split(':').map(n => parseInt(n, 10))
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     if (col > cols) delete screen.pools[poolId]
   }
@@ -288,7 +288,7 @@ function changeRows (screenId: string, rows: number) {
   screen.rows = rows
   if (screen.pools == null) return
   for (const poolId of (Object.keys(screen.pools ?? {}) as Array<keyof typeof screen.pools>)) {
-    const [row, col] = poolId.split(':').map(n => parseInt(n, 10))
+    const [row] = poolId.split(':').map(n => parseInt(n, 10))
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     if (row > rows) delete screen.pools[poolId]
   }

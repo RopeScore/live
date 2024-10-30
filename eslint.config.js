@@ -96,7 +96,8 @@ export default [
         // default: allowNever: false
         // default: allowNullish: false
       }],
-      '@typescript-eslint/no-empty-function': 'warn'
+      '@typescript-eslint/no-empty-function': 'warn',
+      '@typescript-eslint/no-non-null-assertion': 'off',
     }
   },
   {

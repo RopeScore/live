@@ -147,11 +147,11 @@ const heatChangeSubscription = useHeatChangedSubscription({
   groupId: groupId as unknown as string
 })
 
-watch(heatChangeSubscription.result, result => {
-  leaderboardQuery.refetch()
+watch(heatChangeSubscription.result, () => {
+  void leaderboardQuery.refetch()
 })
 useIntervalFn(() => {
-  if (typeof leaderboardQuery.result.value?.group?.currentHeat !== 'number') leaderboardQuery.refetch()
+  if (typeof leaderboardQuery.result.value?.group?.currentHeat !== 'number') void leaderboardQuery.refetch()
 }, 60_000)
 
 const categories = computed(() => leaderboardQuery.result.value?.group?.categories ?? [])

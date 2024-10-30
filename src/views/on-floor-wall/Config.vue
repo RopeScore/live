@@ -47,7 +47,6 @@
 </template>
 
 <script lang="ts" setup>
-import countries from '../../assets/countries.json'
 import { SelectField, NumberField, TextField, ButtonLink } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
 import PhotoPicker from '../../components/PhotoPicker.vue'
@@ -60,8 +59,6 @@ useHead({
 
 const theme = useTheme()
 const settings = useOnFloorWallSettings()
-
-const countriesList = countries.map(c => ({ text: c.name, value: c.code }))
 
 function setCurrentHeatInfoSystem (system: string | undefined) {
   if (system === 'servo' && settings.value.heatInfo?.system !== 'servo') {

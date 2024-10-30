@@ -16,7 +16,7 @@
           :pool="entry.pool!"
           :entry="entry"
           :scoresheet="(primaryScoresheets[entry.id] as MarkScoresheetFragment & ScoresheetBaseFragment)"
-          :tally="tallies[primaryScoresheets[entry.id]?.id]?.tally"
+          :tally="tallies[primaryScoresheets[entry.id]!.id]?.tally"
           :cols="cols"
           :theme="theme"
         />
@@ -110,7 +110,7 @@ const scoresheetChangedSubscription = useScoresheetChangedSubscription({
 })
 
 watch(scoresheetChangedSubscription.result, () => {
-  entriesQuery.refetch()
+  void entriesQuery.refetch()
 })
 
 const scoresheetIds = computed(() => {
@@ -126,7 +126,7 @@ const primaryScoresheets = computed(() => {
     return [
       ent.id,
       filterLatestScoresheets(ent.scoresheets)
-        .filter(scsh => scsh.options?.live === true)[0]
+        .find(scsh => scsh.options?.live === true)
     ]
   }))
 })

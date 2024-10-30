@@ -79,7 +79,7 @@ const heatChangeSubscription = useHeatChangedSubscription({
   groupId: route.params.groupId as string
 })
 
-watch(heatChangeSubscription.result, () => { groupInfo.refetch() })
+watch(heatChangeSubscription.result, () => { void groupInfo.refetch() })
 
 const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
 const theme = useTheme()
@@ -117,7 +117,7 @@ const heats = computed(() => {
 })
 
 const nextThree = computed(() => {
-  return [heatPlusN(1), heatPlusN(2), heatPlusN(3)].filter(n => typeof n === 'number') as number[]
+  return [heatPlusN(1), heatPlusN(2), heatPlusN(3)].filter(n => typeof n === 'number')
 })
 
 function heatPlusN (n: number) {

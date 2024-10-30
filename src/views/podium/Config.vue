@@ -104,12 +104,12 @@ const addNew = {
   '3rd': ref<string | undefined>()
 }
 
-function addNewFn (pos: typeof positions[number], code: string) {
+async function addNewFn (pos: typeof positions[number], code: string) {
   if (!code) return
 
   addNew[pos].value = code
   state.value[pos].push(code)
-  nextTick(() => {
+  await nextTick(() => {
     addNew[pos].value = undefined
   })
 }

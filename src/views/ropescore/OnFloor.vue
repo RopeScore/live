@@ -99,7 +99,7 @@ const heatChangeSubscription = useHeatChangedSubscription({
 const keyColor = useKeyColor()
 const theme = useTheme()
 
-watch(heatChangeSubscription.result, () => { groupInfo.refetch() })
+watch(heatChangeSubscription.result, () => { void groupInfo.refetch() })
 
 const currentHeat = computed(() => groupInfo.result.value?.group?.currentHeat ?? 1)
 
@@ -118,10 +118,6 @@ const entries = computed(() => {
     else if (typeof b.pool === 'number') return 1
     else return a.id.localeCompare(b.id)
   })
-})
-
-const hasPools = computed(() => {
-  return entries.value.length > 1 && entries.value.some(e => typeof e.pool === 'number')
 })
 </script>
 

@@ -173,17 +173,17 @@ function removeQualifier (id: string) {
 }
 
 const newName = ref('')
-function addName (qualifier: Qualifier, name: string | number) {
+async function addName (qualifier: Qualifier, name: string | number) {
   if (typeof name !== 'string') return
 
   qualifier.names.push(name)
-  nextTick(() => {
+  await nextTick(() => {
     document.querySelector<HTMLInputElement>(`#name-${qualifier.id}-${qualifier.names.length - 1} input`)?.focus()
     newName.value = ''
   })
 }
 function updateName (qualifier: Qualifier, nameIdx: number, name: string | number) {
-  if (typeof name !== 'string' || name == null || name.trim() === '')  {
+  if (typeof name !== 'string' || name == null || name.trim() === '') {
     qualifier.names.splice(nameIdx, 1)
     const next = document.querySelector<HTMLInputElement>(`#name-${qualifier.id}-${nameIdx - 1} input`) ??
       document.querySelector<HTMLInputElement>(`#name-${qualifier.id}-new input`)
@@ -193,7 +193,7 @@ function updateName (qualifier: Qualifier, nameIdx: number, name: string | numbe
   }
 }
 function addFromPaste (qualifier: Qualifier, event: ClipboardEvent) {
-  const content = (event.clipboardData ?? (window as any).clipboardData as DataTransfer).getData("text").trim()
+  const content = (event.clipboardData ?? (window as any).clipboardData as DataTransfer).getData('text').trim()
   if (content === '' || content == null) return
   const nameCandidates = content.split(/[;,\n\t]/).map(nc => nc.trim()).filter(nc => nc !== '')
   qualifier.names.push(...nameCandidates)

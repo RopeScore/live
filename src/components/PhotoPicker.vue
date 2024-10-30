@@ -22,7 +22,6 @@ const props = defineProps({
   }
 })
 
-// eslint-disable-next-line func-call-spacing
 const emit = defineEmits<(event: 'update:model-value', value: string | undefined) => void>()
 
 const loading = ref(false)
@@ -34,7 +33,7 @@ function pickFile () {
   input.accept = props.contentTypes.join(',')
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  input.addEventListener('change', async _ => {
+  input.addEventListener('change', async () => {
     if (loading.value || !input.files?.length) return
 
     loading.value = true

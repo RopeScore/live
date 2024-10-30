@@ -36,7 +36,7 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
   }).get().json<ServoHeatInfo[]>()
 
   const servoPoll = useTimeoutPoll(() => {
-    servoCurrentHeatFetch.execute()
+    void servoCurrentHeatFetch.execute()
   }, 5_000, { immediate: false })
 
   watch(() => settings.value, heatInfoConfig => {
@@ -46,7 +46,7 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
     if (heatInfoConfig?.system === 'servo' && heatInfoConfig.competitionId != null) {
       let url
       try {
-        url = new URL(`/api/v1/competitions/${heatInfoConfig.competitionId}/info/current`, heatInfoConfig.baseUrl as string)
+        url = new URL(`/api/v1/competitions/${heatInfoConfig.competitionId}/info/current`, heatInfoConfig.baseUrl)
       } catch {
         return
       }
@@ -75,6 +75,7 @@ export function getHeatNameList (heat: ServoHeatInfo, { mode = 'full' }: GetHeat
       case 'last': {
         const name = heat[`Part${idx}_Last`]?.trim() ?? ''
         if (name.length > 0) names.push(name)
+        break
       }
       default: {
         const name = heat[`Part${idx}`]?.trim() ?? ''

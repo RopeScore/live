@@ -49,7 +49,7 @@ async function resetPassword () {
 watch(auth.user, newUser => {
   if (newUser) {
     const returnTo = route.query['return-to'] as string | undefined
-    router.replace(returnTo ? decodeURIComponent(returnTo) : '/')
+    void router.replace(returnTo ? decodeURIComponent(returnTo) : '/')
   }
 })
 </script>

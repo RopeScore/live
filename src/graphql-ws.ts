@@ -1,6 +1,6 @@
 import { ApolloLink, type Operation, type FetchResult, Observable } from '@apollo/client/core'
-import { print, type GraphQLError } from 'graphql'
-import { createClient, type ClientOptions, type Client } from 'graphql-ws'
+import { type FormattedExecutionResult, print, type GraphQLError } from 'graphql'
+import { createClient, type ClientOptions, type Client, type Sink } from 'graphql-ws'
 
 interface RestartableClient extends Client {
   restart: () => void
@@ -83,7 +83,8 @@ export class WebSocketLink extends ApolloLink {
               )
             )
           }
-        }
+          // casting around a wrong type in graphql-ws, which incorrectly expects `Sink<ExecutionResult>`
+        } satisfies Sink<FormattedExecutionResult> as any
       )
     })
   }
