@@ -8,7 +8,6 @@ const router = createRouter({
     { path: '/auth', component: async () => await import('./views/Auth.vue') },
 
     { path: '/groups', component: async () => await import('./views/Groups.vue'), meta: { authRequired: true, menu: 'Groups', menuOrder: 2 } },
-    { path: '/groups/:groupId/live', component: async () => await import('./views/ropescore/Live.vue'), meta: { fullscreen: true, authRequired: true } },
     { path: '/groups/:groupId/on-floor', component: async () => await import('./views/ropescore/OnFloor.vue'), meta: { fullscreen: true, authRequired: true } },
     { path: '/groups/:groupId/next-up', component: async () => await import('./views/ropescore/NextUp.vue'), meta: { fullscreen: true, authRequired: true } },
     { path: '/groups/:groupId/leaderboard', component: async () => await import('./views/ropescore/Leaderboard.vue'), meta: { fullscreen: true, authRequired: true } },
