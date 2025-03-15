@@ -18,9 +18,9 @@
       <div class="font-bold text-8xl">
         {{ clock }}
       </div>
-      <div v-if="heatInfo.data.value?.[0]?.HeatNumber">
+      <div v-if="heatInfo.currentHeat.value">
         <span class="text-5xl">heat&nbsp;</span>
-        <span class="text-8xl font-bold">{{ heatInfo.data.value[0].HeatNumber }}</span>
+        <span class="text-8xl font-bold">{{ heatInfo.currentHeat.value }}</span>
       </div>
     </div>
 
@@ -29,30 +29,27 @@
         <template v-for="col of screen?.cols ?? 0" :key="col">
           <div v-if="pools[`${row}:${col}`] == null" />
           <template v-else>
-            <device-not-set v-if="!pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" :theme="theme" />
+            <device-not-set v-if="settings.heatInfo?.system !== 'ropescore' && !pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" :theme="theme" />
             <speed-live-score
-              v-else-if="tallies[pools[`${row}:${col}`].deviceId!]?.info == null || tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'S' || tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'Shj'"
+              v-else-if="extendedInfo(row, col)?.judgeType == null || ['S', 'Shj'].includes(extendedInfo(row, col)?.judgeType as string)"
               :pool="pools[`${row}:${col}`].label"
-              :tally="tallies[pools[`${row}:${col}`].deviceId!]?.tally"
-              :device-id="pools[`${row}:${col}`].deviceId"
+              :tally="tallies[extendedInfo(row, col)?.rsScoresheetId ?? extendedInfo(row, col)?.deviceId!]?.tally.value"
+              :info="extendedInfo(row, col)"
               :cols="cols"
-              :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
-              :names="poolNames(pools[`${row}:${col}`].label)"
               :theme="theme"
             />
             <timing-live-score
-              v-else-if="tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType === 'T'"
+              v-else-if="extendedInfo(row, col)?.judgeType === 'T'"
               :pool="pools[`${row}:${col}`].label"
-              :tally="tallies[pools[`${row}:${col}`].deviceId!]?.tally"
-              :device-id="pools[`${row}:${col}`].deviceId"
+              :tally="tallies[extendedInfo(row, col)?.rsScoresheetId ?? extendedInfo(row, col)?.deviceId!]?.tally.value"
+              :info="extendedInfo(row, col)"
               :cols="cols"
-              :bg-url="poolBgUrl(pools[`${row}:${col}`].label)"
               :theme="theme"
             />
             <unsupported-competition-event
               v-else
               :pool="pools[`${row}:${col}`].label"
-              :competition-event-id="pools[`${row}:${col}`].deviceId ? tallies[pools[`${row}:${col}`].deviceId!]?.info?.judgeType ?? '---' : '---'"
+              :info="extendedInfo(row, col)"
               :theme="theme"
             />
           </template>
@@ -89,9 +86,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, watch } from 'vue'
-import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription } from '../../graphql/generated'
-import { type ScoreTally, type Mark, formatList } from '../../helpers'
+import { computed, reactive, ref, watch, type Ref } from 'vue'
+import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, type StreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription, useStreamMarkAddedSubscription } from '../../graphql/generated'
+import { type ScoreTally, type Mark } from '../../helpers'
 import { useDeviceStreamPools } from './use-device-stream-pools'
 import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
@@ -103,7 +100,7 @@ import DeviceNotSet from '../../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../../components/SpeedLiveScore.vue'
 import TimingLiveScore from '../../components/TimingLiveScore.vue'
 import UnsupportedCompetitionEvent from '../../components/UnsupportedCompetitionEvent.vue'
-import { getHeatNameList, useHeatInfo } from '../../hooks/heat-info'
+import { useHeatInfo, type HeatInfo } from '../../hooks/heat-info'
 
 useHead({
   title: '📺 Device Stream (Live)'
@@ -119,8 +116,13 @@ const cols = computed(() => screen.value?.rows === 0 ? 1 : screen.value?.cols ??
 const rows = computed(() => screen.value?.cols === 0 ? 1 : screen.value?.rows ?? 1)
 const pools = computed(() => screen.value?.pools ?? {})
 
-const tallies = reactive<Record<string, { tally: ScoreTally, lastSequence: number, completed: boolean, info?: DeviceStreamJudgeInfo }>>({})
+const tallies = reactive<Record<string, { tally: Ref<ScoreTally>, lastSequence: number, info?: DeviceStreamJudgeInfo }>>({})
 const deviceIds = computed(() => Object.values(pools.value).map(p => p.deviceId).filter(id => typeof id === 'string'))
+
+const hic = ref(settings.value.heatInfo)
+watch(() => settings.value.heatInfo, newHeatInfo => { hic.value = newHeatInfo })
+
+const heatInfo = useHeatInfo(hic)
 
 const freeCorner = computed(() => {
   if (pools.value[`1:${cols.value}`] == null) return 'top-right'
@@ -133,41 +135,59 @@ const freeCorner = computed(() => {
 const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
 }, {
-  enabled: computed(() => deviceIds.value.length > 0) as unknown as boolean
+  enabled: computed(() => deviceIds.value.length > 0 && settings.value.heatInfo?.system !== 'ropescore'),
 })
 const markStreamSubscriptionAlt = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
 }, {
-  enabled: computed(() => deviceIds.value.length > 0) as unknown as boolean,
+  enabled: computed(() => deviceIds.value.length > 0 && settings.value.heatInfo?.system !== 'ropescore'),
   clientId: 'alternate'
 })
 
-function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | undefined) {
+const scoresheetIdVars = computed(() => ({
+  scoresheetIds: Object.values(heatInfo.pools.value).map(hi => hi.rsScoresheetId).filter(id => id != null)
+}))
+const markStreamSubscriptionRs = useStreamMarkAddedSubscription(scoresheetIdVars, {
+  enabled: computed(() => scoresheetIdVars.value.scoresheetIds.length > 0 && settings.value.heatInfo?.system === 'ropescore'),
+})
+const markStreamSubscriptionRsAlt = useStreamMarkAddedSubscription(scoresheetIdVars, {
+  enabled: computed(() => scoresheetIdVars.value.scoresheetIds.length > 0 && settings.value.heatInfo?.system === 'ropescore'),
+  clientId: 'alternate'
+})
+
+function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | StreamMarkAddedSubscription | null | undefined) {
   if (!res) return
-  const deviceId = res.deviceStreamMarkAdded.device.id
-  const sequence = res.deviceStreamMarkAdded.sequence
-  const tally = res.deviceStreamMarkAdded.tally as ScoreTally
-  const mark = res.deviceStreamMarkAdded.mark as Mark
-  const info = res.deviceStreamMarkAdded.info
+  let tallyId, sequence, tally, mark, info
+  if ('deviceStreamMarkAdded' in res) {
+    tallyId = res.deviceStreamMarkAdded.device.id
+    sequence = res.deviceStreamMarkAdded.sequence
+    tally = res.deviceStreamMarkAdded.tally as ScoreTally
+    mark = res.deviceStreamMarkAdded.mark as Mark
+    info = res.deviceStreamMarkAdded.info
+  } else {
+    tallyId = res.streamMarkAdded.scoresheet.id
+    sequence = res.streamMarkAdded.sequence
+    tally = res.streamMarkAdded.tally as ScoreTally
+    mark = res.streamMarkAdded.mark as Mark
+  }
 
   metrics.distribution('stream_mark_delay', Date.now() - mark.timestamp, {
     unit: 'millisecond'
   })
 
-  let tallyInfo = tallies[deviceId]
+  let tallyInfo = tallies[tallyId]
   if (!tallyInfo) {
     tallyInfo = {
-      tally: reactive<ScoreTally>({}),
+      tally: ref<ScoreTally>({}),
       lastSequence: 0,
-      completed: false
     }
-    tallies[deviceId] = tallyInfo
+    tallies[tallyId] = tallyInfo
   }
 
   if (info != null) tallyInfo.info = info
 
   if (sequence >= tallyInfo.lastSequence) {
-    tallyInfo.tally = reactive(tally)
+    tallyInfo.tally.value = tally
     tallyInfo.lastSequence = sequence
   }
   if (mark.schema === 'clear') {
@@ -177,37 +197,25 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | null | unde
 
 watch(markStreamSubscription.result, markStreamWatcher)
 watch(markStreamSubscriptionAlt.result, markStreamWatcher)
+watch(markStreamSubscriptionRs.result, markStreamWatcher)
+watch(markStreamSubscriptionRsAlt.result, markStreamWatcher)
 
-const poolBackgrounds = ref<Array<{ poolLabel: number, bgUrl?: string, names: string[] }>>([])
-
-function poolBgUrl (poolLabel: number | undefined) {
-  if (poolLabel == null) return undefined
-  return poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.bgUrl
-}
-
-function poolNames (poolLabel: number | undefined) {
-  if (poolLabel == null) return undefined
-  return formatList(poolBackgrounds.value.find(pb => `${pb.poolLabel}` === `${poolLabel}`)?.names ?? [])
-}
-
-const hic = ref(settings.value.heatInfo)
-watch(() => settings.value.heatInfo, newHeatInfo => { hic.value = newHeatInfo })
-
-const heatInfo = useHeatInfo(hic)
-
-watch(heatInfo.data, heatInfo => {
-  if (heatInfo == null) {
-    poolBackgrounds.value = []
-    return
+function extendedInfo (row: number, col: number): Partial<(HeatInfo & DeviceStreamJudgeInfo)> | undefined {
+  const pool = pools.value[`${row}:${col}`]
+  if (pool == null) return undefined
+  return {
+    ...pool,
+    poolLabel: `${pool.label ?? ''}`,
+    ...(pool.deviceId && tallies[pool.deviceId]?.info
+      ? tallies[pool.deviceId]?.info
+      : {}
+    ),
+    ...(pool.label != null && heatInfo.pools.value[`${pool.label}`] != null
+      ? heatInfo.pools.value[pool.label]
+      : {}
+    )
   }
-  poolBackgrounds.value = heatInfo.map(hi => {
-    return {
-      poolLabel: hi.Station,
-      bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined),
-      names: getHeatNameList(hi, { mode: 'first' })
-    }
-  })
-})
+}
 </script>
 
 <style scoped>

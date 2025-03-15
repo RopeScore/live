@@ -12,21 +12,21 @@
       </div>
       <div>
         <span class="text-5xl">heat&nbsp;</span>
-        <span v-if="heatInfos" class="text-8xl font-bold">{{ heatInfos[0].HeatNumber }}</span>
+        <span v-if="heatInfo.currentHeat" class="text-8xl font-bold">{{ heatInfo.currentHeat }}</span>
       </div>
       <div
-        v-if="heatInfos?.length === 1"
+        v-if="entryCount === 1"
         class="text-5xl"
         :class="{
           'text-gray-500': theme !== 'dark',
           'text-gray-400': theme === 'dark'
         }"
       >
-        #{{ heatInfos[0].EntryNumber ?? '3030' }}
+        #{{ firstEntry?.entryId ?? '' }}
       </div>
     </div>
 
-    <div v-if="heatInfos?.length === 1" class="grid w-full grid-cols-[2fr_3fr] gap-6 items-center justify-around">
+    <div v-if="entryCount === 1" class="grid w-full grid-cols-[2fr_3fr] gap-6 items-center justify-around">
       <img
         class="w-full max-w-100 border-2 justify-self-end"
         :class="{
@@ -34,7 +34,7 @@
           'border-gray-400': theme === 'dark'
         }"
         alt=""
-        :src="flagUrl(heatInfos[0])"
+        :src="firstEntry?.bgUrl"
       >
       <div class="text-6xl">
         <p
@@ -44,38 +44,38 @@
             'text-gray-400': theme === 'dark'
           }"
         >
-          Station {{ heatInfos[0].Station }} &mdash; {{ heatInfos[0].DivisionName }} {{ heatInfos[0].AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heatInfos[0].GenderName }}
+          Station {{ firstEntry?._servo?.Station }} &mdash; {{ firstEntry?._servo?.DivisionName }} {{ firstEntry?._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ firstEntry?._servo?.GenderName }}
         </p>
         <p class="pb-4">
-          {{ heatInfos[0].Event }}
+          {{ firstEntry?._servo?.Event }}
         </p>
         <div
-          v-if="heatInfos[0].Event !== 'Team Show Freestyle'"
+          v-if="firstEntry?._servo?.Event !== 'Team Show Freestyle'"
           class="font-bold"
           :class="{
-            'text-8xl': !((heatInfos[0].Part2?.trim()?.length ?? 0) > 0 || (heatInfos[0].Part3?.trim()?.length ?? 0) > 0 || (heatInfos[0].Part4?.trim()?.length ?? 0) > 0 || (heatInfos[0].Part5?.trim()?.length ?? 0) > 0)
+            'text-8xl': !((firstEntry?._servo?.Part2?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part3?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part4?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part5?.trim()?.length ?? 0) > 0)
           }"
         >
-          <p v-for="name of getHeatNameList(heatInfos[0])" :key="name" class="pb-4">
+          <p v-for="name of getServoHeatNameList(firstEntry?._servo!)" :key="name" class="pb-4">
             {{ name }}
           </p>
         </div>
-        <p>{{ heatInfos[0].TeamCountryName }}</p>
+        <p>{{ firstEntry?._servo?.TeamCountryName }}</p>
       </div>
     </div>
 
     <div
-      v-else-if="heatInfos != null && heatInfos.length > 1"
+      v-else-if="entryCount > 1"
       :style="`--cols: ${grid.cols}; --rows: ${grid.rows};`"
       class="grid max-w-full overflow-hidden w-full grid-cols-[repeat(var(--cols),10rem_1fr)] grid-rows-[repeat(calc(var(--rows)+1),1fr)] items-center justify-around gap-y-4"
     >
       <p class="col-span-[calc(var(--cols)*2)] text-center font-bold text-6xl">
-        {{ heatInfos[0].Event }}
+        {{ firstEntry?._servo?.Event }}
       </p>
 
-      <template v-for="heat of heatInfos" :key="heat.Station">
+      <template v-for="heat of heatInfo.pools.value" :key="heat._servo?.Station">
         <div
-          :style="`--station-col: ${stationToPos(heat.Station).col}; --station-row: ${stationToPos(heat.Station).row}`"
+          :style="`--station-col: ${stationToPos(heat._servo?.Station!).col}; --station-row: ${stationToPos(heat._servo?.Station!).row}`"
           class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] bg-white p-2"
         >
           <img
@@ -85,11 +85,11 @@
               'border-gray-400': theme === 'dark'
             }"
             alt=""
-            :src="flagUrl(heat)"
+            :src="heat.bgUrl"
           >
         </div>
         <div
-          :style="`--station-col: ${stationToPos(heat.Station).col}; --station-row: ${stationToPos(heat.Station).row}`"
+          :style="`--station-col: ${stationToPos(heat._servo?.Station!).col}; --station-row: ${stationToPos(heat._servo?.Station!).row}`"
           class="col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1)+1)] text-4xl bg-white p-6"
         >
           <p
@@ -98,13 +98,13 @@
               'text-gray-400': theme === 'dark'
             }"
           >
-            Station {{ heat.Station }} &mdash; {{ heat.DivisionName }} {{ heat.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heat.GenderName }}
+            Station {{ heat._servo?.Station }} &mdash; {{ heat._servo?.DivisionName }} {{ heat._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heat._servo?.GenderName }}
           </p>
           <p class="font-bold">
-            {{ formatList(getHeatNameList(heat, { mode: 'first' })) }}
+            {{ formatList(getServoHeatNameList(heat._servo!, { mode: 'first' })) }}
           </p>
           <p class="">
-            {{ heat.TeamCountryName }}
+            {{ heat._servo?.TeamCountryName }}
           </p>
         </div>
       </template>
@@ -118,7 +118,7 @@ import { useHead } from '@vueuse/head'
 import { formatList, getOpfsImgUrl } from '../../helpers'
 import { useTheme } from '../../hooks/theme'
 import { useOnFloorWallSettings } from './use-on-floor-wall'
-import { getHeatNameList, useHeatInfo, type ServoHeatInfo } from '../../hooks/heat-info'
+import { getServoHeatNameList, useHeatInfo } from '../../hooks/heat-info'
 import { useDateFormat, useTimestamp } from '@vueuse/core'
 
 useHead({
@@ -138,14 +138,19 @@ watch(() => settings.value.heatInfo, newHeatInfo => { hic.value = newHeatInfo })
 
 const heatInfo = useHeatInfo(hic)
 
-function flagUrl (hi: ServoHeatInfo) {
-  return hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined)
-}
+const entryCount = computed(() => {
+  const infos = Object.values(heatInfo.pools.value)
+  return infos.length
+})
 
-const heatInfos = heatInfo.data
+const firstEntry = computed(() => {
+  const infos = Object.values(heatInfo.pools.value)
+  if (infos.length > 0) return infos[0]
+  else return undefined
+})
 
 const grid = computed(() => {
-  const maxStation = Math.max(...((heatInfos.value ?? [] as ServoHeatInfo[]).map(hi => hi.Station)))
+  const maxStation = Math.max(...Object.keys(heatInfo.pools.value).map(pl => parseFloat(pl)))
   console.log(maxStation)
   let cols = 1
   let rows = 1

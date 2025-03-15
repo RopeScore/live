@@ -18,13 +18,13 @@
 
     <p class="text-center">
       Unsupported Competition Event:
-      <code class="block">{{ entry?.competitionEventId ?? competitionEventId }}</code>
+      <code class="block">{{ info?.competitionEventId }}</code>
       cannot display live score
     </p>
 
     <div class="absolute bottom-2 left-2 text-gray-500">
-      <div v-if="entry">
-        {{ entry.id }}
+      <div v-if="info">
+        {{ info.entryId }}
       </div>
     </div>
   </div>
@@ -32,22 +32,17 @@
 
 <script lang="ts" setup>
 import { type PropType } from 'vue'
-import { type EntryFragment } from '../graphql/generated'
 import type { Theme } from '../hooks/theme'
+import type { HeatInfo } from '../hooks/heat-info'
+import type { DeviceStreamJudgeInfo } from '../graphql/generated'
 
 defineProps({
   pool: {
     type: Number,
     default: undefined
   },
-  entry: {
-    type: Object as PropType<EntryFragment>,
-    required: false,
-    default: () => ({})
-  },
-  competitionEventId: {
-    type: String,
-    required: false,
+  info: {
+    type: Object as PropType<Partial<HeatInfo & DeviceStreamJudgeInfo>>,
     default: null
   },
   theme: {

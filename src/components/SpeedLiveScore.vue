@@ -5,14 +5,14 @@
       'border-black bg-white text-black': theme !== 'dark',
       'border-gray-600 bg-black text-white dark': theme === 'dark',
 
-      'bg-green-100': theme !== 'dark' && scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
-      'bg-green-900': theme === 'dark' && scoresheet?.__typename === 'MarkScoresheet' && scoresheet?.completedAt,
-      'bg-gray-300': theme !== 'dark' && entry?.didNotSkipAt,
-      'bg-dark-500': theme === 'dark' && entry?.didNotSkipAt
+      'bg-green-100': theme !== 'dark' && info?.submitted,
+      'bg-green-900': theme === 'dark' && info?.submitted,
+      'bg-gray-300': theme !== 'dark' && info?.didNotSkip,
+      'bg-dark-500': theme === 'dark' && info?.didNotSkip
     }"
   >
-    <div v-if="bgUrl" class="absolute bottom-0 right-0 left-0 max-h-[75%]">
-      <img :src="bgUrl" alt=" ">
+    <div v-if="info.bgUrl" class="absolute bottom-0 right-0 left-0 max-h-[75%]">
+      <img :src="info.bgUrl" alt=" ">
       <div class="absolute inset-0 flag-bg" />
     </div>
     <div class="absolute inset-0 full-bg" />
@@ -27,25 +27,25 @@
       {{ pool ?? '' }}
     </div>
     <div
-      v-if="entry || names"
+      v-if="info.names != null && info.names.length > 0"
       class="font-bold text-4xl absolute top-2 right-2 max-w-[66%] overflow-hidden custom-wrap text-balance text-right"
     >
-      {{ entry?.participant?.name ?? names }}
+      {{ formatList(info.names) }}
     </div>
 
-    <div v-if="!entry?.didNotSkipAt" class="z-1 font-semibold tabular-nums w-full text-center font-mono custom-size">
+    <div v-if="!info?.didNotSkip" class="z-1 font-semibold tabular-nums w-full text-center font-mono custom-size">
       {{ tally?.step ?? 0 }}
     </div>
 
     <div class="debug absolute top-2 right-2 text-gray-500">
-      <div v-if="deviceId">
-        {{ deviceId }}
+      <div v-if="info.deviceId">
+        {{ info.deviceId }}
       </div>
-      <div v-if="scoresheet">
-        {{ scoresheet.id }}
+      <div v-if="info.rsScoresheetId">
+        {{ info.rsScoresheetId }}
       </div>
-      <div v-if="entry">
-        {{ getAbbr(entry.competitionEventId) }}
+      <div v-if="info.competitionEventId">
+        {{ getAbbr(info.competitionEventId) }}
       </div>
     </div>
   </div>
@@ -53,29 +53,18 @@
 
 <script lang="ts" setup>
 import { computed, type PropType, toRef } from 'vue'
-import { type EntryFragment, type MarkScoresheetFragment, type ScoresheetBaseFragment } from '../graphql/generated'
-import { type ScoreTally, getAbbr } from '../helpers'
+import { type ScoreTally, formatList, getAbbr } from '../helpers'
 import type { Theme } from '../hooks/theme'
+import type { HeatInfo } from '../hooks/heat-info'
+import type { DeviceStreamJudgeInfo } from '../graphql/generated'
 
 const props = defineProps({
   pool: {
     type: Number,
     default: undefined
   },
-  entry: {
-    type: Object as PropType<EntryFragment>,
-    default: () => null
-  },
-  names: {
-    type: String,
-    default: () => null
-  },
-  scoresheet: {
-    type: Object as PropType<Pick<MarkScoresheetFragment & ScoresheetBaseFragment, 'id' | '__typename' | 'completedAt'> | null>,
-    default: () => null
-  },
-  deviceId: {
-    type: String,
+  info: {
+    type: Object as PropType<Partial<HeatInfo & DeviceStreamJudgeInfo>>,
     default: null
   },
   tally: {
@@ -85,10 +74,6 @@ const props = defineProps({
   cols: {
     type: Number,
     default: null
-  },
-  bgUrl: {
-    type: String,
-    default: undefined
   },
   theme: {
     type: String as PropType<Theme>,

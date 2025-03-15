@@ -1,10 +1,24 @@
-import { type Ref, ref, watch } from 'vue'
+import { computed, type Ref, ref, watch } from 'vue'
 import { useFetch, useTimeoutPoll } from '@vueuse/core'
+import { useGroupInfoQuery, useHeatChangedSubscription, useHeatEntriesScoresheetsQuery, useScoresheetChangedSubscription, type MarkScoresheetFragment, type ScoresheetBaseFragment } from '../graphql/generated'
+import { filterLatestScoresheets, type CompetitionEvent } from '../helpers'
+
 export interface ServoCurrentHeatInfoConfig {
   system: 'servo'
   baseUrl: string
   competitionId?: number
 }
+
+interface NoHeatSystemConfig {
+  system: 'none'
+}
+
+interface RopeScoreCurrentHeatInfoConfig {
+  system: 'ropescore'
+  groupId?: string
+}
+
+export type HeatInfoConfig = ServoCurrentHeatInfoConfig | RopeScoreCurrentHeatInfoConfig | NoHeatSystemConfig
 
 export interface ServoHeatInfo {
   PROGRAM: 'ON' | ''
@@ -24,7 +38,30 @@ export interface ServoHeatInfo {
   [lastNameKey: `Part${number}_Last`]: string
 }
 
-export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefined>) {
+export interface HeatInfo {
+  poolLabel: string
+  bgUrl?: string
+  names?: string[]
+  teamName?: string
+  didNotSkip?: boolean
+  submitted?: boolean
+
+  deviceId?: string
+  judgeType?: string | null
+  competitionEventId?: CompetitionEvent
+  entryId?: string
+  rsScoresheetId?: string
+
+  _servo?: ServoHeatInfo
+}
+
+export interface UseHeatInfoReturn {
+  currentHeat: Ref<string | number | undefined>
+  pools: Ref<Record<string, HeatInfo>>
+}
+
+export function useHeatInfo (settings: Ref<HeatInfoConfig | undefined>): UseHeatInfoReturn {
+  // SERVO
   const servoPollUrl = ref<string>('')
 
   const servoCurrentHeatFetch = useFetch(servoPollUrl, {
@@ -39,6 +76,43 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
     void servoCurrentHeatFetch.execute()
   }, 5_000, { immediate: false })
 
+  // ROPESCORE
+  const groupIdVars = computed(() => settings.value?.system === 'ropescore' ? { groupId: settings.value.groupId ?? '' } : { groupId: '' })
+  const rsEnabled = computed(() => settings.value?.system === 'ropescore')
+  const groupInfo = useGroupInfoQuery(groupIdVars, {
+    enabled: rsEnabled,
+  })
+  const heatChangeSubscription = useHeatChangedSubscription(groupIdVars, {
+    enabled: rsEnabled,
+  })
+
+  const currentHeat = ref(1)
+  watch(groupInfo.result, result => {
+    if (typeof result?.group?.currentHeat === 'number') currentHeat.value = result?.group?.currentHeat
+  })
+  watch(heatChangeSubscription.result, result => {
+    if (typeof result?.heatChanged === 'number') currentHeat.value = result?.heatChanged
+  })
+
+  const entriesQuery = useHeatEntriesScoresheetsQuery(computed(() => ({
+    ...groupIdVars.value,
+    heat: currentHeat.value
+  })), {
+    pollInterval: 15_000,
+    fetchPolicy: 'cache-and-network',
+    enabled: rsEnabled,
+  })
+
+  const scoresheetChangedSubscription = useScoresheetChangedSubscription(computed(() => ({
+    entryIds: entriesQuery.result.value?.group?.entriesByHeat.map(e => e.id) ?? []
+  })), {
+    enabled: rsEnabled
+  })
+  watch(scoresheetChangedSubscription.result, () => {
+    void entriesQuery.refetch()
+  })
+
+  // GENERAL
   watch(() => settings.value, heatInfoConfig => {
     // start by just disabling all polling
     servoPoll.pause()
@@ -55,14 +129,59 @@ export function useHeatInfo (settings: Ref<ServoCurrentHeatInfoConfig | undefine
     }
   }, { immediate: true })
 
-  return servoCurrentHeatFetch
+  return {
+    currentHeat: computed(() => {
+      if (settings.value?.system === 'servo') return servoCurrentHeatFetch.data.value?.[0].HeatNumber
+      else if (settings.value?.system === 'ropescore') return currentHeat.value
+      else return undefined
+    }),
+    pools: computed(() => {
+      if (settings.value?.system === 'servo') {
+        return Object.fromEntries(servoCurrentHeatFetch.data.value?.map(hi => [
+          `${hi.Station}`,
+          {
+            poolLabel: `${hi.Station}`,
+            bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined),
+            names: getServoHeatNameList(hi, { mode: 'first' }),
+            teamName: hi.Team,
+            entryId: `${hi.EntryNumber}`,
+
+            _servo: hi,
+          } as HeatInfo
+        ]) ?? [])
+      } else if (settings.value?.system === 'ropescore') {
+        return Object.fromEntries(entriesQuery.result.value?.group?.entriesByHeat?.map(entry => {
+          const scoresheet = filterLatestScoresheets(entry.scoresheets)
+            .find(scsh => scsh.__typename === 'MarkScoresheet' && scsh.options?.live === true) as (MarkScoresheetFragment & ScoresheetBaseFragment) | undefined
+
+          return [
+            `${entry.pool ?? ''}`,
+            {
+              poolLabel: `${entry.pool ?? ''}`,
+              names: entry.participant.__typename === 'Team' ? entry.participant.members : [entry.participant.name],
+              teamName: entry.participant.__typename === 'Team' ? entry.participant.name : entry.participant.club,
+              didNotSkip: entry.didNotSkipAt != null,
+              submitted: scoresheet?.completedAt != null,
+              competitionEventId: entry.competitionEventId,
+              judgeType: scoresheet?.judgeType,
+              entryId: entry.id,
+
+              rsScoresheetId: scoresheet?.id,
+            } as HeatInfo
+          ]
+        }) ?? [])
+      } else {
+        return {}
+      }
+    })
+  }
 }
 
-interface GetHeatNameListOptions {
+interface GetServoHeatNameListOptions {
   /** @default 'full' */
   mode?: 'full' | 'last' | 'first'
 }
-export function getHeatNameList (heat: ServoHeatInfo, { mode = 'full' }: GetHeatNameListOptions = {}) {
+export function getServoHeatNameList (heat: ServoHeatInfo, { mode = 'full' }: GetServoHeatNameListOptions = {}) {
   const names: string[] = []
   for (let idx = 1; idx <= 5; idx++) {
     switch (mode) {

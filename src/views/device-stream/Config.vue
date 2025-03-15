@@ -5,189 +5,205 @@
     </text-button>
   </div>
 
-  <section class="container mx-auto">
+  <section class="container mx-auto mb-4">
     <h2 class="text-xl">
-      Device Shares
-    </h2>
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th>Device ID</th>
-          <th>Device Name</th>
-          <th>Battery</th>
-          <th class="relative">
-            Last Battery Status
-            <span v-if="sharesQuery.loading.value" class="absolute right-1 top-1">
-              <icon-loading class="animate-spin" />
-            </span>
-          </th>
-          <th>Request Status</th>
-          <th>Expires</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="share of shares" :key="share.id">
-          <td>{{ share.device.id }}</td>
-          <td>{{ share.device.name }}</td>
-          <td
-            v-if="share.device.battery"
-            class="min-w-[10ch] text-right"
-            :class="{
-              'bg-green-300': share.device.battery.batteryLevel > 30,
-              'bg-orange-200': share.device.battery.batteryLevel <= 30 && share.device.battery.batteryLevel > 15,
-              'bg-red-200': share.device.battery.batteryLevel <= 15,
-            }"
-          >
-            {{ share.device.battery.batteryLevel }} %
-          </td>
-          <td v-else class="bg-gray-200" />
-
-          <td v-if="share.device.battery" :class="{ 'bg-orange-200': tooLongAgo(share.device.battery.updatedAt) }">
-            <relative-time :datetime="toISO(share.device.battery.updatedAt)">
-              {{ toISO(share.device.battery.updatedAt) }}
-            </relative-time>
-            <span v-if="!share.device.battery.automatic"> (manual)</span>
-          </td>
-          <td v-else class="bg-gray-200">
-            never
-          </td>
-          <td
-            :class="{
-              'bg-orange-300': share.status === DeviceStreamShareStatus.Pending,
-              'bg-green-300': share.status === DeviceStreamShareStatus.Accepted
-            }"
-          >
-            {{ share.status }}
-          </td>
-          <td :class="{ 'bg-orange-200': expiresSoon(share.expiresAt) }">
-            <relative-time :datetime="toISO(share.expiresAt)">
-              {{ toISO(share.expiresAt) }}
-            </relative-time>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <td colspan="4">
-          <text-field v-model="newDeviceId" form="request-share" label="Device ID" dense />
-        </td>
-        <td colspan="2">
-          <text-button
-            color="blue"
-            dense
-            :loading="requestShare.loading.value"
-            form="request-share"
-          >
-            Request Share
-          </text-button>
-        </td>
-      </tfoot>
-    </table>
-    <form id="request-share" @submit.prevent="requestShare.mutate({ deviceId: newDeviceId })" />
-  </section>
-
-  <section class="container mx-auto">
-    <h2 class="text-xl">
-      Pool Backgrounds
+      Pool Info
     </h2>
     <div>
       <select-field
         :model-value="settings.heatInfo?.system"
-        label="Pool Backgrounds System"
-        :data-list="['servo']"
-        @update:model-value="setCurrentHeatInfoSystem($event as string)"
+        label="Pool Info System"
+        :data-list="HEAT_SYSTEMS"
+        @update:model-value="setCurrentHeatInfoSystem($event as HeatSystem)"
       />
-      <text-field
-        v-if="settings.heatInfo?.system === 'servo'"
-        v-model="settings.heatInfo.baseUrl"
-        label="Servo Scoring Base URL"
-        type="url"
-      />
-      <number-field
-        v-if="settings.heatInfo?.system === 'servo'"
-        v-model="settings.heatInfo.competitionId"
-        label="Servo Scoring Competition ID"
-        :min="0"
-        :step="1"
-      />
+      <template v-if="settings.heatInfo?.system === 'servo'">
+        <text-field
+          v-model="settings.heatInfo.baseUrl"
+          label="Servo Scoring Base URL"
+          type="url"
+        />
+        <number-field
+          v-model="settings.heatInfo.competitionId"
+          label="Servo Scoring Competition ID"
+          :min="0"
+          :step="1"
+        />
+      </template>
+
+      <template v-else-if="settings.heatInfo?.system === 'ropescore'">
+        <select-field
+          v-model:model-value="settings.heatInfo.groupId"
+          label="Group"
+          :data-list="groupItems"
+          :disabled="groupsQuery.loading.value"
+        />
+      </template>
     </div>
   </section>
 
-  <section>
-    <div class="container mx-auto flex justify-between items-baseline">
-      <h2 class="mt-4 text-xl">
-        Screens and Pools
+  <p v-if="settings.heatInfo?.system == null">
+    Please select a pool info system above (or none to use device shares)
+  </p>
+
+  <template v-else>
+    <section v-if="settings.heatInfo?.system !== 'ropescore'" class="container mx-auto">
+      <h2 class="text-xl">
+        Device Shares
       </h2>
-      <text-button color="blue" @click="addScreen">
-        New Screen
-      </text-button>
-    </div>
-    <div v-for="screen, screenId of settings.screens ?? {}" :key="screenId">
-      <div class="container mx-auto flex justify-between items-baseline mt-6">
-        <h3 class="text-lg font-bold">
-          Screen {{ screenId }}
-        </h3>
-        <div>
-          <button-link :to="`/device-stream/display?screen-id=${screenId}&theme=${theme}`" target="_blank">
-            Show Scores
-          </button-link>
-          <text-button color="red" @click="removeScreen(screenId)">
-            Remove Screen
-          </text-button>
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th>Device ID</th>
+            <th>Device Name</th>
+            <th>Battery</th>
+            <th class="relative">
+              Last Battery Status
+              <span v-if="sharesQuery.loading.value" class="absolute right-1 top-1">
+                <icon-loading class="animate-spin" />
+              </span>
+            </th>
+            <th>Request Status</th>
+            <th>Expires</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="share of shares" :key="share.id">
+            <td>{{ share.device.id }}</td>
+            <td>{{ share.device.name }}</td>
+            <td
+              v-if="share.device.battery"
+              class="min-w-[10ch] text-right"
+              :class="{
+                'bg-green-300': share.device.battery.batteryLevel > 30,
+                'bg-orange-200': share.device.battery.batteryLevel <= 30 && share.device.battery.batteryLevel > 15,
+                'bg-red-200': share.device.battery.batteryLevel <= 15,
+              }"
+            >
+              {{ share.device.battery.batteryLevel }} %
+            </td>
+            <td v-else class="bg-gray-200" />
+
+            <td v-if="share.device.battery" :class="{ 'bg-orange-200': tooLongAgo(share.device.battery.updatedAt) }">
+              <relative-time :datetime="toISO(share.device.battery.updatedAt)">
+                {{ toISO(share.device.battery.updatedAt) }}
+              </relative-time>
+              <span v-if="!share.device.battery.automatic"> (manual)</span>
+            </td>
+            <td v-else class="bg-gray-200">
+              never
+            </td>
+            <td
+              :class="{
+                'bg-orange-300': share.status === DeviceStreamShareStatus.Pending,
+                'bg-green-300': share.status === DeviceStreamShareStatus.Accepted
+              }"
+            >
+              {{ share.status }}
+            </td>
+            <td :class="{ 'bg-orange-200': expiresSoon(share.expiresAt) }">
+              <relative-time :datetime="toISO(share.expiresAt)">
+                {{ toISO(share.expiresAt) }}
+              </relative-time>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <td colspan="4">
+            <text-field v-model="newDeviceId" form="request-share" label="Device ID" dense />
+          </td>
+          <td colspan="2">
+            <text-button
+              color="blue"
+              dense
+              :loading="requestShare.loading.value"
+              form="request-share"
+            >
+              Request Share
+            </text-button>
+          </td>
+        </tfoot>
+      </table>
+      <form id="request-share" @submit.prevent="requestShare.mutate({ deviceId: newDeviceId })" />
+    </section>
+
+    <section>
+      <div class="container mx-auto flex justify-between items-baseline">
+        <h2 class="mt-4 text-xl">
+          Screens and Pools
+        </h2>
+        <text-button color="blue" @click="addScreen">
+          New Screen
+        </text-button>
+      </div>
+      <div v-for="screen, screenId of settings.screens ?? {}" :key="screenId">
+        <div class="container mx-auto flex justify-between items-baseline mt-6">
+          <h3 class="text-lg font-bold">
+            Screen {{ screenId }}
+          </h3>
+          <div>
+            <button-link :to="`/device-stream/display?screen-id=${screenId}&theme=${theme}`" target="_blank">
+              Show Scores
+            </button-link>
+            <text-button color="red" @click="removeScreen(screenId)">
+              Remove Screen
+            </text-button>
+          </div>
+        </div>
+
+        <fieldset class="container mx-auto grid grid-cols-2 gap-2">
+          <number-field :model-value="screen.rows" label="Rows" :min="0" :step="1" @update:model-value="changeRows(screenId, $event)" />
+          <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
+        </fieldset>
+
+        <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
+          <template v-for="row of screen.rows ?? 0" :key="row">
+            <template v-for="col of screen.cols ?? 0" :key="col">
+              <div
+                v-if="screen.pools?.[`${row}:${col}`]"
+                class="p-1 flex flex-col justify-between"
+                :class="{
+                  'border-b': row !== screen.rows,
+                  'border-r': col !== screen.cols,
+                }"
+              >
+                <number-field
+                  :model-value="screen.pools[`${row}:${col}`].label"
+                  label="Pool #"
+                  type="number"
+                  :step="1"
+                  :min="1"
+                  @update:model-value="screen.pools[`${row}:${col}`].label = $event"
+                />
+                <select-field
+                  v-if="settings.heatInfo?.system !== 'ropescore'"
+                  :model-value="screen.pools[`${row}:${col}`].deviceId"
+                  label="Device ID"
+                  :data-list="acceptedDevices"
+                  @update:model-value="screen.pools[`${row}:${col}`].deviceId = ($event as string)"
+                />
+                <text-button color="red" class="mt-2" @click="removePool(screenId, row, col)">
+                  Disable Pool
+                </text-button>
+              </div>
+              <div
+                v-else
+                class="p-1 flex flex-row justify-center items-center bg-gray-100"
+                :class="{
+                  'border-b': row !== screen.rows,
+                  'border-r': col !== screen.cols,
+                }"
+              >
+                <text-button color="blue" @click="addPool(screenId, row, col)">
+                  <icon-plus class="inline-block -mt-1" />
+                  Enable Pool
+                </text-button>
+              </div>
+            </template>
+          </template>
         </div>
       </div>
-
-      <fieldset class="container mx-auto grid grid-cols-2 gap-2">
-        <number-field :model-value="screen.rows" label="Rows" :min="0" :step="1" @update:model-value="changeRows(screenId, $event)" />
-        <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
-      </fieldset>
-
-      <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
-        <template v-for="row of screen.rows ?? 0" :key="row">
-          <template v-for="col of screen.cols ?? 0" :key="col">
-            <div
-              v-if="screen.pools?.[`${row}:${col}`]"
-              class="p-1"
-              :class="{
-                'border-b': row !== screen.rows,
-                'border-r': col !== screen.cols,
-              }"
-            >
-              <number-field
-                :model-value="screen.pools[`${row}:${col}`].label"
-                label="Pool #"
-                type="number"
-                :step="1"
-                :min="1"
-                @update:model-value="screen.pools[`${row}:${col}`].label = $event"
-              />
-              <select-field
-                :model-value="screen.pools[`${row}:${col}`].deviceId"
-                label="Device ID"
-                :data-list="acceptedDevices"
-                @update:model-value="screen.pools[`${row}:${col}`].deviceId = ($event as string)"
-              />
-              <text-button color="red" class="mt-2" @click="removePool(screenId, row, col)">
-                Disable Pool
-              </text-button>
-            </div>
-            <div
-              v-else
-              class="p-1 flex flex-row justify-center items-center bg-gray-100"
-              :class="{
-                'border-b': row !== screen.rows,
-                'border-r': col !== screen.cols,
-              }"
-            >
-              <text-button color="blue" @click="addPool(screenId, row, col)">
-                <icon-plus class="inline-block -mt-1" />
-                Enable Pool
-              </text-button>
-            </div>
-          </template>
-        </template>
-      </div>
-    </div>
-  </section>
+    </section>
+  </template>
 
   <div
     v-if="sharesQuery.error.value"
@@ -199,11 +215,11 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useDeviceStreamPools } from './use-device-stream-pools'
-import { DeviceStreamShareStatus, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../../graphql/generated'
+import { HEAT_SYSTEMS, useDeviceStreamPools, type HeatSystem } from './use-device-stream-pools'
+import { DeviceStreamShareStatus, useGroupsQuery, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../../graphql/generated'
 import { useHead } from '@vueuse/head'
 
-import { TextButton, TextField, SelectField, ButtonLink, NumberField } from '@ropescore/components'
+import { TextButton, TextField, SelectField, ButtonLink, NumberField, type DataListItem } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
 import IconPlus from 'virtual:icons/mdi/plus'
 import useFirebaseAuth from '../../hooks/firebase-auth'
@@ -224,7 +240,6 @@ const sharesQuery = useUserStreamSharesQuery({
   enabled: auth.isAuthenticated as unknown as boolean
 })
 const shares = computed(() => sharesQuery.result.value?.me?.__typename === 'User' ? sharesQuery.result.value.me.streamShares : [])
-
 const acceptedDevices = computed(() => shares.value.filter(s => s.status === DeviceStreamShareStatus.Accepted).map(s => ({ text: `${s.device.id} ${s.device.name ? `(${s.device.name})` : ''}`, value: s.device.id })))
 
 const requestShare = useRequestStreamShareMutation({
@@ -235,13 +250,27 @@ requestShare.onDone(() => {
   newDeviceId.value = ''
 })
 
+const groupsQuery = useGroupsQuery(() => ({
+  fetchPolicy: 'cache-and-network',
+  pollInterval: 30_000,
+  enabled: auth.isAuthenticated.value
+}))
+const groups = computed(() => groupsQuery.result.value?.groups.filter(group => !group.completedAt) ?? [])
+const groupItems = computed(() => groups.value.map(g => ({ text: g.name, value: g.id }) as DataListItem))
+
 const settings = useDeviceStreamPools()
 
-function setCurrentHeatInfoSystem (system: string | undefined) {
-  if (system === 'servo' && settings.value.heatInfo?.system !== 'servo') {
+function setCurrentHeatInfoSystem (system: HeatSystem | undefined) {
+  if (settings.value.heatInfo?.system === system) return
+
+  if (system === 'servo') {
     settings.value.heatInfo = {
       system: 'servo',
       baseUrl: 'https://scoring.ijru.sport'
+    }
+  } else if (system != null) {
+    settings.value.heatInfo = {
+      system
     }
   } else {
     settings.value.heatInfo = undefined

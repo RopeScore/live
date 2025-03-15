@@ -16,10 +16,6 @@
           </div>
 
           <menu class="p-0 m-0 flex justify-end items-start flex-col">
-            <button-link :to="`/groups/${group.id}/live?theme=${theme}&key-color=${keyColor}`">
-              Live
-            </button-link>
-
             <button-link :to="`/groups/${group.id}/on-floor?theme=${theme}&key-color=${keyColor}`">
               On Floor
             </button-link>

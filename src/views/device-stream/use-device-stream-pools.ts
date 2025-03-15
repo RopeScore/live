@@ -1,5 +1,5 @@
 import { useLocalStorage } from '@vueuse/core'
-import type { ServoCurrentHeatInfoConfig } from '../../hooks/heat-info'
+import type { HeatInfoConfig } from '../../hooks/heat-info'
 
 export interface StreamPool {
   deviceId?: string
@@ -14,9 +14,12 @@ export interface ScreenConfig {
 }
 
 export interface DeviceStreamSettings {
-  heatInfo?: ServoCurrentHeatInfoConfig
+  heatInfo?: HeatInfoConfig
   screens?: Record<string, ScreenConfig>
 }
+
+export const HEAT_SYSTEMS = ['servo', 'ropescore', 'none'] as const
+export type HeatSystem = typeof HEAT_SYSTEMS[number]
 
 const settings = useLocalStorage<DeviceStreamSettings>('rs-device-stream-settings', {})
 
