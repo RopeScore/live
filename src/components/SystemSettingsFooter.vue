@@ -28,7 +28,7 @@ const keyColor = useKeyColor()
       />
     </div>
     <p v-if="auth.isAuthenticated.value" class="border-l lt-xl:border-b px-4 flex items-center">
-      User ID: <code class="bg-gray-100 px-2 rounded">{{ auth.userLoading.value ? 'Loading...' : auth.user.value?.id }}</code>
+      Username: <code class="bg-gray-100 px-2 rounded">{{ auth.userLoading.value ? 'Loading...' : (auth.user.value?.__typename === 'User' ? auth.user.value.username ?? auth.user.value?.id : auth.user.value?.id ?? '-') }}</code>
     </p>
     <p v-else />
 
