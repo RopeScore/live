@@ -16,7 +16,7 @@
           :pool="entry.pool!"
           :entry="entry"
           :scoresheet="(primaryScoresheets[entry.id] as MarkScoresheetFragment & ScoresheetBaseFragment)"
-          :tally="tallies[primaryScoresheets[entry.id]!.id]?.tally"
+          :tally="tallies[primaryScoresheets[entry.id]?.id!]?.tally"
           :cols="cols"
           :theme="theme"
         />
