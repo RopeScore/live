@@ -27,10 +27,20 @@
       {{ pool ?? '' }}
     </div>
     <div
-      v-if="info.names != null && info.names.length > 0"
-      class="font-bold text-4xl absolute top-2 right-2 max-w-[66%] overflow-hidden custom-wrap text-balance text-right"
+      class="absolute top-2 right-2 max-w-[66%] overflow-hidden custom-wrap text-balance text-right"
     >
-      {{ formatList(info.names) }}
+      <div
+        v-if="info.names != null && info.names.length > 0"
+        class="font-bold text-4xl"
+      >
+        {{ formatList(info.names) }}
+      </div>
+      <div
+        v-if="info.teamName != null"
+        class="text-4xl"
+      >
+        {{ info.teamName }}
+      </div>
     </div>
 
     <div v-if="!info?.didNotSkip" class="z-1 font-semibold tabular-nums w-full text-center font-mono custom-size">

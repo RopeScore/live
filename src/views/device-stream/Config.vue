@@ -108,19 +108,21 @@
           </tr>
         </tbody>
         <tfoot>
-          <td colspan="4">
-            <text-field v-model="newDeviceId" form="request-share" label="Device ID" dense />
-          </td>
-          <td colspan="2">
-            <text-button
-              color="blue"
-              dense
-              :loading="requestShare.loading.value"
-              form="request-share"
-            >
-              Request Share
-            </text-button>
-          </td>
+          <tr>
+            <td colspan="4">
+              <text-field v-model="newDeviceId" form="request-share" label="Device ID" dense />
+            </td>
+            <td colspan="2">
+              <text-button
+                color="blue"
+                dense
+                :loading="requestShare.loading.value"
+                form="request-share"
+              >
+                Request Share
+              </text-button>
+            </td>
+          </tr>
         </tfoot>
       </table>
       <form id="request-share" @submit.prevent="requestShare.mutate({ deviceId: newDeviceId })" />

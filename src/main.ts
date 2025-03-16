@@ -37,7 +37,6 @@ if (import.meta.env.PROD) {
     dsn: 'https://0f31d5c064474f00915d0b7f0bc5777f@o127465.ingest.sentry.io/6171736',
     release: import.meta.env.VITE_COMMIT_REF?.toString(),
     environment: import.meta.env.VITE_CONTEXT?.toString(),
-    logErrors: true,
     integrations: [Sentry.browserTracingIntegration({
       router,
     })],

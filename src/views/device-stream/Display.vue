@@ -94,7 +94,7 @@ import { useHead } from '@vueuse/head'
 import { useRouteQuery } from '@vueuse/router'
 import { useTheme } from '../../hooks/theme'
 import { useDateFormat, useTimestamp } from '@vueuse/core'
-import { metrics } from '@sentry/vue'
+import * as Sentry from '@sentry/vue'
 
 import DeviceNotSet from '../../components/DeviceNotSet.vue'
 import SpeedLiveScore from '../../components/SpeedLiveScore.vue'
@@ -171,9 +171,7 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | StreamMarkA
     mark = res.streamMarkAdded.mark as Mark
   }
 
-  metrics.distribution('stream_mark_delay', Date.now() - mark.timestamp, {
-    unit: 'millisecond'
-  })
+  Sentry.setMeasurement('stream_mark_delay', Date.now() - mark.timestamp, 'millisecond')
 
   let tallyInfo = tallies[tallyId]
   if (!tallyInfo) {

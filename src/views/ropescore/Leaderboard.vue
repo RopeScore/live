@@ -110,7 +110,7 @@
             'bg-gray-700': theme === 'dark' && idx % 2 === 1
           }]"
         >
-          {{ getScore(header, entryRes as EntryResult) }}
+          {{ extractTableScore(header, entryRes as EntryResult) }}
         </div>
         <!-- Footer: recently added - if they didn't place in top N -->
       </template>
@@ -123,10 +123,10 @@ import { useHead } from '@vueuse/head'
 import { useRouteParams, useRouteQuery } from '@vueuse/router'
 import { useLeaderboardQuery, useHeatChangedSubscription, CategoryType, type TeamFragment, type ResultVersionType } from '../../graphql/generated'
 import { computed, ref, watch } from 'vue'
-import { parseCompetitionEventDefinition, type EntryResult, type TableHeader, type OverallResult } from '@ropescore/rulesets'
+import { parseCompetitionEventDefinition, type EntryResult } from '@ropescore/rulesets'
 import { useIntervalFn } from '@vueuse/core'
 import { useCompetitionEvent } from '../../hooks/ruleset'
-import { formatList } from '../../helpers'
+import { extractTableScore, formatList } from '../../helpers'
 import { useTheme } from '../../hooks/theme'
 
 import SvGFLogo from '../../assets/svgf-icon-svenskgymnastik-white.svg'
@@ -206,19 +206,12 @@ useIntervalFn(() => {
 
 // TODO: apply config
 const resultTable = computed(() => competitionEvent.value?.resultTable({}) ?? { headers: [], groups: [] })
-const primaryTableHeaders = computed(() => resultTable.value.headers.filter(c => !!c.primary))
+const primaryTableHeaders = computed(() => resultTable.value.headers.filter(c => 'primary' in c && c.primary != null))
 const scoreCols = computed(() => primaryTableHeaders.value.length || 1)
 const infoCols = computed(() => currentCategory.value?.type === CategoryType.Team ? 3 : 2)
 
 function getParticipant (participantId: string | number) {
   return (currentCategory.value?.participants ?? []).find(p => p.id === participantId)
-}
-
-function getScore (header: TableHeader, result: EntryResult | OverallResult) {
-  let score: number
-  if (header.component && 'componentResults' in result) score = result.componentResults[header.component].result[header.key]
-  else score = result.result[header.key]
-  return header.formatter?.(score) ?? score ?? ''
 }
 </script>
 

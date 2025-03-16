@@ -1,3 +1,4 @@
+import { type EntryResult, type OverallResult, type TableHeader } from '@ropescore/rulesets'
 import { type ScoresheetBaseFragment } from './graphql/generated'
 
 export type CompetitionEvent = `e.${string}.${'fs' | 'sp' | 'oa'}.${'sr' | 'dd' | 'wh' | 'ts' | 'xd'}.${string}.${number}.${`${number}x${number}` | number}`
@@ -124,5 +125,19 @@ export async function getOpfsImgUrl (src: string) {
     return URL.createObjectURL(file)
   } else {
     return src
+  }
+}
+
+export function extractTableScore (header: TableHeader, result: EntryResult | OverallResult | undefined): string {
+  if (!result) return ''
+  if (header.status) {
+    const score = result.statuses[header.key]
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
+    return header.formatter?.(score) ?? `${score ?? ''}`
+  } else {
+    let score: number
+    if (header.component && 'componentResults' in result) score = result.componentResults[header.component].result[header.key]
+    else score = result.result[header.key]
+    return header.formatter?.(score) ?? `${score ?? ''}`
   }
 }
