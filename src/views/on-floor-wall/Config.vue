@@ -44,10 +44,19 @@
       />
     </div>
   </section>
+
+  <section class="mx-auto container">
+    <div>
+      <checkbox-field
+        v-model="settings.showFlags"
+        label="Show Flags"
+      />
+    </div>
+  </section>
 </template>
 
 <script lang="ts" setup>
-import { SelectField, NumberField, TextField, ButtonLink } from '@ropescore/components'
+import { SelectField, NumberField, TextField, ButtonLink, CheckboxField } from '@ropescore/components'
 import { useHead } from '@vueuse/head'
 import PhotoPicker from '../../components/PhotoPicker.vue'
 import { useTheme } from '../../hooks/theme'

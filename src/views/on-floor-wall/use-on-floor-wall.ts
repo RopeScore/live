@@ -4,6 +4,7 @@ import type { ServoCurrentHeatInfoConfig } from '../../hooks/heat-info'
 export interface OnFloorWallSettings {
   heatInfo?: ServoCurrentHeatInfoConfig
   background?: string
+  showFlags?: boolean
 }
 
 const settings = useLocalStorage<OnFloorWallSettings>('rs-on-floor-wall-settings', {})

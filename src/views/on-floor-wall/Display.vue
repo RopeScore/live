@@ -26,8 +26,16 @@
       </div>
     </div>
 
-    <div v-if="entryCount === 1" class="grid w-full grid-cols-[2fr_3fr] gap-6 items-center justify-around">
+    <div
+      v-if="entryCount === 1"
+      class="grid w-full gap-6 items-center justify-around"
+      :class="{
+        'grid-cols-[2fr_3fr]': settings.showFlags,
+        'grid-cols-[max-content]': !settings.showFlags,
+      }"
+    >
       <img
+        v-if="settings.showFlags"
         class="w-full max-w-100 border-2 justify-self-end"
         :class="{
           'border-gray-800': theme !== 'dark',
@@ -67,7 +75,11 @@
     <div
       v-else-if="entryCount > 1"
       :style="`--cols: ${grid.cols}; --rows: ${grid.rows};`"
-      class="grid max-w-full overflow-hidden w-full grid-cols-[repeat(var(--cols),10rem_1fr)] grid-rows-[repeat(calc(var(--rows)+1),1fr)] items-center justify-around gap-y-4"
+      class="grid max-w-full overflow-hidden w-full grid-rows-[repeat(calc(var(--rows)+1),1fr)] items-center justify-around gap-y-4"
+      :class="{
+        'grid-cols-[repeat(var(--cols),10rem_1fr)]': settings.showFlags,
+        'grid-cols-[repeat(var(--cols),0_1fr)]': !settings.showFlags,
+      }"
     >
       <p class="col-span-[calc(var(--cols)*2)] text-center font-bold text-6xl">
         {{ firstEntry?._servo?.Event }}
@@ -75,8 +87,13 @@
 
       <template v-for="heat of heatInfo.pools.value" :key="heat._servo?.Station">
         <div
+          v-if="settings.showFlags"
           :style="`--station-col: ${stationToPos(heat._servo?.Station!).col}; --station-row: ${stationToPos(heat._servo?.Station!).row}`"
-          class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] bg-white p-2"
+          class="flex h-full items-center justify-end col-start-[var(--station-col,1)] row-start-[calc(var(--station-row,1)+1)] place-self-stretch p-2"
+          :class="{
+            'bg-black text-white': theme === 'dark',
+            'bg-white text-black': theme !== 'dark'
+          }"
         >
           <img
             class="border-2"
@@ -90,7 +107,11 @@
         </div>
         <div
           :style="`--station-col: ${stationToPos(heat._servo?.Station!).col}; --station-row: ${stationToPos(heat._servo?.Station!).row}`"
-          class="col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1)+1)] text-4xl bg-white p-6"
+          class="col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1)+1)] place-self-stretch text-4xl p-6"
+          :class="{
+            'bg-black text-white': theme === 'dark',
+            'bg-white text-black': theme !== 'dark'
+          }"
         >
           <p
             :class="{
