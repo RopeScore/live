@@ -133,17 +133,22 @@
         <h2 class="mt-4 text-xl">
           Screens and Pools
         </h2>
-        <text-button color="blue" @click="addScreen">
-          New Screen
-        </text-button>
+        <div>
+          <text-button color="blue" @click="addScreen('grid')">
+            New Grid Screen
+          </text-button>
+          <text-button color="blue" @click="addScreen('ranked-list')">
+            New Ranked List Screen
+          </text-button>
+        </div>
       </div>
-      <div v-for="screen, screenId of settings.screens ?? {}" :key="screenId">
+      <div v-for="screen, screenId of settings.screens ?? {}" :key="screenId" class="p-4 border-b">
         <div class="container mx-auto flex justify-between items-baseline mt-6">
           <h3 class="text-lg font-bold">
-            Screen {{ screenId }}
+            {{ screen.type === 'ranked-list' ? 'Ranked List' : 'Grid' }} Screen {{ screenId }}
           </h3>
           <div>
-            <button-link :to="`/device-stream/display?screen-id=${screenId}&theme=${theme}`" target="_blank">
+            <button-link :to="`/device-stream/display?screen-id=${screenId}&theme=${theme}&key-color=${keyColor}`" target="_blank">
               Show Scores
             </button-link>
             <text-button color="red" @click="removeScreen(screenId)">
@@ -152,62 +157,106 @@
           </div>
         </div>
 
-        <fieldset class="container mx-auto grid grid-cols-2 gap-2">
-          <number-field :model-value="screen.rows" label="Rows" :min="0" :step="1" @update:model-value="changeRows(screenId, $event)" />
-          <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
-        </fieldset>
-
-        <fieldset class="container mx-auto grid grid-cols-2 gap-2">
-          <checkbox-field v-model:model-value="screen.hideClock" label="Hide Clock" />
-          <checkbox-field v-model:model-value="screen.hideCurrentHeat" label="Hide Current Heat" />
-        </fieldset>
-
-        <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
-          <template v-for="row of screen.rows ?? 0" :key="row">
-            <template v-for="col of screen.cols ?? 0" :key="col">
-              <div
-                v-if="screen.pools?.[`${row}:${col}`]"
-                class="p-1 flex flex-col justify-between"
-                :class="{
-                  'border-b': row !== screen.rows,
-                  'border-r': col !== screen.cols,
-                }"
-              >
-                <number-field
-                  :model-value="screen.pools[`${row}:${col}`].label"
-                  label="Pool #"
-                  type="number"
-                  :step="1"
-                  :min="1"
-                  @update:model-value="screen.pools[`${row}:${col}`].label = $event"
-                />
-                <select-field
-                  v-if="settings.heatInfo?.system !== 'ropescore'"
-                  :model-value="screen.pools[`${row}:${col}`].deviceId"
-                  label="Device ID"
-                  :data-list="acceptedDevices"
-                  @update:model-value="screen.pools[`${row}:${col}`].deviceId = ($event as string)"
-                />
-                <text-button color="red" class="mt-2" @click="removePool(screenId, row, col)">
+        <template v-if="screen.type === 'ranked-list'">
+          <div
+            class="container mx-auto"
+          >
+            <div
+              v-for="pool of screen.pools ?? []"
+              :key="pool.id"
+              class="grid items-end gap-2 p-4"
+              :class="{
+                'grid-cols-[1fr_max-content]': settings.heatInfo?.system === 'ropescore',
+                'grid-cols-[1fr_1fr_max-content]': settings.heatInfo?.system !== 'ropescore',
+              }"
+            >
+              <number-field
+                :model-value="pool.label"
+                label="Pool #"
+                type="number"
+                :step="1"
+                :min="1"
+                @update:model-value="pool.label = $event"
+              />
+              <select-field
+                v-if="settings.heatInfo?.system !== 'ropescore'"
+                :model-value="pool.deviceId"
+                label="Device ID"
+                :data-list="acceptedDevices"
+                @update:model-value="pool.deviceId = ($event as string)"
+              />
+              <div>
+                <text-button color="red" class="mt-2" @click="removePool(screenId, pool.id)">
                   Disable Pool
                 </text-button>
               </div>
-              <div
-                v-else
-                class="p-1 flex flex-row justify-center items-center bg-gray-100"
-                :class="{
-                  'border-b': row !== screen.rows,
-                  'border-r': col !== screen.cols,
-                }"
-              >
-                <text-button color="blue" @click="addPool(screenId, row, col)">
-                  <icon-plus class="inline-block -mt-1" />
-                  Enable Pool
-                </text-button>
-              </div>
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <text-button color="blue" @click="addPool(screenId)">
+              <icon-plus class="inline-block -mt-1" />
+              Add Pool
+            </text-button>
+          </div>
+        </template>
+        <template v-else>
+          <fieldset class="container mx-auto grid grid-cols-2 gap-2">
+            <number-field :model-value="screen.rows" label="Rows" :min="0" :step="1" @update:model-value="changeRows(screenId, $event)" />
+            <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
+          </fieldset>
+
+          <fieldset class="container mx-auto grid grid-cols-2 gap-2">
+            <checkbox-field v-model:model-value="screen.hideClock" label="Hide Clock" />
+            <checkbox-field v-model:model-value="screen.hideCurrentHeat" label="Hide Current Heat" />
+          </fieldset>
+
+          <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
+            <template v-for="row of screen.rows ?? 0" :key="row">
+              <template v-for="col of screen.cols ?? 0" :key="col">
+                <div
+                  v-if="screen.pools?.[`${row}:${col}`]"
+                  class="p-1 flex flex-col justify-between"
+                  :class="{
+                    'border-b': row !== screen.rows,
+                    'border-r': col !== screen.cols,
+                  }"
+                >
+                  <number-field
+                    :model-value="screen.pools[`${row}:${col}`].label"
+                    label="Pool #"
+                    type="number"
+                    :step="1"
+                    :min="1"
+                    @update:model-value="screen.pools[`${row}:${col}`].label = $event"
+                  />
+                  <select-field
+                    v-if="settings.heatInfo?.system !== 'ropescore'"
+                    :model-value="screen.pools[`${row}:${col}`].deviceId"
+                    label="Device ID"
+                    :data-list="acceptedDevices"
+                    @update:model-value="screen.pools[`${row}:${col}`].deviceId = ($event as string)"
+                  />
+                  <text-button color="red" class="mt-2" @click="removePool(screenId, screen.pools[`${row}:${col}`].id)">
+                    Disable Pool
+                  </text-button>
+                </div>
+                <div
+                  v-else
+                  class="p-1 flex flex-row justify-center items-center bg-gray-100"
+                  :class="{
+                    'border-b': row !== screen.rows,
+                    'border-r': col !== screen.cols,
+                  }"
+                >
+                  <text-button color="blue" @click="addPool(screenId, row, col)">
+                    <icon-plus class="inline-block -mt-1" />
+                    Enable Pool
+                  </text-button>
+                </div>
+              </template>
             </template>
-          </template>
-        </div>
+          </div>
+        </template>
       </div>
     </section>
   </template>
@@ -230,7 +279,7 @@ import { TextButton, TextField, SelectField, ButtonLink, NumberField, CheckboxFi
 import IconLoading from 'virtual:icons/mdi/loading'
 import IconPlus from 'virtual:icons/mdi/plus'
 import useFirebaseAuth from '../../hooks/firebase-auth'
-import { useTheme } from '../../hooks/theme'
+import { useTheme, useKeyColor } from '../../hooks/theme'
 
 useHead({
   title: 'Device Stream'
@@ -240,6 +289,7 @@ const auth = useFirebaseAuth()
 
 const newDeviceId = ref('')
 const theme = useTheme()
+const keyColor = useKeyColor()
 
 const sharesQuery = useUserStreamSharesQuery({
   fetchPolicy: 'cache-and-network',
@@ -297,9 +347,11 @@ sharesQuery.onResult(res => {
   }
 })
 
-function addScreen () {
+function addScreen (type: 'grid' | 'ranked-list') {
   settings.value.screens ??= {}
-  settings.value.screens[crypto.randomUUID()] = { cols: 2, rows: 2, pools: {} }
+  settings.value.screens[crypto.randomUUID()] = type === 'grid'
+    ? { type, cols: 2, rows: 2, pools: {} }
+    : { type, pools: [] }
 }
 function removeScreen (screenId: string) {
   if (settings.value.screens?.[screenId] != null) delete settings.value.screens?.[screenId]
@@ -309,6 +361,7 @@ function changeCols (screenId: string, cols: number) {
   if (cols == null || Number.isNaN(cols)) return
   const screen = settings.value.screens?.[screenId]
   if (screen == null) return
+  if (screen.type !== 'grid') return
   screen.cols = cols
   if (screen.pools == null) return
   for (const poolId of (Object.keys(screen.pools) as Array<keyof typeof screen.pools>)) {
@@ -321,6 +374,7 @@ function changeRows (screenId: string, rows: number) {
   if (rows == null || Number.isNaN(rows)) return
   const screen = settings.value.screens?.[screenId]
   if (screen == null) return
+  if (screen.type !== 'grid') return
   screen.rows = rows
   if (screen.pools == null) return
   for (const poolId of (Object.keys(screen.pools ?? {}) as Array<keyof typeof screen.pools>)) {
@@ -330,18 +384,31 @@ function changeRows (screenId: string, rows: number) {
   }
 }
 
-function addPool (screenId: string, row: number, col: number) {
+function addPool (screenId: string, ...id: ([] | [row: number, col: number])) {
   const screen = settings.value.screens?.[screenId]
   if (screen == null) return
-  screen.pools ??= {}
-  screen.pools[`${row}:${col}`] = {}
+
+  if (screen.type === 'grid') {
+    screen.pools ??= {}
+    screen.pools[`${id[0]}:${id[1]}` as `${number}:${number}`] = { id: crypto.randomUUID() }
+  } else {
+    screen.pools ??= []
+    screen.pools.push({ id: crypto.randomUUID() })
+  }
 }
-function removePool (screenId: string, row: number, col: number) {
+
+function removePool (screenId: string, id: string) {
   const screen = settings.value.screens?.[screenId]
   if (screen?.pools == null) return
-  const poolId = `${row}:${col}` as const
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-  if (screen.pools[poolId]) delete screen.pools[poolId]
+  if (screen.type === 'grid') {
+    const poolId = Object.entries(screen.pools).find(([, pool]) => pool.id === id)?.[0] as keyof typeof screen.pools
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    if (poolId != null && screen.pools[poolId]) delete screen.pools[poolId]
+  } else {
+    const poolId = id[0]
+    const poolIdx = screen.pools.findIndex(pool => pool.id === poolId)
+    if (poolIdx !== -1) screen.pools.splice(poolIdx, 1)
+  }
 }
 
 function toISO (ts: number | Date) {

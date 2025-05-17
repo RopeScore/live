@@ -7,10 +7,13 @@
     }"
   >
     <div
-      class="font-bold text-8xl absolute top-0 left-2"
+      class="font-bold text-8xl absolute left-2"
       :class="{
         'text-gray-600': theme !== 'dark',
         'text-gray-400': theme === 'dark',
+
+        'top-0': !row,
+        'top-auto bottom-auto': row,
       }"
     >
       {{ pool ?? '' }}
@@ -34,6 +37,10 @@ defineProps({
   theme: {
     type: String as PropType<Theme>,
     required: true
-  }
+  },
+  row: {
+    type: Boolean,
+    default: false,
+  },
 })
 </script>
