@@ -11,6 +11,8 @@ export interface ScreenConfig {
   cols: number
   // row:col
   pools?: Record<`${number}:${number}`, StreamPool>
+  hideClock?: boolean
+  hideCurrentHeat?: boolean
 }
 
 export interface DeviceStreamSettings {

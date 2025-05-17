@@ -15,10 +15,10 @@
         'bottom-4 left-4 items-start': freeCorner === 'bottom-left'
       }"
     >
-      <div class="font-bold text-8xl">
+      <div v-if="!screen?.hideClock" class="font-bold text-8xl">
         {{ clock }}
       </div>
-      <div v-if="heatInfo.currentHeat.value">
+      <div v-if="!screen?.hideCurrentHeat && heatInfo.currentHeat.value">
         <span class="text-5xl">heat&nbsp;</span>
         <span class="text-8xl font-bold">{{ heatInfo.currentHeat.value }}</span>
       </div>

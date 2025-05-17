@@ -157,6 +157,11 @@
           <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
         </fieldset>
 
+        <fieldset class="container mx-auto grid grid-cols-2 gap-2">
+          <checkbox-field v-model:model-value="screen.hideClock" label="Hide Clock" />
+          <checkbox-field v-model:model-value="screen.hideCurrentHeat" label="Hide Current Heat" />
+        </fieldset>
+
         <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
           <template v-for="row of screen.rows ?? 0" :key="row">
             <template v-for="col of screen.cols ?? 0" :key="col">
@@ -221,7 +226,7 @@ import { HEAT_SYSTEMS, useDeviceStreamPools, type HeatSystem } from './use-devic
 import { DeviceStreamShareStatus, useGroupsQuery, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../../graphql/generated'
 import { useHead } from '@vueuse/head'
 
-import { TextButton, TextField, SelectField, ButtonLink, NumberField, type DataListItem } from '@ropescore/components'
+import { TextButton, TextField, SelectField, ButtonLink, NumberField, CheckboxField, type DataListItem } from '@ropescore/components'
 import IconLoading from 'virtual:icons/mdi/loading'
 import IconPlus from 'virtual:icons/mdi/plus'
 import useFirebaseAuth from '../../hooks/firebase-auth'
