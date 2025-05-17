@@ -158,8 +158,9 @@ export function useHeatInfo (settings: Ref<HeatInfoConfig | undefined>): UseHeat
             `${entry.pool ?? ''}`,
             {
               poolLabel: `${entry.pool ?? ''}`,
-              names: entry.participant.__typename === 'Team' ? entry.participant.members : [entry.participant.name],
+              names: entry.participant.__typename === 'Team' ? entry.participant.members.map(name => guessFirstName(name)) : [entry.participant.name],
               teamName: entry.participant.__typename === 'Team' ? entry.participant.name : entry.participant.club,
+              bgUrl: entry.participant.country ? `/flags/${entry.participant.country.toLocaleLowerCase()}.svg` : undefined,
               didNotSkip: entry.didNotSkipAt != null,
               submitted: scoresheet?.completedAt != null,
               competitionEventId: entry.competitionEventId,
@@ -203,4 +204,8 @@ export function getServoHeatNameList (heat: ServoHeatInfo, { mode = 'full' }: Ge
     }
   }
   return names
+}
+
+export function guessFirstName (name: string) {
+  return name.trim().split(/\s+/)[0] ?? name ?? ''
 }
