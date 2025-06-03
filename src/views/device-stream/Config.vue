@@ -187,7 +187,7 @@
               />
               <div>
                 <text-button color="red" class="mt-2" @click="removePool(screenId, pool.id)">
-                  Disable Pool
+                  Delete Pool
                 </text-button>
               </div>
             </div>
@@ -405,7 +405,7 @@ function removePool (screenId: string, id: string) {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     if (poolId != null && screen.pools[poolId]) delete screen.pools[poolId]
   } else {
-    const poolId = id[0]
+    const poolId = id
     const poolIdx = screen.pools.findIndex(pool => pool.id === poolId)
     if (poolIdx !== -1) screen.pools.splice(poolIdx, 1)
   }
