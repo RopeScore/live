@@ -46,7 +46,7 @@
   </p>
 
   <template v-else>
-    <section v-if="settings.heatInfo?.system !== 'ropescore'" class="container mx-auto">
+    <section v-if="settings.heatInfo?.system === 'none'" class="container mx-auto">
       <h2 class="text-xl">
         Device Shares
       </h2>
@@ -166,8 +166,8 @@
               :key="pool.id"
               class="grid items-end gap-2 p-4"
               :class="{
-                'grid-cols-[1fr_max-content]': settings.heatInfo?.system === 'ropescore',
-                'grid-cols-[1fr_1fr_max-content]': settings.heatInfo?.system !== 'ropescore',
+                'grid-cols-[1fr_max-content]': settings.heatInfo?.system !== 'none',
+                'grid-cols-[1fr_1fr_max-content]': settings.heatInfo?.system === 'none',
               }"
             >
               <number-field
@@ -179,7 +179,7 @@
                 @update:model-value="pool.label = $event"
               />
               <select-field
-                v-if="settings.heatInfo?.system !== 'ropescore'"
+                v-if="settings.heatInfo?.system === 'none'"
                 :model-value="pool.deviceId"
                 label="Device ID"
                 :data-list="acceptedDevices"
@@ -230,7 +230,7 @@
                     @update:model-value="screen.pools[`${row}:${col}`].label = $event"
                   />
                   <select-field
-                    v-if="settings.heatInfo?.system !== 'ropescore'"
+                    v-if="settings.heatInfo?.system === 'none'"
                     :model-value="screen.pools[`${row}:${col}`].deviceId"
                     label="Device ID"
                     :data-list="acceptedDevices"

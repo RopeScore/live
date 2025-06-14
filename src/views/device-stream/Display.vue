@@ -46,7 +46,7 @@
         <template v-for="col of screen?.cols ?? 0" :key="col">
           <div v-if="pools[`${row}:${col}`] == null" />
           <template v-else>
-            <device-not-set v-if="settings.heatInfo?.system !== 'ropescore' && !pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" :theme="theme" />
+            <device-not-set v-if="settings.heatInfo?.system === 'none' && !pools[`${row}:${col}`].deviceId" :pool="pools[`${row}:${col}`].label" :theme="theme" />
             <unsupported-competition-event
               v-else-if="tallies[getTallyId(extendedInfo[pools[`${row}:${col}`].id])!]?.shownScore === 'unsupported'"
               :pool="pools[`${row}:${col}`].label"
@@ -131,7 +131,7 @@
 
 <script lang="ts" setup>
 import { computed, reactive, ref, watch, type Ref, type UnwrapRef } from 'vue'
-import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, type StreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription, useStreamMarkAddedSubscription } from '../../graphql/generated'
+import { type DeviceStreamJudgeInfo, type DeviceStreamMarkAddedSubscription, type ServoStreamMarkAddedSubscription, type StreamMarkAddedSubscription, useDeviceStreamMarkAddedSubscription, useServoStreamMarkAddedSubscription, useStreamMarkAddedSubscription } from '../../graphql/generated'
 import { type ScoreTally, type Mark } from '../../helpers'
 import { useDeviceStreamPools, type StreamPool } from './use-device-stream-pools'
 import { useHead } from '@vueuse/head'
@@ -208,12 +208,12 @@ const sortRankedPools = useThrottleFn(() => {
 const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
 }, {
-  enabled: computed(() => deviceIds.value.length > 0 && settings.value.heatInfo?.system !== 'ropescore'),
+  enabled: computed(() => deviceIds.value.length > 0 && settings.value.heatInfo?.system === 'none'),
 })
 const markStreamSubscriptionAlt = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
 }, {
-  enabled: computed(() => deviceIds.value.length > 0 && settings.value.heatInfo?.system !== 'ropescore'),
+  enabled: computed(() => deviceIds.value.length > 0 && settings.value.heatInfo?.system === 'none'),
   clientId: 'alternate'
 })
 
@@ -228,7 +228,18 @@ const markStreamSubscriptionRsAlt = useStreamMarkAddedSubscription(scoresheetIdV
   clientId: 'alternate'
 })
 
-function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | StreamMarkAddedSubscription | null | undefined) {
+const servoStreamIds = computed(() => ({
+  streamIds: Object.values(heatInfo.pools.value).map(hi => hi.servoAssignmentCode != null ? `${hi.servoAssignmentCode}::${hi.entryId}` : null).filter(id => id != null)
+}))
+const markStreamSubscriptionServo = useServoStreamMarkAddedSubscription(servoStreamIds, {
+  enabled: computed(() => servoStreamIds.value.streamIds.length > 0 && settings.value.heatInfo?.system === 'servo'),
+})
+const markStreamSubscriptionServoAlt = useServoStreamMarkAddedSubscription(servoStreamIds, {
+  enabled: computed(() => servoStreamIds.value.streamIds.length > 0 && settings.value.heatInfo?.system === 'servo'),
+  clientId: 'alternate'
+})
+
+function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | StreamMarkAddedSubscription | ServoStreamMarkAddedSubscription | null | undefined) {
   if (!res) return
   let tallyId, sequence, tally, mark, info
   if ('deviceStreamMarkAdded' in res) {
@@ -237,6 +248,11 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | StreamMarkA
     tally = res.deviceStreamMarkAdded.tally as ScoreTally
     mark = res.deviceStreamMarkAdded.mark as Mark
     info = res.deviceStreamMarkAdded.info
+  } else if ('servoStreamMarkAdded' in res) {
+    tallyId = res.servoStreamMarkAdded.streamId
+    sequence = res.servoStreamMarkAdded.sequence
+    tally = res.servoStreamMarkAdded.tally as ScoreTally
+    mark = res.servoStreamMarkAdded.mark as Mark
   } else {
     tallyId = res.streamMarkAdded.scoresheet.id
     sequence = res.streamMarkAdded.sequence
@@ -281,6 +297,8 @@ watch(markStreamSubscription.result, markStreamWatcher)
 watch(markStreamSubscriptionAlt.result, markStreamWatcher)
 watch(markStreamSubscriptionRs.result, markStreamWatcher)
 watch(markStreamSubscriptionRsAlt.result, markStreamWatcher)
+watch(markStreamSubscriptionServo.result, markStreamWatcher)
+watch(markStreamSubscriptionServoAlt.result, markStreamWatcher)
 
 const extendedInfo = computed(() => {
   const poolsArr = Array.isArray(pools.value) ? pools.value : Object.values(pools.value)
@@ -299,7 +317,7 @@ const extendedInfo = computed(() => {
 })
 
 function getTallyId (exInfo: UnwrapRef<typeof extendedInfo>[string]) {
-  return exInfo.rsScoresheetId ?? exInfo.deviceId
+  return exInfo.rsScoresheetId ?? (exInfo.servoAssignmentCode ? `${exInfo.servoAssignmentCode}::${exInfo.entryId}` : null) ?? exInfo.deviceId
 }
 </script>
 

@@ -1,0 +1,10 @@
+subscription ServoStreamMarkAdded ($streamIds: [ID!]!) {
+  servoStreamMarkAdded (streamIds: $streamIds) {
+    sequence
+    tally
+    mark
+    entryId
+    assignmentCode
+    streamId
+  }
+}

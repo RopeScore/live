@@ -1,5 +1,5 @@
 import { getAuth, type User, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, sendEmailVerification, sendPasswordResetEmail } from 'firebase/auth'
-import { setUser } from '@sentry/browser'
+import { setUser } from '@sentry/vue'
 import { ref, computed, onUnmounted } from 'vue'
 import { useMeQuery, useUpdateUserMutation } from '../graphql/generated'
 import useNotifications from './notifications'

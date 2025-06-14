@@ -34,6 +34,7 @@ export interface ServoHeatInfo {
   TeamCountryFlagUrl: string
   EntryNumber: number
   CompEventEntryID: string
+  LiveScoringAssignmentCode: string
   [nameKey: `Part${number}`]: string
   [lastNameKey: `Part${number}_Last`]: string
 }
@@ -51,6 +52,7 @@ export interface HeatInfo {
   competitionEventId?: CompetitionEvent
   entryId?: string
   rsScoresheetId?: string
+  servoAssignmentCode?: string
 
   _servo?: ServoHeatInfo
 }
@@ -145,6 +147,7 @@ export function useHeatInfo (settings: Ref<HeatInfoConfig | undefined>): UseHeat
             names: getServoHeatNameList(hi, { mode: 'first' }),
             teamName: hi.Team,
             entryId: `${hi.EntryNumber}`,
+            servoAssignmentCode: hi.LiveScoringAssignmentCode,
 
             _servo: hi,
           } as HeatInfo
