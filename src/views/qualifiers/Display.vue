@@ -89,7 +89,7 @@ bc.addEventListener('message', evt => {
     typeof evt.data === 'string' &&
     (evt.data.startsWith('show:') || evt.data.startsWith('show-title:'))
   ) {
-    const rawSession = localStorage.getItem('rs-qualifier-sessions')
+    const rawSession = window.localStorage.getItem('rs-qualifier-sessions')
     const sessions = rawSession ? JSON.parse(rawSession) as QualifierSession[] : null
     console.log(sessions)
     if (sessions == null) {

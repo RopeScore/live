@@ -70,7 +70,7 @@ const { settings } = usePodium()
 
 bc.addEventListener('message', evt => {
   if (evt.data === 'raise') {
-    const ls = localStorage.getItem('rs-podium')
+    const ls = window.localStorage.getItem('rs-podium')
     state.value = ls ? JSON.parse(ls) : null
     raised.value = true
   } else if (evt.data === 'lower') {
@@ -78,7 +78,7 @@ bc.addEventListener('message', evt => {
   }
 
   if (evt.data === 'raise' || evt.data === 'update-title') {
-    const st = localStorage.getItem('rs-podium-settings')
+    const st = window.localStorage.getItem('rs-podium-settings')
     const parsed: PodiumSettings | null = st ? JSON.parse(st) : null
     title.value = parsed?.title
   }
