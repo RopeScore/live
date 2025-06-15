@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm ci --prefer-offline
+      - run: pnpm install
       - run: pnpm run build
         env:
           VITE_COMMIT_REF: ${{ github.sha }}
