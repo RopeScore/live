@@ -4,3 +4,5 @@ onlyBuiltDependencies:
   - protobufjs
   - unrs-resolver
   - vue-demi
+publicHoistPattern:
+  - workbox-window
