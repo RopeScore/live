@@ -11,7 +11,7 @@
       'bg-dark-500': theme === 'dark' && info?.didNotSkip,
 
       'flex': !row,
-      'grid grid-cols-[min-content_1fr_min-content] gap-4': row
+      'grid grid-rows-2 grid-cols-[min-content_1fr_min-content] gap-4': row
     }"
   >
     <div
@@ -28,23 +28,34 @@
     <div class="absolute inset-0" :class="{ 'full-bg-bottom': !row, 'full-bg-left': row }" />
 
     <div
+      v-if="row"
+      class="font-bold"
+      :class="{
+        'top-0 absolute left-2 text-8xl': !row,
+        'w-[3ch] z-1 pl-4 text-6xl self-start': row,
+      }"
+    >
+      {{ rank ?? '' }}
+    </div>
+
+    <div
       class="font-bold"
       :class="{
         'text-gray-600': theme !== 'dark',
         'text-gray-400': theme === 'dark',
 
         'top-0 absolute left-2 text-8xl': !row,
-        'w-[3ch] z-1 pl-4 text-6xl': row,
+        'w-[3ch] z-1 pl-4 text-4xl grid-row-start-2 grid-col-start-1 self-end pb-2': row,
       }"
     >
-      {{ pool ?? '' }}
+      S{{ pool ?? '' }}
     </div>
 
     <div
       class="overflow-hidden custom-wrap text-balance"
       :class="{
         'absolute top-2 right-2 text-end max-w-[66%] ': !row,
-        'z-1': row,
+        'z-1 row-span-2': row,
       }"
     >
       <div
@@ -67,7 +78,7 @@
       class="z-1 font-semibold tabular-nums w-full font-mono"
       :class="{
         'custom-size text-center': !row,
-        'text-6xl text-end pr-4 min-w-[3ch]': row,
+        'text-6xl text-end pr-4 min-w-[3ch] row-span-2': row,
       }"
     >
       {{ score ?? 0 }}
@@ -108,6 +119,10 @@ const props = defineProps({
   },
   score: {
     type: Number,
+    default: null
+  },
+  rank: {
+    type: String,
     default: null
   },
   cols: {

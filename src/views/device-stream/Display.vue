@@ -1,16 +1,6 @@
 <template>
   <div
-    v-if="screen == null"
-    class="flex justify-center items-center"
-    :class="{
-      'bg-white text-black': theme !== 'dark',
-      'bg-black text-white': theme === 'dark',
-    }"
-  >
-    This screen cannot be found.
-  </div>
-  <div
-    v-else-if="screen?.type === 'grid'"
+    v-if="screen?.type === 'grid'"
     class="grid grid-rows-1"
     :class="{
       'bg-green-500': keyColor === 'green',
@@ -105,8 +95,8 @@
       'text-white': theme === 'dark',
     }"
   >
-    <transition-group name="pools" tag="main" class="grid custom-grid h-full">
-      <template v-for="pool of rankedPools" :key="pool.id">
+    <transition-group name="pools" tag="main" class="grid custom-grid h-full relative">
+      <template v-for="pool of topNRankedPools" :key="pool.id">
         <device-not-set v-if="settings.heatInfo?.system !== 'ropescore' && !pool.deviceId" :pool="pool.label" :theme="theme" row />
         <unsupported-competition-event
           v-else-if="tallies[getTallyId(extendedInfo[pool.id])!]?.shownScore === 'unsupported'"
@@ -118,6 +108,7 @@
         <live-score
           v-else
           :pool="pool.label"
+          :rank="getRank(tallies[getTallyId(extendedInfo[pool.id])!]?.shownScore as number)"
           :score="tallies[getTallyId(extendedInfo[pool.id])!]?.shownScore as number"
           :info="extendedInfo[pool.id]"
           :cols="cols"
@@ -126,6 +117,17 @@
         />
       </template>
     </transition-group>
+  </div>
+
+  <div
+    v-else
+    class="flex justify-center items-center"
+    :class="{
+      'bg-white text-black': theme !== 'dark',
+      'bg-black text-white': theme === 'dark',
+    }"
+  >
+    This screen cannot be found.
   </div>
 </template>
 
@@ -160,7 +162,7 @@ const screen = computed(() => screenId.value == null ? null : settings.value.scr
 const cols = computed(() => screen.value?.type !== 'grid' || screen.value?.rows === 0 ? 1 : screen.value?.cols ?? 1)
 const rows = computed(() => {
   if (screen.value?.type === 'grid') return screen.value?.rows === 0 ? 1 : screen.value?.rows ?? 1
-  else return rankedPools.value.length
+  else return topNRankedPools.value.length
 })
 const pools = computed(() => screen.value?.type === 'grid' ? screen.value?.pools ?? {} : screen.value?.pools ?? [])
 
@@ -183,6 +185,14 @@ const freeCorner = computed(() => {
 })
 
 const rankedPools = ref<StreamPool[]>([])
+const topNRankedPools = computed(() => {
+  if (screen.value?.type !== 'ranked-list') return rankedPools.value
+  if (screen.value.topNOnly && screen.value.topN != null && screen.value.topN > 0) {
+    return rankedPools.value.slice(0, screen.value.topN)
+  }
+  return rankedPools.value
+})
+const rankDirection = ref<'asc' | 'desc'>('desc')
 watch(() => [screen.value?.type, screen.value?.pools] as const, ([type, pools]) => {
   if (type === 'ranked-list' && Array.isArray(pools)) rankedPools.value = [...pools]
   else rankedPools.value = []
@@ -194,7 +204,7 @@ const sortRankedPools = useThrottleFn(() => {
 
     if (typeof scoreA === 'number' && typeof scoreB === 'number') {
       if (scoreA === scoreB) return 0
-      else if (extendedInfo.value[a.id].judgeType === 'T') return scoreA - scoreB
+      else if (rankDirection.value === 'asc') return scoreA - scoreB
       else return scoreB - scoreA
     } else {
       if (scoreA === scoreB) return (a.label ?? Infinity) - (b.label ?? Infinity)
@@ -204,6 +214,30 @@ const sortRankedPools = useThrottleFn(() => {
     }
   })
 }, 250, true)
+
+const rankedScores = computed(() => Object.values(tallies)
+  .map(t => t.shownScore)
+  .filter(s => s !== 'unsupported')
+  .sort((a, b) => {
+    if (rankDirection.value === 'asc') return a - b
+    else return b - a
+  })
+)
+
+function getRank (score: number | 'unsupported') {
+  if (score === 'unsupported') return undefined
+  const index = rankedScores.value.indexOf(score)
+  if (index === -1) return undefined
+  const rank = index + 1
+  let suffix: string
+  switch (rank) {
+    case 1: suffix = 'st'; break
+    case 2: suffix = 'nd'; break
+    case 3: suffix = 'rd'; break
+    default: suffix = 'th'; break
+  }
+  return `${rank}${suffix}`
+}
 
 const markStreamSubscription = useDeviceStreamMarkAddedSubscription({
   deviceIds: deviceIds as unknown as string[]
@@ -279,8 +313,10 @@ function markStreamWatcher (res: DeviceStreamMarkAddedSubscription | StreamMarkA
     tallyInfo.lastSequence = sequence
 
     if (info?.judgeType == null || ['S', 'Shj'].includes(info.judgeType)) {
+      rankDirection.value = 'desc'
       tallyInfo.shownScore = tally.step ?? 0
     } else if (info.judgeType === 'T') {
+      rankDirection.value = 'asc'
       tallyInfo.shownScore = tally.seconds ?? 0
     } else {
       tallyInfo.shownScore = 'unsupported'
@@ -327,7 +363,20 @@ function getTallyId (exInfo: UnwrapRef<typeof extendedInfo>[string]) {
   grid-template-rows: repeat(v-bind(rows), minmax(0, 1fr));
 }
 
-.pools-move {
-  transition: all 0.25s ease;
+.pools-move,
+.pools-enter-active,
+.pools-leave-active {
+  transition: all 1s ease;
+}
+
+.pools-enter-from,
+.pools-leave-to {
+  opacity: 0;
+  transform: translateY(100vh);
+}
+
+.pools-leave-active {
+  position: absolute;
+  inset-inline: 0;
 }
 </style>

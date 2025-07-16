@@ -20,6 +20,8 @@ export interface GridScreenConfig {
 export interface RankedScreenConfig {
   type: 'ranked-list'
   pools?: StreamPool[]
+  topNOnly?: boolean
+  topN?: number
 }
 
 export interface DeviceStreamSettings {
