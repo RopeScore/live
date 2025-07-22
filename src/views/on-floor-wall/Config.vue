@@ -46,12 +46,16 @@
   </section>
 
   <section class="mx-auto container">
-    <div>
-      <checkbox-field
-        v-model="settings.showFlags"
-        label="Show Flags"
-      />
-    </div>
+    <checkbox-field
+      v-model="settings.showFlags"
+      label="Show Flags"
+    />
+    <select-field
+      :model-value="settings.mode ?? 'athlete-name'"
+      label="Name Display Mode"
+      :data-list="onFloorWallNameModes"
+      @update:model-value="settings.mode = $event as typeof onFloorWallNameModes[number]['value']"
+    />
   </section>
 </template>
 
@@ -60,7 +64,7 @@ import { SelectField, NumberField, TextField, ButtonLink, CheckboxField } from '
 import { useHead } from '@vueuse/head'
 import PhotoPicker from '../../components/PhotoPicker.vue'
 import { useTheme } from '../../hooks/theme'
-import { useOnFloorWallSettings } from './use-on-floor-wall'
+import { onFloorWallNameModes, useOnFloorWallSettings } from './use-on-floor-wall'
 
 useHead({
   title: 'On Floor Wall'

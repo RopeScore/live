@@ -34,16 +34,18 @@
         'grid-cols-[max-content]': !settings.showFlags,
       }"
     >
-      <img
-        v-if="settings.showFlags"
-        class="w-full max-w-100 border-2 justify-self-end"
-        :class="{
-          'border-gray-800': theme !== 'dark',
-          'border-gray-400': theme === 'dark'
-        }"
-        alt=""
-        :src="firstEntry?.bgUrl"
-      >
+      <div v-if="settings.showFlags" class="justify-self-end w-full max-w-100">
+        <img
+          v-if="firstEntry?.bgUrl"
+          class="border-2"
+          :class="{
+            'border-gray-800': theme !== 'dark',
+            'border-gray-400': theme === 'dark'
+          }"
+          alt=""
+          :src="firstEntry?.bgUrl"
+        >
+      </div>
       <div class="text-6xl">
         <p
           class="pb-4"
@@ -55,12 +57,18 @@
           Station {{ firstEntry?._servo?.Station }} &mdash; {{ firstEntry?._servo?.DivisionName }} {{ firstEntry?._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ firstEntry?._servo?.GenderName }}
         </p>
         <p class="pb-4">
-          {{ firstEntry?._servo?.Event }}
+          {{ firstEntry?._servo?.Event }} {{ settings.mode }}
         </p>
         <div
-          v-if="firstEntry?._servo?.Event !== 'Team Show Freestyle'"
-          class="font-bold"
+          v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode) && !!firstEntry?.teamName"
+          class="font-bold pb-4"
+        >
+          {{ firstEntry?.teamName }}
+        </div>
+        <div
+          v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode)"
           :class="{
+            'font-bold': settings.mode !== 'athletes-and-team-name',
             'text-8xl': !((firstEntry?._servo?.Part2?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part3?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part4?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part5?.trim()?.length ?? 0) > 0)
           }"
         >
@@ -96,6 +104,7 @@
           }"
         >
           <img
+            v-if="heat.bgUrl"
             class="border-2"
             :class="{
               'border-gray-800': theme !== 'dark',
@@ -121,7 +130,16 @@
           >
             Station {{ heat._servo?.Station }} &mdash; {{ heat._servo?.DivisionName }} {{ heat._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ heat._servo?.GenderName }}
           </p>
-          <p class="font-bold">
+          <p
+            v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode) && !!firstEntry?.teamName"
+            class="font-bold"
+          >
+            {{ firstEntry?.teamName }}
+          </p>
+          <p
+            v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode)"
+            :class="{ 'font-bold': settings.mode !== 'athletes-and-team-name' }"
+          >
             {{ formatList(getServoHeatNameList(heat._servo!, { mode: 'first' })) }}
           </p>
           <p class="">

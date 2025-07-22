@@ -28,8 +28,9 @@ export interface ServoHeatInfo {
   DivisionName: string
   AgeGroupName: string
   GenderName: string
+  GroupName: string
   Team: string
-  TeamCountryCode: string
+  TeamCountryCode: string | null
   TeamCountryName: string
   TeamCountryFlagUrl: string
   EntryNumber: number
@@ -44,6 +45,7 @@ export interface HeatInfo {
   bgUrl?: string
   names?: string[]
   teamName?: string
+  delegationName?: string
   didNotSkip?: boolean
   submitted?: boolean
 
@@ -145,7 +147,8 @@ export function useHeatInfo (settings: Ref<HeatInfoConfig | undefined>): UseHeat
             poolLabel: `${hi.Station}`,
             bgUrl: hi.TeamCountryFlagUrl || (hi.TeamCountryCode ? `/flags/${hi.TeamCountryCode.toLocaleLowerCase()}.svg` : undefined),
             names: getServoHeatNameList(hi, { mode: 'first' }),
-            teamName: hi.Team,
+            teamName: hi.GroupName || undefined,
+            delegationName: hi.Team,
             entryId: `${hi.EntryNumber}`,
             servoAssignmentCode: hi.LiveScoringAssignmentCode,
 
@@ -162,7 +165,8 @@ export function useHeatInfo (settings: Ref<HeatInfoConfig | undefined>): UseHeat
             {
               poolLabel: `${entry.pool ?? ''}`,
               names: entry.participant.__typename === 'Team' ? entry.participant.members.map(name => guessFirstName(name)) : [entry.participant.name],
-              teamName: entry.participant.__typename === 'Team' ? entry.participant.name : entry.participant.club,
+              teamName: entry.participant.__typename === 'Team' ? entry.participant.name : undefined,
+              delegationName: entry.participant.club,
               bgUrl: entry.participant.country ? `/flags/${entry.participant.country.toLocaleLowerCase()}.svg` : undefined,
               didNotSkip: entry.didNotSkipAt != null,
               submitted: scoresheet?.completedAt != null,
