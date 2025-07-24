@@ -59,17 +59,24 @@
       }"
     >
       <div
-        v-if="info.names != null && info.names.length > 0"
+        v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.teamName != null"
         class="font-bold"
         :class="{ 'text-4xl': !row, 'whitespace-nowrap text-3xl': row }"
       >
-        {{ formatList(info.names) }}
+        {{ info.teamName }}
       </div>
       <div
-        v-if="info.teamName != null"
+        v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.names != null && info.names.length > 0"
+        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'text-4xl': !row, 'whitespace-nowrap text-3xl': row }"
+      >
+        {{ formatList(info.names) }}
+      </div>
+
+      <div
+        v-if="info.delegationName != null"
         :class="{ 'text-4xl': !row, 'whitespace-nowrap text-3xl': row }"
       >
-        {{ info.teamName }}
+        {{ info.delegationName }}
       </div>
     </div>
 
@@ -107,6 +114,7 @@ import { formatList, getAbbr } from '../helpers'
 import type { Theme } from '../hooks/theme'
 import type { HeatInfo } from '../hooks/heat-info'
 import type { DeviceStreamJudgeInfo } from '../graphql/generated'
+import type { DeviceStreamNameMode } from '../views/device-stream/use-device-stream-pools'
 
 const props = defineProps({
   pool: {
@@ -116,6 +124,10 @@ const props = defineProps({
   info: {
     type: Object as PropType<Partial<HeatInfo & DeviceStreamJudgeInfo>>,
     default: null
+  },
+  nameMode: {
+    type: String as PropType<DeviceStreamNameMode>,
+    default: 'athlete-names'
   },
   score: {
     type: Number,

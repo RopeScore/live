@@ -162,6 +162,14 @@
             <checkbox-field v-model:model-value="screen.topNOnly" label="Only Show top N pools" />
             <number-field v-model:model-value="screen.topN" label="N pools to show" :min="1" :step="1" :max="screen.pools?.length ?? 1" />
           </fieldset>
+          <fieldset class="container mx-auto">
+            <select-field
+              :model-value="screen.nameMode ?? 'athlete-name'"
+              label="Name Display Mode"
+              :data-list="deviceStreamNameModes"
+              @update:model-value="screen.nameMode = $event as DeviceStreamNameMode"
+            />
+          </fieldset>
 
           <div
             class="container mx-auto"
@@ -209,10 +217,17 @@
             <number-field :model-value="screen.rows" label="Rows" :min="0" :step="1" @update:model-value="changeRows(screenId, $event)" />
             <number-field :model-value="screen.cols" label="Columns" :min="0" :step="1" @update:model-value="changeCols(screenId, $event)" />
           </fieldset>
-
           <fieldset class="container mx-auto grid grid-cols-2 gap-2">
             <checkbox-field v-model:model-value="screen.hideClock" label="Hide Clock" />
             <checkbox-field v-model:model-value="screen.hideCurrentHeat" label="Hide Current Heat" />
+          </fieldset>
+          <fieldset class="container mx-auto">
+            <select-field
+              :model-value="screen.nameMode ?? 'athlete-name'"
+              label="Name Display Mode"
+              :data-list="deviceStreamNameModes"
+              @update:model-value="screen.nameMode = $event as DeviceStreamNameMode"
+            />
           </fieldset>
 
           <div class="grid custom-grid mt-4" :style="{ '--cols': screen.cols, '--rows': screen.rows }">
@@ -276,7 +291,7 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { HEAT_SYSTEMS, useDeviceStreamPools, type HeatSystem } from './use-device-stream-pools'
+import { deviceStreamNameModes, HEAT_SYSTEMS, useDeviceStreamPools, type HeatSystem, type DeviceStreamNameMode } from './use-device-stream-pools'
 import { DeviceStreamShareStatus, useGroupsQuery, useRequestStreamShareMutation, useUserStreamSharesQuery } from '../../graphql/generated'
 import { useHead } from '@vueuse/head'
 

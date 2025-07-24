@@ -50,6 +50,7 @@
               :info="extendedInfo[pools[`${row}:${col}`].id]"
               :cols="cols"
               :theme="theme"
+              :name-mode="screen?.nameMode ?? 'athlete-names'"
             />
           </template>
         </template>
@@ -97,7 +98,7 @@
   >
     <transition-group name="pools" tag="main" class="grid custom-grid h-full relative">
       <template v-for="pool of topNRankedPools" :key="pool.id">
-        <device-not-set v-if="settings.heatInfo?.system !== 'ropescore' && !pool.deviceId" :pool="pool.label" :theme="theme" row />
+        <device-not-set v-if="settings.heatInfo?.system === 'none' && !pool.deviceId" :pool="pool.label" :theme="theme" row />
         <unsupported-competition-event
           v-else-if="tallies[getTallyId(extendedInfo[pool.id])!]?.shownScore === 'unsupported'"
           :pool="pool.label"
@@ -113,6 +114,7 @@
           :info="extendedInfo[pool.id]"
           :cols="cols"
           :theme="theme"
+          :name-mode="screen?.nameMode ?? 'athlete-names'"
           row
         />
       </template>

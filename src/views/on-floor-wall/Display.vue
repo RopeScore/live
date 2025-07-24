@@ -57,7 +57,7 @@
           Station {{ firstEntry?._servo?.Station }} &mdash; {{ firstEntry?._servo?.DivisionName }} {{ firstEntry?._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ firstEntry?._servo?.GenderName }}
         </p>
         <p class="pb-4">
-          {{ firstEntry?._servo?.Event }} {{ settings.mode }}
+          {{ firstEntry?._servo?.Event }}
         </p>
         <div
           v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode) && !!firstEntry?.teamName"
@@ -134,7 +134,7 @@
             v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode) && !!firstEntry?.teamName"
             class="font-bold"
           >
-            {{ firstEntry?.teamName }}
+            {{ heat.teamName }}
           </p>
           <p
             v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode)"

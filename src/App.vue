@@ -72,7 +72,7 @@ useHead({
 const route = useRoute()
 const router = useRouter()
 
-const menuItems = computed(() => router.getRoutes().filter(route => route.meta?.menu != null).map(route => ({ title: route.meta.menu, path: route.path, order: (route.meta.menuOrder ?? Infinity) as number })).sort((a, b) => a.order - b.order))
+const menuItems = computed(() => router.getRoutes().filter(route => route.meta?.menu != null).map(route => ({ title: route.meta.menu as string, path: route.path, order: (route.meta.menuOrder ?? Infinity) as number })).sort((a, b) => a.order - b.order))
 const menuDialog = ref<typeof DialogButton>()
 
 const fullscreen = computed(() => {

@@ -1,6 +1,14 @@
 import { isObject, useLocalStorage } from '@vueuse/core'
 import type { HeatInfoConfig } from '../../hooks/heat-info'
 
+export const deviceStreamNameModes = [
+  { text: 'Athlete Names', value: 'athlete-names' },
+  { text: 'Team Name', value: 'team-name' },
+  { text: 'Athletes and Team Name', value: 'athletes-and-team-name' },
+] as const
+
+export type DeviceStreamNameMode = typeof deviceStreamNameModes[number]['value']
+
 export interface StreamPool {
   id: string
   deviceId?: string
@@ -15,6 +23,7 @@ export interface GridScreenConfig {
   pools?: Record<`${number}:${number}`, StreamPool>
   hideClock?: boolean
   hideCurrentHeat?: boolean
+  nameMode?: DeviceStreamNameMode
 }
 
 export interface RankedScreenConfig {
@@ -22,6 +31,7 @@ export interface RankedScreenConfig {
   pools?: StreamPool[]
   topNOnly?: boolean
   topN?: number
+  nameMode?: DeviceStreamNameMode
 }
 
 export interface DeviceStreamSettings {
