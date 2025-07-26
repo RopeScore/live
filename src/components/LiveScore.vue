@@ -1,6 +1,6 @@
 <template>
   <div
-    class="score-container border items-center justify-center relative overflow-hidden relative"
+    class="@container score-container border items-center justify-center relative overflow-hidden relative"
     :class="{
       'border-black bg-white text-black': theme !== 'dark',
       'border-gray-600 bg-black text-white dark': theme === 'dark',
@@ -18,11 +18,11 @@
       v-if="info.bgUrl"
       class="absolute"
       :class="{
-        'bottom-0 right-0 left-0 max-h-[75%]': !row,
+        'bottom-0 right-0 left-0 max-h-[66%]': !row,
         'top-0 bottom-0 left-0 h-full': row,
       }"
     >
-      <img :src="info.bgUrl" alt=" " class="h-full">
+      <img :src="info.bgUrl" alt=" " class="h-full w-full">
       <div class="absolute inset-0" :class="{ 'flag-bg-bottom': !row, 'flag-bg-left' : row }" />
     </div>
     <div class="absolute inset-0" :class="{ 'full-bg-bottom': !row, 'full-bg-left': row }" />
@@ -44,11 +44,11 @@
         'text-gray-600': theme !== 'dark',
         'text-gray-400': theme === 'dark',
 
-        'top-0 absolute left-2 text-8xl': !row,
+        'top-0 absolute left-2 text-[7cqmax]': !row,
         'w-[3ch] z-1 pl-4 text-4xl grid-row-start-2 grid-col-start-1 self-end pb-2': row,
       }"
     >
-      S{{ pool ?? '' }}
+      {{ row ? 'S' : '' }}{{ pool ?? '' }}
     </div>
 
     <div
@@ -61,20 +61,21 @@
       <div
         v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.teamName != null"
         class="font-bold"
-        :class="{ 'text-4xl': !row, 'whitespace-nowrap text-3xl': row }"
+        :class="{ 'text-[2.5cqmax] leading-tight': !row, 'whitespace-nowrap text-3xl': row }"
       >
         {{ info.teamName }}
       </div>
       <div
         v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.names != null && info.names.length > 0"
-        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'text-4xl': !row, 'whitespace-nowrap text-3xl': row }"
+        class="line-clamp-2 text-ellipsis"
+        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'text-[2.5cqmax] leading-tight': !row, 'whitespace-nowrap text-3xl': row }"
       >
         {{ formatList(info.names) }}
       </div>
 
       <div
         v-if="info.delegationName != null"
-        :class="{ 'text-4xl': !row, 'whitespace-nowrap text-3xl': row }"
+        :class="{ 'text-[2.5cqmax] leading-tight': !row, 'whitespace-nowrap text-3xl': row }"
       >
         {{ info.delegationName }}
       </div>
@@ -84,7 +85,7 @@
       v-if="!info?.didNotSkip"
       class="z-1 font-semibold tabular-nums w-full font-mono"
       :class="{
-        'custom-size text-center': !row,
+        'leading-none text-[20cqmax] text-center': !row,
         'text-6xl text-end pr-4 min-w-[3ch] row-span-2': row,
       }"
     >
@@ -109,14 +110,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, type PropType, toRef } from 'vue'
+import { type PropType } from 'vue'
 import { formatList, getAbbr } from '../helpers'
 import type { Theme } from '../hooks/theme'
 import type { HeatInfo } from '../hooks/heat-info'
 import type { DeviceStreamJudgeInfo } from '../graphql/generated'
 import type { DeviceStreamNameMode } from '../views/device-stream/use-device-stream-pools'
 
-const props = defineProps({
+defineProps({
   pool: {
     type: Number,
     default: undefined
@@ -137,10 +138,6 @@ const props = defineProps({
     type: String,
     default: null
   },
-  cols: {
-    type: Number,
-    default: null
-  },
   theme: {
     type: String as PropType<Theme>,
     required: true
@@ -150,23 +147,11 @@ const props = defineProps({
     default: false,
   },
 })
-
-const cols = toRef(props, 'cols')
-const fontSize = computed(() => {
-  if (!cols.value) return '20rem'
-  return `${100 / (cols.value * 2)}vw`
-})
 </script>
 
 <style scoped>
 .custom-wrap {
   text-overflow: ellipsis;
-}
-
-.custom-size {
-  --val: v-bind(fontSize);
-  font-size: var(--val, 20rem);
-  line-height: 1;
 }
 
 .score-container .debug {

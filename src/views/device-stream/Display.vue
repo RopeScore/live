@@ -48,7 +48,6 @@
               :pool="pools[`${row}:${col}`].label"
               :score="tallies[getTallyId(extendedInfo[pools[`${row}:${col}`].id])!]?.shownScore as number"
               :info="extendedInfo[pools[`${row}:${col}`].id]"
-              :cols="cols"
               :theme="theme"
               :name-mode="screen?.nameMode ?? 'athlete-names'"
             />
@@ -112,7 +111,6 @@
           :rank="getRank(tallies[getTallyId(extendedInfo[pool.id])!]?.shownScore as number)"
           :score="tallies[getTallyId(extendedInfo[pool.id])!]?.shownScore as number"
           :info="extendedInfo[pool.id]"
-          :cols="cols"
           :theme="theme"
           :name-mode="screen?.nameMode ?? 'athlete-names'"
           row
