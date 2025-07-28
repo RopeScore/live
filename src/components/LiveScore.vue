@@ -46,7 +46,7 @@
         'text-gray-600': theme !== 'dark',
         'text-gray-400': theme === 'dark',
 
-        'top-0 left-2 text-[7cqmax]': !row,
+        'top-0 left-2 text-[7cqmax] leading-none': !row,
         'left-2 bottom-0 text-[3.5cqh]': row,
       }"
     >
@@ -70,7 +70,7 @@
       <div
         v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.names != null && info.names.length > 0"
         class="text-ellipsis"
-        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'line-clamp-2 text-[1.5cqmax] leading-tight': !row, 'truncate leading-tight text-[2.5cqmax]': row }"
+        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'line-clamp-2 text-[2.5cqmax] leading-tight': !row, 'truncate leading-tight text-[2.5cqmax]': row }"
       >
         {{ formatList(info.names) }}
       </div>
