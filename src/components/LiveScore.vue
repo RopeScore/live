@@ -85,7 +85,9 @@
       v-if="!info?.didNotSkip"
       class="z-1 font-semibold tabular-nums w-full font-mono"
       :class="{
-        'leading-none text-[20cqmax] text-center': !row,
+        'leading-none text-center': !row,
+        'text-[20cqmax]': !row && score < 100,
+        'text-[15cqmax]': !row && score >= 100,
         'text-6xl text-end pr-4 min-w-[3ch] row-span-2': row,
       }"
     >
