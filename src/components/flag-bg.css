@@ -4,31 +4,41 @@
 
 .flag-bg-bottom {
   background: linear-gradient(0deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .9) 80%,
-      rgba(255, 255, 255, 1) 100%);
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, .9) 80%,
+    rgba(255, 255, 255, 1) 100%);
 }
 
 .full-bg-bottom {
   background: linear-gradient(0deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .9) 50%,
-      rgba(255, 255, 255, 1) 100%);
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, .9) 50%,
+    rgba(255, 255, 255, 1) 100%);
 }
 
 .flag-bg-left {
   background: linear-gradient(-90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .9) 80%,
-      rgba(255, 255, 255, 1) 100%);
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, .9) 80%,
+    rgba(255, 255, 255, 1) 100%);
 }
 
 .full-bg-left {
   background: linear-gradient(90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, .9) 80%,
-      rgba(255, 255, 255, 1) 100%);
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) calc(10cqh / 3 * 4),
+    rgba(255, 255, 255, .5) 70%,
+    rgba(255, 255, 255, 0) 100%);
 }
+
+.border-row {
+  border-color: linear-gradient(90deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) calc(10cqh / 3 * 4),
+    rgba(0, 0, 0, .5) 70%,
+    rgba(0, 0, 0, 0) 100%);
+}
+
 
 .dark .custom-size {
   text-shadow: 0 0 .5em black;
@@ -36,30 +46,31 @@
 
 .dark .flag-bg-bottom {
   background: linear-gradient(0deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, .9) 80%,
-      rgba(0, 0, 0, 1) 100%);
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, .9) 80%,
+    rgba(0, 0, 0, 1) 100%);
 }
 
 .dark .full-bg-bottom {
   background: linear-gradient(0deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, .9) 50%,
-      rgba(0, 0, 0, 1) 100%);
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, .9) 50%,
+    rgba(0, 0, 0, 1) 100%);
 }
 
 .dark .flag-bg-left {
   background: linear-gradient(-90deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, .9) 80%,
-      rgba(0, 0, 0, 1) 100%);
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, .9) 80%,
+    rgba(0, 0, 0, 1) 100%);
 }
 
 .dark .full-bg-left {
   background: linear-gradient(90deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, .9) 80%,
-      rgba(0, 0, 0, 1) 100%);
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) calc(10cqh / 3 * 4),
+    rgba(0, 0, 0, .5) 70%,
+    rgba(0, 0, 0, 0) 100%);
 }
 
 img {

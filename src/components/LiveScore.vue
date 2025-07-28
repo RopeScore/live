@@ -1,51 +1,53 @@
 <template>
   <div
-    class="@container score-container border items-center justify-center relative overflow-hidden relative"
+    class="@container score-container items-center justify-center relative overflow-hidden relative"
     :class="{
-      'border-black bg-white text-black': theme !== 'dark',
-      'border-gray-600 bg-black text-white dark': theme === 'dark',
+      'text-black': theme !== 'dark',
+      'border-black bg-white': !row && theme !== 'dark',
+      'text-white dark': theme === 'dark',
+      'border-gray-600 bg-black': !row && theme === 'dark',
 
       'bg-green-100': theme !== 'dark' && info?.submitted,
       'bg-green-900': theme === 'dark' && info?.submitted,
       'bg-gray-300': theme !== 'dark' && info?.didNotSkip,
       'bg-dark-500': theme === 'dark' && info?.didNotSkip,
 
-      'flex': !row,
-      'grid grid-rows-2 grid-cols-[min-content_1fr_min-content] gap-4': row
+      'flex border': !row,
+      'grid grid-rows-2 grid-cols-[calc(10cqh/3*4)_min-content_1fr] gap-4': row
     }"
   >
+    <div v-if="row" class="absolute inset-0 full-bg-left" />
     <div
       v-if="info.bgUrl"
-      class="absolute"
       :class="{
-        'bottom-0 right-0 left-0 max-h-[66%]': !row,
-        'top-0 bottom-0 left-0 h-full': row,
+        'absolute bottom-0 right-0 left-0 max-h-[66%]': !row,
+        'row-span-2 col-start-1 row-start-1 h-full relative': row,
       }"
     >
       <img :src="info.bgUrl" alt=" " class="h-full w-full">
       <div class="absolute inset-0" :class="{ 'flag-bg-bottom': !row, 'flag-bg-left' : row }" />
     </div>
-    <div class="absolute inset-0" :class="{ 'full-bg-bottom': !row, 'full-bg-left': row }" />
+    <div v-if="!row" class="absolute inset-0 full-bg-bottom" />
 
     <div
       v-if="row"
-      class="font-bold"
+      class="absolute font-bold"
       :class="{
-        'top-0 absolute left-2 text-8xl': !row,
-        'w-[3ch] z-1 pl-4 text-6xl self-start': row,
+        'top-0 left-2 text-8xl': !row,
+        'left-2 top-0 text-[3.5cqh]': row,
       }"
     >
       {{ rank ?? '' }}
     </div>
 
     <div
-      class="font-bold"
+      class="font-bold absolute"
       :class="{
         'text-gray-600': theme !== 'dark',
         'text-gray-400': theme === 'dark',
 
-        'top-0 absolute left-2 text-[7cqmax]': !row,
-        'w-[3ch] z-1 pl-4 text-4xl grid-row-start-2 grid-col-start-1 self-end pb-2': row,
+        'top-0 left-2 text-[7cqmax]': !row,
+        'left-2 bottom-0 text-[3.5cqh]': row,
       }"
     >
       {{ row ? 'S' : '' }}{{ pool ?? '' }}
@@ -55,27 +57,27 @@
       class="overflow-hidden custom-wrap text-balance"
       :class="{
         'absolute top-2 right-2 text-end max-w-[66%] ': !row,
-        'z-1 row-span-2': row,
+        'z-1 row-start-1 row-span-2 col-start-3 max-w-[100%]': row,
       }"
     >
       <div
         v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.teamName != null"
         class="font-bold"
-        :class="{ 'text-[2.5cqmax] leading-tight': !row, 'whitespace-nowrap text-3xl': row }"
+        :class="{ 'text-[2.5cqmax] leading-tight': !row, 'truncate text-[2.5cqmax]': row }"
       >
         {{ info.teamName }}
       </div>
       <div
         v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(nameMode) && info.names != null && info.names.length > 0"
-        class="line-clamp-2 text-ellipsis"
-        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'text-[2.5cqmax] leading-tight': !row, 'whitespace-nowrap text-3xl': row }"
+        class="text-ellipsis"
+        :class="{ 'font-bold': nameMode !== 'athletes-and-team-name', 'line-clamp-2 text-[1.5cqmax] leading-tight': !row, 'truncate leading-tight text-[2.5cqmax]': row }"
       >
         {{ formatList(info.names) }}
       </div>
 
       <div
-        v-if="info.delegationName != null"
-        :class="{ 'text-[2.5cqmax] leading-tight': !row, 'whitespace-nowrap text-3xl': row }"
+        v-if="info.delegationName != null && nameMode !== 'none'"
+        :class="{ 'text-[2.5cqmax] leading-tight': !row, 'truncate leading-tight text-[2.5cqmax]': row }"
       >
         {{ info.delegationName }}
       </div>
@@ -88,7 +90,7 @@
         'leading-none text-center': !row,
         'text-[20cqmax]': !row && score < 100,
         'text-[15cqmax]': !row && score >= 100,
-        'text-6xl text-end pr-4 min-w-[3ch] row-span-2': row,
+        'row-start-1 col-start-2 row-span-2 min-w-[3ch] text-right text-[8cqh]': row,
       }"
     >
       {{ score ?? 0 }}

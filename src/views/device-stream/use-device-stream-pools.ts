@@ -5,6 +5,7 @@ export const deviceStreamNameModes = [
   { text: 'Athlete Names', value: 'athlete-names' },
   { text: 'Team Name', value: 'team-name' },
   { text: 'Athletes and Team Name', value: 'athletes-and-team-name' },
+  { text: 'None', value: 'none' },
 ] as const
 
 export type DeviceStreamNameMode = typeof deviceStreamNameModes[number]['value']

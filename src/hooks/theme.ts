@@ -20,6 +20,15 @@ export function useTheme () {
 }
 
 export function useKeyColor () {
+  const queryKeyColor = useRouteQuery('key-color', keyColor)
+
+  return computed({
+    get () { return queryKeyColor.value },
+    set (newValue) { keyColor.value = newValue }
+  })
+}
+
+export function useRawKeyColor () {
   return keyColor
 }
 
