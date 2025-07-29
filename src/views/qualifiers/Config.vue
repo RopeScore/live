@@ -166,7 +166,10 @@ function newSession () {
 }
 function removeSession (sessionId: string) {
   const idx = sessions.value.findIndex(s => s.id === sessionId)
-  if (idx !== -1) sessions.value.splice(idx, 1)
+  if (idx !== -1) {
+    selectedSession.value = sessions.value[idx - 1] ?? undefined
+    sessions.value.splice(idx, 1)
+  }
 }
 
 function newQualifier () {
