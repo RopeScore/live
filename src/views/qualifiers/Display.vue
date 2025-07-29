@@ -59,7 +59,7 @@
               v-show="state === 'shown'"
               :name="idxToPos(idx - 1).direction"
               :style="`--station-col: ${idxToPos(idx - 1).col}; --station-row: ${idxToPos(idx - 1).row}`"
-              class="h-full col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1))] text-4xl px-6 py-2"
+              class="relative h-full col-start-[calc(var(--station-col,1)+1)] row-start-[calc(var(--station-row,1))] text-4xl px-6 py-2"
               :class="{
                 'bg-white bg-opacity-60': theme !== 'dark',
                 'bg-black bg-opacity-60': theme === 'dark',
@@ -71,6 +71,19 @@
               <p v-if="session?.qualifiers[idx - 1]?.countryCode != null">
                 {{ countryNames[session?.qualifiers[idx - 1]?.countryCode!] }}
               </p>
+
+              <template v-if="session?.qualifiers[idx - 1]?.showBlink">
+                <p
+                  class="absolute right-6 bottom-2"
+                >
+                  {{ session?.qualifiers[idx - 1]?.blinkText }}
+                </p>
+                <p
+                  class="absolute right-6 bottom-2 animate-ping text-orange"
+                >
+                  {{ session?.qualifiers[idx - 1]?.blinkText }}
+                </p>
+              </template>
             </div>
           </transition>
         </template>
@@ -97,6 +110,7 @@ const theme = useTheme()
 const { settings } = useQualifiers()
 const session = ref<QualifierSession & { numQualifiers: number }>()
 const pendingHide = ref(false)
+const afterLeaveHooks = ref<Array<() => void>>([])
 const state = ref<'hidden' | 'title' | 'shown'>('hidden')
 
 const countryNames = Object.fromEntries(countries.map(c => [c.code, c.name]))
@@ -124,13 +138,20 @@ bc.addEventListener('message', evt => {
         session.value = undefined
       } else {
         if (evt.data.startsWith('show-title:')) {
-          session.value = {
-            ...newSession,
-            numQualifiers: newSession.qualifiers.length,
+          if (state.value === 'shown') {
+            afterLeaveHooks.value.push(() => {
+              session.value = {
+                ...newSession,
+                numQualifiers: newSession.qualifiers.length
+              }
+            })
+          } else {
+            session.value = {
+              ...newSession,
+              numQualifiers: newSession.qualifiers.length
+            }
           }
-          void nextTick(() => {
-            state.value = 'title'
-          })
+          state.value = 'title'
         } else {
           session.value = {
             ...newSession,
@@ -144,13 +165,18 @@ bc.addEventListener('message', evt => {
     }
   } else if (evt.data === 'hide') {
     state.value = 'hidden'
-    pendingHide.value = true
+    afterLeaveHooks.value.push(() => {
+      session.value = undefined
+    })
   }
 })
 
 function afterLeave () {
-  if (pendingHide.value) {
-    session.value = undefined
+  while (afterLeaveHooks.value.length > 0) {
+    const hook = afterLeaveHooks.value.shift()
+    try {
+      hook?.()
+    } catch {}
   }
 }
 

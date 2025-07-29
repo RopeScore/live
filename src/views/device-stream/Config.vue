@@ -160,7 +160,14 @@
         <template v-if="screen.type === 'ranked-list'">
           <fieldset class="container mx-auto grid grid-cols-2 gap-2">
             <checkbox-field v-model:model-value="screen.topNOnly" label="Only Show top N pools" />
-            <number-field v-model:model-value="screen.topN" label="N pools to show" :min="1" :step="1" :max="screen.pools?.length ?? 1" />
+            <number-field
+              v-model:model-value="screen.topN"
+              label="N pools to show"
+              :disabled="!screen.topNOnly"
+              :min="1"
+              :step="1"
+              :max="screen.pools?.length ?? 1"
+            />
           </fieldset>
           <fieldset class="container mx-auto">
             <select-field

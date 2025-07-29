@@ -15,6 +15,8 @@ export interface Qualifier {
   id: string
   countryCode?: string
   names: string[]
+  showBlink?: boolean
+  blinkText?: string
 }
 
 const settings = useLocalStorage<QualifiersSettings>('rs-qualifiers-settings', {})

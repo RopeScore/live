@@ -105,6 +105,11 @@
           :data-list="countriesList"
         />
 
+        <fieldset class="container mx-auto grid grid-cols-2 gap-2">
+          <checkbox-field v-model:model-value="qualifier.showBlink" label="Show Blink Text" />
+          <text-field v-model:model-value="qualifier.blinkText" label="Blink Text" />
+        </fieldset>
+
         <div
           v-for="name, qIdx of qualifier.names"
           :id="`name-${qualifier.id}-${qIdx}`"
@@ -136,7 +141,7 @@
 <script lang="ts" setup>
 import { useHead } from '@vueuse/head'
 import countries from '../../assets/countries.json'
-import { ButtonLink, TextField, TextButton, SelectField } from '@ropescore/components'
+import { ButtonLink, TextField, TextButton, SelectField, CheckboxField } from '@ropescore/components'
 import { useTheme } from '../../hooks/theme'
 import { useQualifiers, type Qualifier, type QualifierSession } from './use-qualifiers'
 import PhotoPicker from '../../components/PhotoPicker.vue'
