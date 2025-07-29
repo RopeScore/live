@@ -69,8 +69,14 @@
     />
 
     <div
-      class="mx-auto container flex flex-col gap-4 items-center justify-center mt-8"
+      class="mx-auto container flex flex-row gap-4 justify-end my-8"
     >
+      <number-field
+        v-model="numCreate"
+        label="Qty"
+        :min="1"
+        :step="1"
+      />
       <text-button
         color="blue"
         class="self-end"
@@ -107,7 +113,7 @@
 
         <fieldset class="container mx-auto grid grid-cols-2 gap-2">
           <checkbox-field v-model:model-value="qualifier.showBlink" label="Show Blink Text" />
-          <text-field v-model:model-value="qualifier.blinkText" label="Blink Text" />
+          <text-field v-model:model-value="qualifier.blinkText" :disabled="qualifier.showBlink" label="Blink Text" />
         </fieldset>
 
         <div
@@ -141,7 +147,7 @@
 <script lang="ts" setup>
 import { useHead } from '@vueuse/head'
 import countries from '../../assets/countries.json'
-import { ButtonLink, TextField, TextButton, SelectField, CheckboxField } from '@ropescore/components'
+import { ButtonLink, TextField, TextButton, SelectField, CheckboxField, NumberField } from '@ropescore/components'
 import { useTheme } from '../../hooks/theme'
 import { useQualifiers, type Qualifier, type QualifierSession } from './use-qualifiers'
 import PhotoPicker from '../../components/PhotoPicker.vue'
@@ -159,10 +165,12 @@ const countriesList = countries.map(c => ({ text: c.name, value: c.code }))
 
 const selectedSession = ref<QualifierSession>(sessions.value?.[0])
 
+const numCreate = ref(1)
+
 function newSession () {
   const newSession = { id: crypto.randomUUID(), qualifiers: [] }
   sessions.value.push(newSession)
-  if (sessions.value.length === 1) selectedSession.value = newSession
+  selectedSession.value = newSession
 }
 function removeSession (sessionId: string) {
   const idx = sessions.value.findIndex(s => s.id === sessionId)
@@ -173,7 +181,9 @@ function removeSession (sessionId: string) {
 }
 
 function newQualifier () {
-  selectedSession.value?.qualifiers.push({ id: crypto.randomUUID(), names: [] })
+  for (let idx = 0; idx < numCreate.value; idx++) {
+    selectedSession.value?.qualifiers.push({ id: crypto.randomUUID(), names: [] })
+  }
 }
 function removeQualifier (id: string) {
   const idx = selectedSession.value?.qualifiers.findIndex(q => q.id === id)
