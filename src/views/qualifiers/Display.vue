@@ -109,7 +109,6 @@ const bc = new BroadcastChannel('rs-qualifiers')
 const theme = useTheme()
 const { settings } = useQualifiers()
 const session = ref<QualifierSession & { numQualifiers: number }>()
-const pendingHide = ref(false)
 const afterLeaveHooks = ref<Array<() => void>>([])
 const state = ref<'hidden' | 'title' | 'shown'>('hidden')
 
