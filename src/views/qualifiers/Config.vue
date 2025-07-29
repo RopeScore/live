@@ -113,7 +113,7 @@
 
         <fieldset class="container mx-auto grid grid-cols-2 gap-2">
           <checkbox-field v-model:model-value="qualifier.showBlink" label="Show Blink Text" />
-          <text-field v-model:model-value="qualifier.blinkText" :disabled="qualifier.showBlink" label="Blink Text" />
+          <text-field v-model:model-value="qualifier.blinkText" :disabled="!qualifier.showBlink" label="Blink Text" />
         </fieldset>
 
         <div
@@ -165,7 +165,7 @@ const countriesList = countries.map(c => ({ text: c.name, value: c.code }))
 
 const selectedSession = ref<QualifierSession>(sessions.value?.[0])
 
-const numCreate = ref(1)
+const numCreate = ref(6)
 
 function newSession () {
   const newSession = { id: crypto.randomUUID(), qualifiers: [] }
