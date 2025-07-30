@@ -77,7 +77,7 @@
               {{ name }}
             </p>
           </div>
-          <p>{{ firstEntry?._servo?.TeamCountryName }}</p>
+          <p>{{ firstEntry?.delegationName }}</p>
         </div>
       </div>
     </transition>
@@ -144,8 +144,8 @@
           >
             {{ formatList(getServoHeatNameList(heat._servo!, { mode: 'first' })) }}
           </p>
-          <p class="">
-            {{ heat._servo?.TeamCountryName }}
+          <p>
+            {{ heat.delegationName }}
           </p>
         </div>
       </template>
