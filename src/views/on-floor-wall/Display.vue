@@ -26,59 +26,61 @@
       </div>
     </div>
 
-    <div
-      v-if="entryCount === 1"
-      class="grid w-full gap-6 items-center justify-around"
-      :class="{
-        'grid-cols-[2fr_3fr]': settings.showFlags,
-        'grid-cols-[max-content]': !settings.showFlags,
-      }"
-    >
-      <div v-if="settings.showFlags" class="justify-self-end w-full max-w-100">
-        <img
-          v-if="firstEntry?.bgUrl"
-          class="border-2"
-          :class="{
-            'border-gray-800': theme !== 'dark',
-            'border-gray-400': theme === 'dark'
-          }"
-          alt=""
-          :src="firstEntry?.bgUrl"
-        >
-      </div>
-      <div class="text-6xl">
-        <p
-          class="pb-4"
-          :class="{
-            'text-gray-500': theme !== 'dark',
-            'text-gray-400': theme === 'dark'
-          }"
-        >
-          Station {{ firstEntry?._servo?.Station }} &mdash; {{ firstEntry?._servo?.DivisionName }} {{ firstEntry?._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ firstEntry?._servo?.GenderName }}
-        </p>
-        <p class="pb-4">
-          {{ firstEntry?._servo?.Event }}
-        </p>
-        <div
-          v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode) && !!firstEntry?.teamName"
-          class="font-bold pb-4"
-        >
-          {{ firstEntry?.teamName }}
+    <transition v-if="entryCount === 1" name="entry">
+      <div
+        :key="firstEntry?.entryId"
+        class="grid w-full gap-6 items-center justify-around"
+        :class="{
+          'grid-cols-[2fr_3fr]': settings.showFlags,
+          'grid-cols-[max-content]': !settings.showFlags,
+        }"
+      >
+        <div v-if="settings.showFlags" class="justify-self-end w-full max-w-100">
+          <img
+            v-if="firstEntry?.bgUrl"
+            class="border-2"
+            :class="{
+              'border-gray-800': theme !== 'dark',
+              'border-gray-400': theme === 'dark'
+            }"
+            alt=""
+            :src="firstEntry?.bgUrl"
+          >
         </div>
-        <div
-          v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode)"
-          :class="{
-            'font-bold': settings.mode !== 'athletes-and-team-name',
-            'text-8xl': !((firstEntry?._servo?.Part2?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part3?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part4?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part5?.trim()?.length ?? 0) > 0)
-          }"
-        >
-          <p v-for="name of getServoHeatNameList(firstEntry?._servo!)" :key="name" class="pb-4">
-            {{ name }}
+        <div class="text-6xl">
+          <p
+            class="pb-4"
+            :class="{
+              'text-gray-500': theme !== 'dark',
+              'text-gray-400': theme === 'dark'
+            }"
+          >
+            Station {{ firstEntry?._servo?.Station }} &mdash; {{ firstEntry?._servo?.DivisionName }} {{ firstEntry?._servo?.AgeGroupName?.replace(/\s?\(.*$/, '') }} {{ firstEntry?._servo?.GenderName }}
           </p>
+          <p class="pb-4">
+            {{ firstEntry?._servo?.Event }}
+          </p>
+          <div
+            v-if="(['team-name', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode) && !!firstEntry?.teamName"
+            class="font-bold pb-4"
+          >
+            {{ firstEntry?.teamName }}
+          </div>
+          <div
+            v-if="([undefined, 'athlete-names', 'athletes-and-team-name'] as Array<string | undefined>).includes(settings.mode)"
+            :class="{
+              'font-bold': settings.mode !== 'athletes-and-team-name',
+              'text-8xl': !((firstEntry?._servo?.Part2?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part3?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part4?.trim()?.length ?? 0) > 0 || (firstEntry?._servo?.Part5?.trim()?.length ?? 0) > 0)
+            }"
+          >
+            <p v-for="name of getServoHeatNameList(firstEntry?._servo!)" :key="name" class="pb-4">
+              {{ name }}
+            </p>
+          </div>
+          <p>{{ firstEntry?._servo?.TeamCountryName }}</p>
         </div>
-        <p>{{ firstEntry?._servo?.TeamCountryName }}</p>
       </div>
-    </div>
+    </transition>
 
     <div
       v-else-if="entryCount > 1"
@@ -240,5 +242,22 @@ main.dark {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.entry-enter-active,
+.entry-leave-active {
+  transition: opacity .5s ease, transform .5s ease;
+}
+
+.entry-leave-active {
+  @apply absolute inset-auto;
+}
+
+.entry-enter-from {
+  @apply opacity-0 scale-0;
+}
+
+.entry-leave-to {
+  @apply opacity-0 scale-400;
 }
 </style>

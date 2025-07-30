@@ -78,7 +78,7 @@ export function useHeatInfo (settings: Ref<HeatInfoConfig | undefined>): UseHeat
 
   const servoPoll = useTimeoutPoll(() => {
     void servoCurrentHeatFetch.execute()
-  }, 5_000, { immediate: false, immediateCallback: true })
+  }, 1_000, { immediate: false, immediateCallback: true })
 
   // ROPESCORE
   const groupIdVars = computed(() => settings.value?.system === 'ropescore' ? { groupId: settings.value.groupId ?? '' } : { groupId: '' })
